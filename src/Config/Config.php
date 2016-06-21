@@ -6,7 +6,8 @@ namespace Orpheus\Config;
  * The config core class
  * This class is the core for config classes inherited from custom configuration.
  */
-abstract class ConfigCore {
+abstract class Config {
+// abstract class ConfigCore {
 	
 	//! Contains the main configuration, reachable from everywhere.
 	protected static $main;
@@ -140,7 +141,7 @@ abstract class ConfigCore {
 	 * Builds a configuration from $source using load() method.
 	 * If it is not a minor configuration, that new configuration is added to the main configuration.
 	 */
-	public static function build($source, $minor=false, $cached=true) {
+	public static function build($source, $minor=true, $cached=true) {
 		if( !$minor ) {
 			if( !isset(static::$main) ) {
 				static::$main = new static();
