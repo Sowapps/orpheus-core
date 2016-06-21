@@ -1,5 +1,7 @@
 <?php
 use Orpheus\Core\ClassLoader;
+use Orpheus\Config\Config;
+use Orpheus\Exception\UserException;
 /**
  * @brief The core functions
  * 
