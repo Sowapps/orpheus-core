@@ -6,7 +6,7 @@ namespace Orpheus\Config;
  * 
  * This class use ini files to get configuration.
  */
-class IniConfig extends ConfigCore{
+class IniConfig extends ConfigCore {
 	
 	protected static $extension = 'ini';
 
