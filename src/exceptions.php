@@ -6,7 +6,7 @@ namespace Orpheus\Exception;
  * 
  * This exception is thrown when an occured caused by the user.
  */
-class UserException extends Exception {
+class UserException extends \Exception {
 	
 	protected $domain;
 	
