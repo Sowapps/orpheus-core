@@ -1,9 +1,11 @@
 <?php
 namespace Orpheus\Config;
 
-/** The config class
- * This class is the main way to get configuration.
-*/
+/**
+ * The ini config class
+ * 
+ * This class use ini files to get configuration.
+ */
 class IniConfig extends ConfigCore{
 	
 	protected static $extension = 'ini';
