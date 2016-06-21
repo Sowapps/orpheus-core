@@ -1,0 +1,25 @@
+{
+	"name" : "orpheus/orpheus-core",
+	"description" : "Orpheus Core",
+	"keywords" : [
+		"orpheus",
+		"core"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"Orpheus\\" : "src"
+		},
+		"files" : [
+			"src/_loader.php"
+		]
+	},
+	"type" : "library",
+	"license" : "MIT",
+	"authors" : [{
+			"name" : "Florent HAZARD",
+			"email" : "contact@sowapps.com",
+			"homepage" : "http://sowapps.com",
+			"role" : "Developer"
+		}
+	]
+}
