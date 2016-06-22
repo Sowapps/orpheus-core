@@ -143,7 +143,7 @@ abstract class Config {
 	public static function build($source, $minor=false, $cached=true) {
 		if( get_called_class() === get_class() ) {
 			storeBackTrace();
-			throw new \Exception('Use a subclass of '.get_class().' to build your configuration');
+// 			throw new \Exception('Use a subclass of '.get_class().' to build your configuration');
 		}
 		if( !$minor ) {
 			if( !isset(static::$main) ) {
