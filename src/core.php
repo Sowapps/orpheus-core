@@ -101,15 +101,15 @@ function sendJSON($data) {
 function sendRESTfulJSON($data, $code=null) {
 	if( $data instanceof RESTResponse ) {
 		if( !$code ) {
-			$code	= $data->getCode();
+			$code = $data->getCode();
 		}
-		$data	= $data->getBody();
+		$data = $data->getBody();
 	}
 	if( !$code ) {
 		if( $data instanceof Exception ) {
-			$code	= $data->getCode() ? $data->getCode() : HTTP_INTERNAL_SERVER_ERROR;
+			$code = ($data->getCode() < 100) ? $data->getCode() : HTTP_INTERNAL_SERVER_ERROR;
 		} else {
-			$code	= HTTP_OK;
+			$code = HTTP_OK;
 		}
 	}
 	http_response_code($code);
