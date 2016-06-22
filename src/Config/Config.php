@@ -141,6 +141,10 @@ abstract class Config {
 	 * If it is not a minor configuration, that new configuration is added to the main configuration.
 	 */
 	public static function build($source, $minor=false, $cached=true) {
+		if( get_called_class() === get_class() ) {
+			storeBackTrace();
+			throw new \Exception('Use a subclass of '.get_class().' to build your configuration');
+		}
 		if( !$minor ) {
 			if( !isset(static::$main) ) {
 				static::$main = new static();
