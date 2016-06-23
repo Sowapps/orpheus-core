@@ -29,12 +29,15 @@ abstract class Route {
 	
 	public static function setResolver($class) {
 		if( !method_exists($class, 'getRoute') ) {
+			// Check getCurrentRoute
 			throw new \Exception('The route resolver class '.$class.' does not implement the getRoute() method');
 		}
 		static::$resolverClass = $class;
 	}
 
 	/**
+	 * Get Route object for this name
+	 * 
 	 * @param string $name
 	 * @return Route
 	 * @throws \Exception
@@ -45,6 +48,20 @@ abstract class Route {
 		}
 		$class = static::$resolverClass;
 		return $class::getRoute($name);
+	}
+
+	/**
+	 * Get the current main route name
+	 * 
+	 * @return srting
+	 * @throws \Exception
+	 */
+	public static function getCurrentRouteName() {
+		if( !static::$resolverClass ) {
+			throw new \Exception('We did not find any route resolver');
+		}
+		$class = static::$resolverClass;
+		return $class::getCurrentRouteName();
 	}
 	
 }
