@@ -33,7 +33,12 @@ abstract class Route {
 		}
 		static::$resolverClass = $class;
 	}
-	
+
+	/**
+	 * @param string $name
+	 * @return Route
+	 * @throws \Exception
+	 */
 	public static function getRoute($name) {
 		if( !static::$resolverClass ) {
 			throw new \Exception('We did not find any route resolver');
