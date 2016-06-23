@@ -12,8 +12,8 @@ namespace Orpheus\Core;
  */
 abstract class Route {
 	
-	public function isAccessible();
-	public function getLink();
+	public abstract function isAccessible();
+	public abstract function getLink();
 	
 	/**
 	 * @var String
