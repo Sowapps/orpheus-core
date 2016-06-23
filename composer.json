@@ -13,6 +13,9 @@
 			"src/_loader.php"
 		]
 	},
+	"require" : {
+		"orpheus/orpheus-hook" : "dev-master"
+	},
 	"type" : "library",
 	"license" : "MIT",
 	"authors" : [{

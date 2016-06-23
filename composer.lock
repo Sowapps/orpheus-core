@@ -1,0 +1,65 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
+    ],
+    "hash": "eae746d1213a56799ef124a2a8512f7c",
+    "content-hash": "b92a6bd8ff801dee7f1241ed3c554efc",
+    "packages": [
+        {
+            "name": "orpheus/orpheus-hook",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Sowapps/orpheus-hook.git",
+                "reference": "13e4b636ea7fbbd48dd4a4080b0c67fd053eb73a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Sowapps/orpheus-hook/zipball/13e4b636ea7fbbd48dd4a4080b0c67fd053eb73a",
+                "reference": "13e4b636ea7fbbd48dd4a4080b0c67fd053eb73a",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Orpheus\\": "src"
+                },
+                "files": [
+                    "src/_loader.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent HAZARD",
+                    "email": "contact@sowapps.com",
+                    "homepage": "http://sowapps.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Orpheus Hook",
+            "homepage": "https://github.com/Sowapps/orpheus-hook",
+            "keywords": [
+                "HOOK",
+                "event",
+                "orpheus"
+            ],
+            "time": "2016-06-23 08:49:06"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "orpheus/orpheus-hook": 20
+    },
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

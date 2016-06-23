@@ -2,6 +2,7 @@
 use Orpheus\Core\ClassLoader;
 use Orpheus\Config\Config;
 use Orpheus\Exception\UserException;
+use Orpheus\Hook\Hook;
 /**
  * @brief The core functions
  * 

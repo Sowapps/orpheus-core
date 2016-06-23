@@ -1,11 +1,13 @@
 <?php
+use Orpheus\Hook\Hook;
+
 /**
  * @brief The hooks' default callbacks
  * 
  * PHP File containing default registering of hooks' callbacks.
  */
 
-using('hooks');
+// using('hooks');
 
 
 /** Callback for Hook 'runModule'
