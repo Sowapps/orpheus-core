@@ -6,6 +6,9 @@ namespace Orpheus\Core;
  * Official Route for Orpheus
  *
  * @author Florent HAZARD <florent@orpheus-framework.com>
+ * 
+ * We should also implement a service system to allow a class/object to provide
+ * a feature that is required by other lib without they are knowning the lib implementing it
  */
 abstract class Route {
 	
