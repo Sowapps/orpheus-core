@@ -12,37 +12,41 @@ namespace Orpheus\Core;
  */
 abstract class RequestHandler {
 	
+	const TYPE_CONSOLE = 1;
+	const TYPE_HTTP = 2;
+	
 	/**
 	 * @var String
 	 */
-	protected static $handlerClass;
+	protected static $handlerClasses;
 	// We kept a string to get it lighter, there is no need of more feature for that
 	
-	public static function suggestHandler($class) {
-		if( !static::$handlerClass ) {
+	public static function suggestHandler($type, $class) {
+		if( !isset(static::$handlerClasses[$type]) ) {
 			static::setHandler($class);
 		}
 	}
 	
-	public static function setHandler($class) {
+	public static function setHandler($type, $class) {
 		if( !method_exists($class, 'getRoute') ) {
 			// Check getCurrentRoute
 			throw new \Exception('The route handler class '.$class.' does not implement the getRoute() method');
 		}
-		static::$handlerClass = $class;
+		static::$handlerClasses = $class;
 	}
 
 	/**
 	 * Get the current main route name
 	 * 
-	 * @return srting
+	 * @param int $type
+	 * @return string
 	 * @throws \Exception
 	 */
-	public static function handleCurrentRequest() {
-		if( !static::$handlerClass ) {
-			throw new \Exception('We did not find any request handler');
+	public static function handleCurrentRequest($type) {
+		if( !isset(static::$handlerClasses[$type]) ) {
+			throw new \Exception('We did not find any request handler for type '.$type);
 		}
-		$class = static::$handlerClass;
+		$class = static::$handlerClasses[$type];
 		return $class::handleCurrentRequest();
 	}
 	
