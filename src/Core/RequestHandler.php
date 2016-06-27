@@ -23,7 +23,7 @@ abstract class RequestHandler {
 	
 	public static function suggestHandler($type, $class) {
 		if( !isset(static::$handlerClasses[$type]) ) {
-			static::setHandler($class);
+			static::setHandler($type, $class);
 		}
 	}
 	
