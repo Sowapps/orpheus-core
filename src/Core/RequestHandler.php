@@ -28,9 +28,9 @@ abstract class RequestHandler {
 	}
 	
 	public static function setHandler($type, $class) {
-		if( !method_exists($class, 'getRoute') ) {
+		if( !method_exists($class, 'handleCurrentRequest') ) {
 			// Check getCurrentRoute
-			throw new \Exception('The route handler class '.$class.' does not implement the getRoute() method');
+			throw new \Exception('The request handler class '.$class.' does not implement the handleCurrentRequest() method');
 		}
 		static::$handlerClasses = $class;
 	}
