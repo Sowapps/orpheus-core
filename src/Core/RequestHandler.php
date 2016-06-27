@@ -36,17 +36,40 @@ abstract class RequestHandler {
 	}
 
 	/**
-	 * Get the current main route name
+	 * Get the handler
+	 * 
+	 * @param int $type
+	 * @return string
+	 * @throws \Exception
+	 */
+	public static function getHandler($type) {
+		if( !isset(static::$handlerClasses[$type]) ) {
+			throw new \Exception('We did not find any request handler for type '.$type);
+		}
+		return static::$handlerClasses[$type];
+	}
+
+	/**
+	 * Get the Route Class
+	 * 
+	 * @param int $type
+	 * @return string
+	 * @throws \Exception
+	 */
+	public static function getRouteClass($type) {
+		$class = static::getHandler($type);
+		return $class::getRouteClass();
+	}
+
+	/**
+	 * Handle the current request
 	 * 
 	 * @param int $type
 	 * @return string
 	 * @throws \Exception
 	 */
 	public static function handleCurrentRequest($type) {
-		if( !isset(static::$handlerClasses[$type]) ) {
-			throw new \Exception('We did not find any request handler for type '.$type);
-		}
-		$class = static::$handlerClasses[$type];
+		$class = static::getHandler($type);
 		return $class::handleCurrentRequest();
 	}
 	
