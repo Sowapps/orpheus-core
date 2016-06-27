@@ -12,8 +12,8 @@ namespace Orpheus\Core;
  */
 abstract class RequestHandler {
 	
-	const TYPE_CONSOLE = 1;
-	const TYPE_HTTP = 2;
+	const TYPE_CONSOLE = 'cli';
+	const TYPE_HTTP = 'http';
 	
 	/**
 	 * @var String
