@@ -18,7 +18,7 @@ abstract class RequestHandler {
 	/**
 	 * @var String
 	 */
-	protected static $handlerClasses;
+	protected static $handlerClasses = array();
 	// We kept a string to get it lighter, there is no need of more feature for that
 	
 	public static function suggestHandler($type, $class) {
@@ -32,7 +32,7 @@ abstract class RequestHandler {
 			// Check getCurrentRoute
 			throw new \Exception('The request handler class '.$class.' does not implement the handleCurrentRequest() method');
 		}
-		static::$handlerClasses = $class;
+		static::$handlerClasses[$type] = $class;
 	}
 
 	/**
