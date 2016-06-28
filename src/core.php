@@ -889,26 +889,26 @@ function getReportsHTML($stream='global', $rejected=array(), $delete=true) {
 }
 
 /** Gets one report as HTML
- * @param $stream	The stream of the report.
- * @param $report	The message to report.
- * @param $domain	The domain of the report.
- * @param $type		The type of the report.
+ * @param string $stream	The stream of the report.
+ * @param string $report	The message to report.
+ * @param string $domain	The domain of the report.
+ * @param string $type		The type of the report.
 
  * Returns a valid HTML report.
  * This function is only a HTML generator.
 */
 function getHTMLReport($stream, $report, $domain, $type) {
-	if( class_exists('HTMLRendering', true) ) {
-		return HTMLRendering::renderReport($report, $domain, $type, $stream);
-	} 
+// 	if( class_exists('HTMLRendering', true) ) {
+// 		return HTMLRendering::renderReport($report, $domain, $type, $stream);
+// 	} 
 	return '
 		<div class="report report_'.$stream.' '.$type.' '.$domain.'">'.nl2br($report).'</div>';
 }
 
 /** Displays reports as HTML
- * @param $stream The stream to display. Default value is 'global'.
- * @param $rejected An array of rejected messages. Can be the first parameter.
- * @param $delete True to delete entries from the list.
+ * @param string $stream The stream to display. Default value is 'global'.
+ * @param string[] $rejected An array of rejected messages. Can be the first parameter.
+ * @param boolean $delete True to delete entries from the list.
  * @see getReportsHTML()
 
  * Displays all reports from the list of $domain and displays generated HTML source.
@@ -925,8 +925,8 @@ function displayReportsHTML($stream='global', $rejected=array(), $delete=1) {
 }
 
 /** Gets POST data
- * @param $path The path to retrieve. The default value is null (retrieves all data).
- * @return Data using the path or all data from POST array.
+ * @param string $path The path to retrieve. The default value is null (retrieves all data).
+ * @return mixed Data using the path or all data from POST array.
  * @see isPOST()
  * @see extractFrom()
 
