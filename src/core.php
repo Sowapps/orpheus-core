@@ -3,6 +3,9 @@ use Orpheus\Core\ClassLoader;
 use Orpheus\Config\Config;
 use Orpheus\Exception\UserException;
 use Orpheus\Hook\Hook;
+use Exception;
+use Orpheus\Exception\UserReportsException;
+use Orpheus\Publisher\Exception\InvalidFieldException;
 /**
  * @brief The core functions
  * 
@@ -100,12 +103,14 @@ function sendJSON($data) {
 // define('HTTP_NOT_FOUND',				404);
 // define('HTTP_INTERNAL_SERVER_ERROR',	500);
 function sendRESTfulJSON($data, $code=null) {
+	/*
 	if( $data instanceof RESTResponse ) {
 		if( !$code ) {
 			$code = $data->getCode();
 		}
 		$data = $data->getBody();
 	}
+	*/
 	if( !$code ) {
 		if( $data instanceof Exception ) {
 			$code = ($data->getCode() < 100) ? $data->getCode() : HTTP_INTERNAL_SERVER_ERROR;
@@ -116,8 +121,8 @@ function sendRESTfulJSON($data, $code=null) {
 	http_response_code($code);
 	if( $code !== HTTP_OK ) {
 		// Formatted JSON Error
-		if( $data instanceof UserReportsException ) {
-			/* @var $data UserReportsException */
+		if( $data instanceof Orpheus\Exception\UserReportsException ) {
+			/* @var Orpheus\Exception\UserReportsException $data */
 			sendResponse($data->getMessage(), $data->getReports(), $data->getDomain());
 		} else
 		if( $data instanceof UserException ) {
@@ -752,7 +757,8 @@ function reportWarning($report, $domain=null) {
 function reportError($report, $domain=null, $severity=1) {
 	$code	= null;
 	if( $report instanceof UserException ) {
-		if( class_exists('InvalidFieldException') && $report instanceof InvalidFieldException ) {
+// 		if( class_exists('InvalidFieldException') && $report instanceof InvalidFieldException ) {
+		if( $report instanceof InvalidFieldException ) {
 			// InvalidFieldException translates the message when using __toString method, so we need to get the original code
 			// Should be improved by object inheritance
 			$code	= $report->getMessage();
@@ -772,7 +778,8 @@ function reportError($report, $domain=null, $severity=1) {
 function hasErrorReports() {
 	global $REPORTS;
 	if( empty($REPORTS) ) { return false; }
-	foreach($REPORTS as $stream => $types) {
+// 	foreach($REPORTS as $stream => $types) {
+	foreach($REPORTS as $types) {
 		if( !empty($types['error']) ) {
 			return true;
 		}
@@ -1843,7 +1850,7 @@ function calculateAge($birthday, $relativeTo='today') {
 }
 
 function is_closure($v) {
-	return is_object($v) && ($v instanceof Closure);
+	return is_object($v) && ($v instanceof \Closure);
 }
 
 function is_exception($t) {
