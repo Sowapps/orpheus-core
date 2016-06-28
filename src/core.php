@@ -3,7 +3,7 @@ use Orpheus\Core\ClassLoader;
 use Orpheus\Config\Config;
 use Orpheus\Exception\UserException;
 use Orpheus\Hook\Hook;
-use Exception;
+use \Exception;
 use Orpheus\Exception\UserReportsException;
 use Orpheus\Publisher\Exception\InvalidFieldException;
 /**
