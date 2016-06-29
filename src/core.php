@@ -692,6 +692,9 @@ function addReport($report, $type, $domain='global', $code=null, $severity=0) {
 // 	debug("Add report($report, $type, $domain, $code, $severity)");
 	global $REPORTS, $REPORT_STREAM, $REJREPORTS, $DISABLE_REPORT;
 	if( !empty($DISABLE_REPORT) ) { return false; }
+	if( !$domain ) {
+		$domain = 'global';
+	}
 	$report = "$report";
 	if( !$code ) {
 		$code	= $report;
@@ -718,7 +721,7 @@ function addReport($report, $type, $domain='global', $code=null, $severity=0) {
 
  * Adds the report $message to the list of reports for this type 'success'.
 */
-function reportSuccess($report, $domain='global') {
+function reportSuccess($report, $domain=null) {
 	return addReport($report, 'success', $domain);
 }
 
@@ -729,7 +732,7 @@ function reportSuccess($report, $domain='global') {
 
  * Adds the report $message to the list of reports for this type 'info'.
 */
-function reportInfo($report, $domain='global') {
+function reportInfo($report, $domain=null) {
 	return addReport($report, 'info', $domain);
 }
 
