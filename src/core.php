@@ -1,11 +1,10 @@
 <?php
 use Orpheus\Core\ClassLoader;
-use Orpheus\Config\Config;
 use Orpheus\Exception\UserException;
 use Orpheus\Hook\Hook;
-use \Exception;
+use \Exception as Exception;
 use Orpheus\Exception\UserReportsException;
-use Orpheus\Publisher\Exception\InvalidFieldException;
+use Orpheus\Config\Config;
 /**
  * @brief The core functions
  * 
@@ -575,6 +574,7 @@ function using($pkgPath) {
 		return;
 	}
 	// Including loader of a package
+	$path = null;
 	if( existsPathOf($lowerPath, $path) && is_dir($path) ) {
 		if( file_exists($path.'/_loader.php') ) {
 			require_once $path.'/_loader.php';
@@ -641,8 +641,9 @@ function addAutoload($className, $classPath) {
  * A new report stream starts, all new reports will be added to this stream.
 */
 function startReportStream($stream) {
-	global $REPORT_STREAM;
-	$REPORT_STREAM = $stream;
+// 	global $REPORT_STREAM;
+// 	$REPORT_STREAM = $stream;
+	$GLOBALS['REPORT_STREAM'] = $stream;
 }
 
 /** Ends the current stream
@@ -761,11 +762,12 @@ function reportError($report, $domain=null, $severity=1) {
 	$code	= null;
 	if( $report instanceof UserException ) {
 // 		if( class_exists('InvalidFieldException') && $report instanceof InvalidFieldException ) {
-		if( $report instanceof InvalidFieldException ) {
-			// InvalidFieldException translates the message when using __toString method, so we need to get the original code
-			// Should be improved by object inheritance
-			$code	= $report->getMessage();
-		}
+// 		if( $report instanceof InvalidFieldException ) {
+// 			// InvalidFieldException translates the message when using __toString method, so we need to get the original code
+// 			// Should be improved by object inheritance
+// 			$code	= $report->getMessage();
+// 		}
+		$code = $report->getMessage();
 		if( $domain === NULL ) {
 			$domain = $report->getDomain();
 		}
@@ -1085,6 +1087,7 @@ function htmlSelect($name, $values, $data=null, $selected=null, $prefix='', $dom
 function htmlOptions($fieldPath, $values, $default=null, $matches=null, $prefix='', $domain='global') {
 	if( $matches===NULL ) { $matches = OPT_VALUE2LABEL; }
 	// Value of selected/default option
+	$selValue = null;
 	fillInputValue($selValue, $fieldPath, OPT_PERMANENTOBJECT && is_object($default) ? $default->id() : $default);
 	$opts	= '';
 	foreach( $values as $dataKey => $elValue ) {
@@ -1156,11 +1159,11 @@ function _formInput($fieldPath, $default=null) {
 	echo formInput($fieldPath, $default);
 }
 function valueOf($fieldPath, $default=null) {
-	fillInputValue($value, $fieldPath, $default);
+	fillInputValue($value=null, $fieldPath, $default);
 	return $value!=null ? $value : '';
 }
 function inputValue($fieldPath, $default=null) {
-	fillInputValue($value, $fieldPath, $default);
+	fillInputValue($value=null, $fieldPath, $default);
 	return $value!=null ? valueField($value) : '';
 }
 function _inputValue($fieldPath, $default=null) {
@@ -1181,29 +1184,29 @@ function _htmlText($fieldPath, $default='', $addAttr='', $formatter=null) {
 	echo htmlText($fieldPath, $default, $addAttr, $formatter);
 }
 function htmlText($fieldPath, $default='', $addAttr='', $formatter=null, $type='text') {
-	fillInputValue($value, $fieldPath, $default);
+	fillInputValue($value=null, $fieldPath, $default);
 	return '<input type="'.$type.'" name="'.apath_html($fieldPath).'" '.valueField(isset($value) ? isset($formatter) ? call_user_func($formatter, $value) : $value : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
 function htmlTextArea($fieldPath, $default='', $addAttr='') {
-	fillInputValue($value, $fieldPath, $default);
+	fillInputValue($value=null, $fieldPath, $default);
 	return '<textarea name="'.apath_html($fieldPath).'" '.$addAttr.htmlDisabledAttr().'>'.$value.'</textarea>';
 }
 
 function htmlHidden($fieldPath, $default='', $addAttr='') {
-	fillInputValue($value, $fieldPath, $default);
+	fillInputValue($value=null, $fieldPath, $default);
 	return '<input type="hidden" name="'.apath_html($fieldPath).'" '.(isset($value) ? valueField($value).' ' : '').$addAttr.htmlDisabledAttr().'/>';
 }
 
 function htmlRadio($fieldPath, $elValue, $default=false, $addAttr='') {
-	$selected = fillInputValue($value, $fieldPath) ? $value==$elValue : $default;
+	$selected = fillInputValue($value=null, $fieldPath) ? $value==$elValue : $default;
 	return '<input type="radio" name="'.apath_html($fieldPath).'" '.valueField($elValue).' '.($selected ? 'checked="checked"' : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
 function htmlCheckBox($fieldPath, $value=null, $default=false, $addAttr='') {
 	// Checkbox : Null => Undefined, False => Unchecked, 'on' => Checked
 	// 			If Value found,	we consider this one, else we use default
-	fillInputValue($selected, $fieldPath, $default, true);
+	fillInputValue($selected=false, $fieldPath, $default, true);
 // 	debug("htmlCheckBox($fieldPath)", $selected);
 // 	debug("is_array($selected) => ".b(is_array($selected)));
 // 	debug("$value!==NULL && is_array($selected) && in_array($value, $selected) => ".b($value!==NULL && is_array($selected) && in_array($value, $selected)));
@@ -1516,6 +1519,7 @@ function timeFormatToRegex($format) {
 }
 
 function parseTime($time, $format=SYSTEM_TIME_FORMAT) {
+	$matches = null;
 	if( !preg_match(timeFormatToRegex($format), $time, $matches) ) {
 		throw new Exception('invalidTimeParameter');
 	}
@@ -1775,7 +1779,7 @@ function deleteCookie($name) {
 	if( !isset($_COOKIE[$name]) ) {
 		return false;
 	}
-	unset($_COOKIE[$key]);
+	unset($_COOKIE[$name]);
 	setcookie($name, '', 1, '/');
 	return true;
 }
@@ -1784,7 +1788,7 @@ defifn('SESSION_SHARE_ACROSS_SUBDOMAIN',	false);
 define('SESSION_WITH_COOKIE',		1<<0);
 define('SESSION_WITH_HTTPTOKEN',	1<<1);
 function startSession($type=SESSION_WITH_COOKIE) {
-	global $ERROR_ACTION;
+// 	global $ERROR_ACTION;
 	/**
 	 * By default, browsers share cookies across subdomains
 	 * So, we change the session name (also the cookie name) according to host
@@ -1813,9 +1817,9 @@ function startSession($type=SESSION_WITH_COOKIE) {
 	session_name('PHPSESSID'.(SESSION_SHARE_ACROSS_SUBDOMAIN ? '' : sprintf("%u", crc32(HOST))));
 
 	// PHP is unable to manage exception thrown during session_start()
-	$ERROR_ACTION	= ERROR_DISPLAY_RAW;
+	$GLOBALS['ERROR_ACTION'] = ERROR_DISPLAY_RAW;
 	session_start();
-	$ERROR_ACTION	= ERROR_THROW_EXCEPTION;
+	$GLOBALS['ERROR_ACTION'] = ERROR_THROW_EXCEPTION;
 	
 	$initSession	= function() {
 		$_SESSION	= array('ORPHEUS' => array('LAST_REGENERATEID'=>TIME, 'CLIENT_IP'=>clientIP()));
@@ -1842,7 +1846,7 @@ function startSession($type=SESSION_WITH_COOKIE) {
 		if( $movedAction === 'home' ) {
 			redirectTo(DEFAULTLINK);
 		} else
-		if( $movedSession === 'exception' ) {
+		if( $movedAction === 'exception' ) {
 			throw new UserException('movedSession');
 		}
 	}
