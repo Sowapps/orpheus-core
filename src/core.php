@@ -1159,11 +1159,13 @@ function _formInput($fieldPath, $default=null) {
 	echo formInput($fieldPath, $default);
 }
 function valueOf($fieldPath, $default=null) {
-	fillInputValue($value=null, $fieldPath, $default);
+	$value = null;
+	fillInputValue($value, $fieldPath, $default);
 	return $value!=null ? $value : '';
 }
 function inputValue($fieldPath, $default=null) {
-	fillInputValue($value=null, $fieldPath, $default);
+	$value = null;
+	fillInputValue($value, $fieldPath, $default);
 	return $value!=null ? valueField($value) : '';
 }
 function _inputValue($fieldPath, $default=null) {
@@ -1184,29 +1186,34 @@ function _htmlText($fieldPath, $default='', $addAttr='', $formatter=null) {
 	echo htmlText($fieldPath, $default, $addAttr, $formatter);
 }
 function htmlText($fieldPath, $default='', $addAttr='', $formatter=null, $type='text') {
-	fillInputValue($value=null, $fieldPath, $default);
+	$value = null;
+	fillInputValue($value, $fieldPath, $default);
 	return '<input type="'.$type.'" name="'.apath_html($fieldPath).'" '.valueField(isset($value) ? isset($formatter) ? call_user_func($formatter, $value) : $value : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
 function htmlTextArea($fieldPath, $default='', $addAttr='') {
-	fillInputValue($value=null, $fieldPath, $default);
+	$value = null;
+	fillInputValue($value, $fieldPath, $default);
 	return '<textarea name="'.apath_html($fieldPath).'" '.$addAttr.htmlDisabledAttr().'>'.$value.'</textarea>';
 }
 
 function htmlHidden($fieldPath, $default='', $addAttr='') {
-	fillInputValue($value=null, $fieldPath, $default);
+	$value = null;
+	fillInputValue($value, $fieldPath, $default);
 	return '<input type="hidden" name="'.apath_html($fieldPath).'" '.(isset($value) ? valueField($value).' ' : '').$addAttr.htmlDisabledAttr().'/>';
 }
 
 function htmlRadio($fieldPath, $elValue, $default=false, $addAttr='') {
-	$selected = fillInputValue($value=null, $fieldPath) ? $value==$elValue : $default;
+	$value = null;
+	$selected = fillInputValue($value, $fieldPath) ? $value==$elValue : $default;
 	return '<input type="radio" name="'.apath_html($fieldPath).'" '.valueField($elValue).' '.($selected ? 'checked="checked"' : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
 function htmlCheckBox($fieldPath, $value=null, $default=false, $addAttr='') {
 	// Checkbox : Null => Undefined, False => Unchecked, 'on' => Checked
 	// 			If Value found,	we consider this one, else we use default
-	fillInputValue($selected=false, $fieldPath, $default, true);
+	$selected = false;
+	fillInputValue($selected, $fieldPath, $default, true);
 // 	debug("htmlCheckBox($fieldPath)", $selected);
 // 	debug("is_array($selected) => ".b(is_array($selected)));
 // 	debug("$value!==NULL && is_array($selected) && in_array($value, $selected) => ".b($value!==NULL && is_array($selected) && in_array($value, $selected)));
