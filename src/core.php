@@ -11,7 +11,9 @@ use Orpheus\Config\Config;
  * PHP File containing all system functions.
  */
 
-/** Redirects the client to a destination by HTTP
+/**
+ * Redirect the client to a destination by HTTP
+ * 
  * @param $destination The destination to go. Default value is SCRIPT_NAME.
  * @see permanentRedirectTo()
 
@@ -26,7 +28,9 @@ function redirectTo($destination=null) {
 	die();
 }
 
-/** Redirects permanently the client to a destination by HTTP
+/**
+ * Redirect permanently the client to a destination by HTTP
+ * 
  * @param $destination The destination to go. Default value is SCRIPT_NAME.
  * @see redirectTo()
 
@@ -54,7 +58,9 @@ function htmlRedirectTo($destination, $time=3, $die=0) {
 	}
 }
 
-/** Do a binary test
+/**
+ * Do a binary test
+ * 
  * @param int $value The value to compare.
  * @param int $reference The reference for the comparison.
  * @return True if $value is binary included in $reference.
@@ -66,7 +72,9 @@ function bintest($value, $reference) {
 	return ( ($value & $reference) == $reference);
 }
 
-/** Sends a packaged response to the client.
+/**
+ * Send a packaged response to the client.
+ * 
  * @param $code string The response code.
  * @param $other array Other data to send to the client. Default value is an empty string.
  * @param $domain string The translation domain. Default value is 'global'.
@@ -88,6 +96,13 @@ function sendResponse($code, $other='', $domain='global', $desc=null) {
 	));
 }
 
+/**
+ * Send a JSON response to the client.
+ *
+ * @param $data The data to send
+ * 
+ * Send data and end script
+ */
 function sendJSON($data) {
 	header('Content-Type: application/json');
 // 	header('Content-Type',	'application/json; charset=UTF-8');
@@ -101,6 +116,13 @@ function sendJSON($data) {
 // define('HTTP_FORBIDDEN',				403);
 // define('HTTP_NOT_FOUND',				404);
 // define('HTTP_INTERNAL_SERVER_ERROR',	500);
+/**
+ * Send a RESTful JSON response to the client.
+ *
+ * @param $data The data to send
+ * 
+ * Send data and end script. This function takes care of exceptions and codes.
+ */
 function sendRESTfulJSON($data, $code=null) {
 	/*
 	if( $data instanceof RESTResponse ) {
@@ -140,7 +162,9 @@ function sendRESTfulJSON($data, $code=null) {
 	}
 }
 
-/** Runs a SSH2 command.
+/**
+ * Run a SSH2 command.
+ * 
  * @param $command The command to execute.
  * @param $SSH2S Local settings for the connection.
  * @return The stream from ssh2_exec()
@@ -187,6 +211,12 @@ function cleanscandir($dir, $sorting_order=0) {
 	return $result;
 }
 
+/**
+ * Stringify any variable
+ * 
+ * @param mixed $s the input data to stringify
+ * @return string
+ */
 function stringify($s) {
 	if( is_object($s) && $s instanceof Exception ) {
 		$s = formatException($s);
@@ -196,6 +226,13 @@ function stringify($s) {
 	return $s;
 }
 
+/**
+ * Convert a variable a HTML-readable string
+ *
+ * @param mixed $s the input data to stringify
+ * @return string
+ * @see toString()
+ */
 function toHtml($s) {
 	if( $s===NULL ) {
 		$s = '{NULL}';
@@ -209,6 +246,13 @@ function toHtml($s) {
 	return $s;
 }
 
+/**
+ * Convert a variable a Text-readable string
+ *
+ * @param mixed $s the input data to stringify
+ * @return string
+ * @see toHtml()
+ */
 function toString($s) {
 	if( $s===NULL ) {
 		$s = 'NULL';
@@ -239,6 +283,12 @@ function toString($s) {
 	return $s;
 }
 
+/**
+ * Format the input Exception to a human-readable string
+ * 
+ * @param Exception $e
+ * @return string
+ */
 function formatException($e) {
 	return 'Exception \''.get_class($e).'\' with '.( $e->getMessage() ? " message '{$e->getMessage()}'" : 'no message')
 		.' in '.$e->getFile().':'.$e->getLine()."\n<pre>".$e->getTraceAsString().'</pre>';
@@ -368,7 +418,9 @@ function sql_error($report, $action='') {
 // 	throw new SQLException('errorOccurredWithDB');
 }
 
-/** Escape a text
+/**
+ * Escape a text
+ * 
  * @param $str The string to escape.
  * @return The escaped string.
 
@@ -378,12 +430,15 @@ function escapeText($str, $flags=ENT_NOQUOTES) {
 	return htmlentities(str_replace("\'", "'", $str), $flags, 'UTF-8', false); 	
 }
 
-define('ESCAPE_SIMPLEQUOTES', 1<<1);
-define('ESCAPE_DOUBLEQUOTES', 1<<2);
-define('ESCAPE_ALLQUOTES', ESCAPE_SIMPLEQUOTES|ESCAPE_DOUBLEQUOTES);
-define('ESCAPE_TOHTML', 1<<3);
-define('ESCAPE_ALLQUOTES_TOHTML', ESCAPE_ALLQUOTES|ESCAPE_TOHTML);
-define('ESCAPE_DOUBLEQUOTES_TOHTML', ESCAPE_DOUBLEQUOTES|ESCAPE_TOHTML);
+/**
+ * Escape quotes from a string
+ *
+ * @param $str The string to escape.
+ * @param $flags The flags option.
+ * @return The escaped string.
+
+ * Escape the text $str from quotes using smart flags.
+ */
 function escapeQuotes($str, $flags=ESCAPE_ALLQUOTES) {
 	if( !$flags ) {
 		$flags	= ESCAPE_ALLQUOTES;
@@ -401,6 +456,12 @@ function escapeQuotes($str, $flags=ESCAPE_ALLQUOTES) {
 	}
 	return str_replace($in, $out, $str);
 }
+define('ESCAPE_SIMPLEQUOTES', 1<<1);
+define('ESCAPE_DOUBLEQUOTES', 1<<2);
+define('ESCAPE_ALLQUOTES', ESCAPE_SIMPLEQUOTES|ESCAPE_DOUBLEQUOTES);
+define('ESCAPE_TOHTML', 1<<3);
+define('ESCAPE_ALLQUOTES_TOHTML', ESCAPE_ALLQUOTES|ESCAPE_TOHTML);
+define('ESCAPE_DOUBLEQUOTES_TOHTML', ESCAPE_DOUBLEQUOTES|ESCAPE_TOHTML);
 
 /**
  * Display text as HTML
@@ -472,7 +533,9 @@ function parseFields(array $fields, $quote='"') {
 	return $list;
 }
 
-/** Gets value from an Array Path
+/**
+ * Get value from an Array Path
+ * 
  * @param array $array The array to get the value from.
  * @param string $apath The path used to browse the array.
  * @param mixed $default The default value returned if array is valid but key is not found.
@@ -500,6 +563,17 @@ function apath_get($array, $apath, $default=null, $pathRequired=false) {
 	return $suffix !== NULL ? apath_get($array[$key], $suffix) : $array[$key];
 }
 
+/**
+ * Set value into an Array Path
+ *
+ * @param array $array The array to get the value from.
+ * @param string $apath The path used to browse the array.
+ * @param mixed $value The value to set in array
+ * @param boolean $overwrite True to overwrite existing value. Default value is True.
+ * @see apath_get()
+ *
+ * Set value into array using an Array Path with / as separator.
+ */
 function apath_setp(&$array, $apath, $value, $overwrite=true) {
 	if( $array === NULL ) {
 		$array	= array();
@@ -525,7 +599,9 @@ function apath_setp(&$array, $apath, $value, $overwrite=true) {
 	apath_setp($array[$key], $suffix, $value, $overwrite);
 }
 
-/** Build all path to browse array
+/**
+ * Build all path to browse array
+ * 
  * @param $array The array to get the value from.
  * @param $prefix The prefix to get the value, this is for an internal use only.
  * @return An array of apath to get all values.
@@ -552,8 +628,9 @@ function build_apath($array, $prefix='') {
 /** Imports the required class(es).
  * @param $pkgPath The package path.
  * @warning You should only use lowercase for package names.
+ * @deprecated use namespaces, packages and autoload system
  * 
- * Includes a class from a package in the libs directory, or calls the package loader.
+ * Include a class from a package in the libs directory, or calls the package loader.
  * e.g: "package.myclass", "package.other.*", "package"
  * 
  * Packages should include a _loader.php or loader.php file (it is detected in that order).
@@ -1421,6 +1498,13 @@ function explodeList($delimiter, $string, $limit, $default=null) {
 	return array_pad(explode($delimiter, $string, $limit), abs($limit), $default);
 }
 
+/**
+ * Hash string with salt
+ * 
+ * @param unknown $str
+ * 
+ * Hash input string with salt (constant USER_SALT) using SHA512
+ */
 function hashString($str) {
 	//http://www.php.net/manual/en/faq.passwords.php
 	$salt = defined('USER_SALT') ? USER_SALT : '1$@g&';
@@ -1521,10 +1605,22 @@ function ft($time=null) {
 }
 defifn('SYSTEM_TIME_FORMAT', '%H:%M');
 
+/**
+ * Create time format regex from strftime format
+ * 
+ * @param string $format
+ */
 function timeFormatToRegex($format) {
 	return '#^'.str_replace(array('%H', '%M'), array('([0-1][0-9]|2[0-3])', '([0-5][0-9])'), $format).'$#';
 }
 
+/**
+ * Parse time from string to time array
+ * 
+ * @param string $time Parsed time
+ * @param string $format Format to use
+ * @throws Exception
+ */
 function parseTime($time, $format=SYSTEM_TIME_FORMAT) {
 	$matches = null;
 	if( !preg_match(timeFormatToRegex($format), $time, $matches) ) {
@@ -1638,23 +1734,45 @@ function standardizePhoneNumber_FR($number, $delimiter='.', $limit=2) {
 	return substr($number, 0, $i+2).$n;
 }
 
+/**
+ * Add zero to the input number
+ * 
+ * @param integer $number The number
+ * @param integer $length The length to add zero
+ */
 function leadZero($number, $length=2) {
 	return sprintf('%0'.$length.'d', $number);
 }
 
+/**
+ * Format duration to closest unit
+ * 
+ * @param integer $duration Duration in seconds
+ */
 function formatDuration_Shortest($duration) {
-	$formats	= array('days'=>86400, 'hours'=>3600, 'minutes'=>60);
+	$formats = array('days'=>86400, 'hours'=>3600, 'minutes'=>60);
 	foreach( $formats as $unit => $time ) {
-		$r	= $duration/$time;
+		$r = $duration/$time;
 		if( $r >= 1 ) { break; }
 	}
-	return intval($r).t($unit.'_short');
+	return t($unit.'_short', intval($r));
 }
 
+/**
+ * Count intersect key in given arrays
+ * 
+ * @param array $array1
+ * @param array $array2
+ */
 function count_intersect_keys($array1, $array2) {
 	return count(array_intersect_key($array1, $array2));
 }
 
+/**
+ * Get the mime type of the given file path
+ * 
+ * @param string $filePath
+ */
 function getMimeType($filePath) {
 	if( function_exists('finfo_open') ) {
 // 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -1663,18 +1781,44 @@ function getMimeType($filePath) {
 	return mime_content_type($filePath);
 }
 
+/**
+ * Ensure path avaibility as folder
+ * 
+ * @param string $filePath
+ */
 function checkDir($filePath) {
 	return is_dir($filePath) || mkdir($filePath, 0772, true);
 }
 
+/**
+ * Insert $value in $array at $position
+ * 
+ * @param array $array
+ * @param int $position
+ * @param mixed $value
+ * @set array_splice()
+ */
 function array_insert(&$array, $position, $value) {
 	array_splice($array, $position, 0, $value);
 }
 
+/**
+ * Add values from an array to another
+ * 
+ * @param array $array
+ * @param array $other
+ */
 function array_add(&$array, $other) {
-	$array	= array_merge($array, $other);
+	$array = array_merge($array, $other);
 }
 
+/**
+ * Filter $array entries by $keys
+ *
+ * @param array $array
+ * @param array $keys
+ * @return array
+ */
 function array_filterbykeys($array, $keys) {
 	$r	= array();
 	foreach( $keys as $key ) {
@@ -1685,16 +1829,37 @@ function array_filterbykeys($array, $keys) {
 	return $r;
 }
 
+/**
+ * Get the index in $array of $key
+ *
+ * @param array $array
+ * @param scalar $key
+ * @return int
+ */
 function array_index($array, $key) {
 	return array_search($key, array_keys($array));
 // 	return array_search($key, array_keys(array_values($array)));
 }
 
+/**
+ * Get the last value of $array
+ *
+ * @param array $array
+ * @return mixed
+ */
 function array_last($array) {
 	// Copy of array, the pointer is not moved
 	return end($array);
 }
 
+/**
+ * Get value of $array at $index or $default if not found
+ *
+ * @param array $array
+ * @param int $index 
+ * @param boolean $default
+ * @return mixed
+ */
 function array_get($array, $index, $default=false) {
 	$array	= array_values($array);
 // 	debug('array_get('.$index.') values', $array);
@@ -1703,6 +1868,7 @@ function array_get($array, $index, $default=false) {
 
 /**
  * Apply a user supplied function to every member of an array
+ * 
  * @param array $array The input array.
  * @param callable $callback Typically, callback takes on two parameters. The array parameter's value being the first, and the key/index second.
  * @param string $userdata If the optional userdata parameter is supplied, it will be passed as the third parameter to the callback.
@@ -1774,6 +1940,7 @@ function reverse_values(&$val1, &$val2) {
 
 /**
  * Check value in between min and max
+ * 
  * @param integer $value
  * @param integer $min
  * @param integer $max
@@ -1782,6 +1949,12 @@ function between($value, $min, $max) {
 	return $min <= $value && $value <= $max;
 }
 
+/**
+ * Delete a HTTP cookie
+ *
+ * @param string $name The name of the cookie to delete
+ * @return boolean True if cookie was deleted, false if not found
+ */
 function deleteCookie($name) {
 	if( !isset($_COOKIE[$name]) ) {
 		return false;
@@ -1791,9 +1964,14 @@ function deleteCookie($name) {
 	return true;
 }
 
-defifn('SESSION_SHARE_ACROSS_SUBDOMAIN',	false);
-define('SESSION_WITH_COOKIE',		1<<0);
-define('SESSION_WITH_HTTPTOKEN',	1<<1);
+/**
+ * Start a PHP Session
+ *
+ * @param mixed $type The type flag of the session
+ * @throws UserException
+ * 
+ * Start a secured PHP Session and initialize Orpheus
+ */
 function startSession($type=SESSION_WITH_COOKIE) {
 // 	global $ERROR_ACTION;
 	/**
@@ -1858,19 +2036,46 @@ function startSession($type=SESSION_WITH_COOKIE) {
 		}
 	}
 }
+defifn('SESSION_SHARE_ACROSS_SUBDOMAIN',	false);
+define('SESSION_WITH_COOKIE',		1<<0);
+define('SESSION_WITH_HTTPTOKEN',	1<<1);
 
+/**
+ * Calculate age from $birthday $relativeTo a date
+ * 
+ * @param unknown $birthday
+ * @param string $relativeTo
+ * @return int
+ */
 function calculateAge($birthday, $relativeTo='today') {
 	return date_diff(date_create($birthday), date_create($relativeTo))->y;
 }
 
+/**
+ * Finds whether the given variable is a closure
+ * 
+ * @param mixed $v
+ * @return boolean True if $v is a closure
+ */
 function is_closure($v) {
 	return is_object($v) && ($v instanceof \Closure);
 }
 
+/**
+ * Finds whether the given variable is an exception
+ *
+ * @param mixed $v
+ * @return boolean True if $v is an Exception
+ */
 function is_exception($t) {
 	return is_object($t) && ($t instanceof Exception);
 }
 
+/**
+ * Get microsecond as UNIX format
+ *
+ * @return number
+ */
 function ms() {
 	return round(microtime(true)*1000);
 }
