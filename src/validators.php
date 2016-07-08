@@ -51,44 +51,49 @@ function is_personalname($name, $charnb_max=50, $charnb_min=3) {
  * The ID number is an integer.
  */
 function is_ID($Number) {
-	$Number	= "$Number";
+	$Number = "$Number";
 	return is_scalar($Number) && ctype_digit($Number) && $Number > 0;
 }
 
+define('DATE_FORMAT_LOCALE',	0);
+define('DATE_FORMAT_SQL',		1);
+define('DATE_FORMAT_GNU',		2);
 /** Checks if the input is a date.
 
- * @param $date string The date to check.
- * @param $withTime boolean True to use datetime format, optional. Default value is false.
- * @param $time integer The output timestamp of the data, optional.
- * @param $country string The country to use the date format, optional. Default and unique value is FR, not used.
- * @return True if $date si a valid date.
- * 
- * The date have to be well formatted and valid.
- * The FR date format is DD/MM/YYYY and time format is HH:MM:SS
- * Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
- * Fill missing informations with 0.
- */
-function is_date($date, $withTime=false, &$time=false, $country='FR') {
-	$timeRegex	= '(?: ([0-2][0-9]):([0-5][0-9])(?::([0-5][0-9]))?)?';
-	if( $country=='SQL' ) {
-		$DateFor = preg_replace('#^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})'.($withTime ? $timeRegex : '')."$#", '$3#$2#$1#$4#$5#$6', $date, -1, $count);
+* @param $date string The date to check.
+* @param $withTime boolean True to use datetime format, optional. Default value is false.
+* @param $time integer The output timestamp of the data, optional.
+* @param $country string The country to use the date format, optional. Default and unique value is FR, not used.
+* @return True if $date si a valid date.
+*
+* The date have to be well formatted and valid.
+* The FR date format is DD/MM/YYYY and time format is HH:MM:SS
+* Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
+* Fill missing informations with 0.
+*/
+function is_date($date, $withTime=false, &$time=false, $format=DATE_FORMAT_LOCALE) {
+	/* @var DateTime $dateTime */
+// 	debug('is_date('.$date.', '.b($withTime).', '.$time.', '.$country.')');
+	if( $format === DATE_FORMAT_SQL ) {
+		$dateTime = DateTime::createFromFormat($withTime ? 'd/m/Y H:i:s' : 'd/m/Y|', $date);
+	} else
+	if( $format === DATE_FORMAT_GNU ) {
+		$dateTime = DateTime::createFromFormat($withTime ? 'Y-m-d H:i:s' : 'Y-m-d|', $date);
 	} else {
-		$DateFor = preg_replace('#^([0-9]{1,2})/([0-9]{1,2})/([0-9]{4})'.($withTime ? $timeRegex : '')."$#", '$1#$2#$3#$4#$5#$6', $date, -1, $count);
+		$dateTime = DateTime::createFromFormat(t($withTime ? 'datetimeFromFormat' : 'dateFromFormat'), $date);
 	}
-	if( !$count ) { return false; }
-	list($day, $month, $year, $hour, $min, $sec) = explodeList("#", $DateFor, 6, 0);
-	$r = checkdate($month, $day, $year);
-	if( $r && $time!==false ) {
-		$time = mktime((int) $hour, (int) $min, (int) $sec, $month, $day, $year);
-	} 
-	return $r;
+// 	debug('$dateTime', $dateTime);
+// 	die();
+	if( $dateTime ) {
+		$time = $dateTime->getTimestamp();
+	}
+	return !!$dateTime;
 }
 
 function is_time($time, &$matches=null) {
 	$format	= hasTranslation('timeFormat') ? t('timeFormat') : '%H:%M';
 	//(?:[0-1][0-9]|2[0-3]):[0-5][0-9]
 	return preg_match(timeFormatToRegex($format), $time, $matches);
-// 	if( !$r ) { return false; }
 }
 
 /** Checks if the input is an url.
