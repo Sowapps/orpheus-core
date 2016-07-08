@@ -1558,10 +1558,10 @@ function dt($time=TIME, $utc=false) {
 */
 function df($format, $time=TIME, $tz=null) {
 	if( $tz === false ) {
-		$tz	= 'UTC';
+		$tz = 'UTC';
 	}
 	if( $tz ) {
-		$ctz	= date_default_timezone_get();
+		$ctz = date_default_timezone_get();
 		date_default_timezone_set($tz);
 	}
 // 	$r	= !empty($time) ? strftime(t($format), dateToTime($time)) : null;

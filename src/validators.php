@@ -71,9 +71,16 @@ define('DATE_FORMAT_GNU',		2);
 * Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
 * Fill missing informations with 0.
 */
-function is_date($date, $withTime=false, &$time=false, $format=DATE_FORMAT_LOCALE) {
+function is_date($date, $withTime=false, &$time=false, $format=null) {
 	/* @var DateTime $dateTime */
 // 	debug('is_date('.$date.', '.b($withTime).', '.$time.', '.$country.')');
+	if( !$format ) {
+		$time = strtotime($date);
+		if( $time !== false ) {
+			return true;
+		}
+		$format = DATE_FORMAT_LOCALE;
+	}
 	if( $format === DATE_FORMAT_SQL ) {
 		$dateTime = DateTime::createFromFormat($withTime ? 'd/m/Y H:i:s' : 'd/m/Y|', $date);
 	} else
