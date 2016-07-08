@@ -87,6 +87,7 @@ function is_date($date, $withTime=false, &$time=false, $format=null) {
 	if( $format === DATE_FORMAT_GNU ) {
 		$dateTime = DateTime::createFromFormat($withTime ? 'Y-m-d H:i:s' : 'Y-m-d|', $date);
 	} else {
+		// TODO: Use cookie timezone
 		$dateTime = DateTime::createFromFormat(t($withTime ? 'datetimeFromFormat' : 'dateFromFormat'), $date);
 	}
 // 	debug('$dateTime', $dateTime);
