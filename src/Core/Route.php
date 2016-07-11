@@ -12,7 +12,19 @@ namespace Orpheus\Core;
  */
 abstract class Route {
 	
+	/**
+	 * Test if the route is accessible in the current context using restrictTo
+	 * This method is sensitive to CHECK_MODULE_ACCESS constant, a true value make it always accessible, never use it in production
+	 * 
+	 * @return boolean
+	 */
 	public abstract function isAccessible();
+	
+	/**
+	 * Get the link to this route
+	 * 
+	 * @return boolean
+	 */
 	public abstract function getLink();
 	
 	/**
