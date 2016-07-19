@@ -28,6 +28,13 @@ abstract class Route {
 	public abstract function getLink();
 	
 	/**
+	 * Get the name
+	 * 
+	 * @return string
+	 */
+	public abstract function getName();
+	
+	/**
 	 * @var String
 	 */
 	protected static $resolverClass;
