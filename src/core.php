@@ -6,7 +6,7 @@ use \Exception as Exception;
 use Orpheus\Exception\UserReportsException;
 use Orpheus\Config\Config;
 /**
- * @brief The core functions
+ * The core functions
  * 
  * PHP File containing all system functions.
  */
@@ -19,7 +19,7 @@ use Orpheus\Config\Config;
 
  * Redirects the client to a $destination using HTTP headers.
  * Stops the running script.
-*/
+ */
 function redirectTo($destination=null) {
 	if( !isset($destination) ) {
 		$destination = $_SERVER['SCRIPT_NAME'];
@@ -36,7 +36,7 @@ function redirectTo($destination=null) {
 
  * Redirects permanently the client to a $destination using the HTTP headers.
  * The only difference with redirectTo() is the status code sent to the client.
-*/
+ */
 function permanentRedirectTo($destination=null) {
 	header('HTTP/1.1 301 Moved Permanently', true, 301);
 // 	header('HTTP/1.1 301 Moved Permanently', false, 301);
@@ -50,7 +50,7 @@ function permanentRedirectTo($destination=null) {
 
  * Redirects the client to a $destination using the HTML meta tag.
  * Does not stop the running script, it only displays.
-*/
+ */
 function htmlRedirectTo($destination, $time=3, $die=0) {
 	echo "<META HTTP-EQUIV=\"Refresh\" CONTENT=\"{$time} ; URL={$destination}\">";
 	if( $die ) {
@@ -67,7 +67,7 @@ function htmlRedirectTo($destination, $time=3, $die=0) {
 
  * Do a binary test, compare $value with $reference.
  * This function is very useful to do binary comparison for rights and inclusion in a value.
-*/
+ */
 function bintest($value, $reference) {
 	return ( ($value & $reference) == $reference);
 }
@@ -84,7 +84,7 @@ function bintest($value, $reference) {
  * User $Other to send arrays and objects to the client.
  * The packaged reponse is a json string that very useful for AJAX request.
  * This function stops the running script.
-*/
+ */
 function sendResponse($code, $other='', $domain='global', $desc=null) {
 	if( !$domain ) {
 		$domain	= 'global';
@@ -171,7 +171,7 @@ function sendRESTfulJSON($data, $code=null) {
 
  * Runs a command on a SSH2 connection.
  * You can pass the connection settings array in argument but you can declare a global variable named $SSH2S too.
-*/
+ */
 function ssh2_run($command, $SSH2S=null) {
 	if( !isset($SSH2S) ) {
 		global $SSH2S;
@@ -196,7 +196,7 @@ function ssh2_run($command, $SSH2S=null) {
  * @return An array of the files in this directory.
 
  * Scans a directory and returns a clean result.
-*/
+ */
 function cleanscandir($dir, $sorting_order=0) {
 	try {
 		$result = scandir($dir);
@@ -294,14 +294,16 @@ function formatException($e) {
 		.' in '.$e->getFile().':'.$e->getLine()."\n<pre>".$e->getTraceAsString().'</pre>';
 }
 
-/** Logs a report in a file.
+/**
+ * Log a report in a file
+ * 
  * @param $report The report to log.
  * @param $file The log file path.
  * @param $action The action associated to the report. Default value is an empty string.
  * @param $message The message to display. Default is an empty string. See description for details.
  * @warning This function require a writable log file.
 
- * Logs an error in a file serializing data to JSON.
+ * Log an error in a file serializing data to JSON.
  * Each line of the file is a JSON string of the reports.
  * The log folder is the constant LOGSPATH or, if undefined, the current one.
  * Take care of this behavior:
@@ -309,7 +311,7 @@ function formatException($e) {
  *	Else if ERROR_LEVEL is DEV_LEVEL, displays report
  *	Else if message is empty, throw exception
  *	Else it displays the message.
-*/
+ */
 function log_report($report, $file, $action='', $message='') {
 	if( !is_scalar($report) ) {
 		if( $report instanceof Exception ) {
@@ -346,19 +348,23 @@ function log_report($report, $file, $action='', $message='') {
 	}
 }
 
-/** Logs a debug.
+/**
+ * Log a debug
+ * 
  * @param $report The debug report to log.
  * @param $action The action associated to the report. Default value is an empty string.
  * @see log_report()
 
- * Logs a debug.
+ * Log a debug.
  * The log file is the constant DEBUGFILENAME or, if undefined, '.debug'.
-*/
+ */
 function log_debug($report, $action='') {
 	log_report($report, defined("DEBUGFILENAME") ? DEBUGFILENAME : '.debug', $action, null);
 }
 
-/** Logs a hack attemp.
+/**
+ * Log a hack attemp
+ * 
  * @param $report The report to log.
  * @param $action The action associated to the report. Default value is an empty string.
  * @param $message If False, it won't display the report, else if a not empty string, it displays it, else it takes the report's value.
@@ -366,36 +372,40 @@ function log_debug($report, $action='') {
 
  * Logs a hack attemp.
  * The log file is the constant HACKFILENAME or, if undefined, '.hack'.
-*/
+ */
 function log_hack($report, $action='', $message=null) {
 	global $USER;
 	log_report($report.' 
 [ IP: '.$_SERVER['REMOTE_ADDR'].'; User: '.(isset($USER) ? "$USER #".$USER->id() : 'N/A').'; agent: '.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'N/A').'; referer: '.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'N/A').' ]', defined("HACKLOGFILENAME") ? HACKLOGFILENAME : '.hack', $action, $message);
 }
 
-/** Logs a system error.
+/**
+ * Log a system error
+ * 
  * @param $report The report to log.
  * @param $action The action associated to the report. Default value is an empty string.
  * @param $silent True to not display any report. Default value is false.
  * @see log_report()
  * @deprecated
 
- * Logs a system error.
+ * Log a system error.
  * The log file is the constant SYSLOGFILENAME or, if undefined, '.log_error'.
-*/
+ */
 function sys_error($report, $action='', $silent=false) {
 	log_report($report, defined("SYSLOGFILENAME") ? SYSLOGFILENAME : '.log_error', $action, $silent ? null : '');
 }
 
-/** Logs a system error.
+/**
+ * Log a system error
+ * 
  * @param string $report The report to log.
  * @param string $action The action associated to the report. Default value is an empty string.
  * @param boolean $fatal True if the error is fatal, it stops script. Default value is true.
  * @see log_report()
 
- * Logs a system error.
+ * Log a system error
  * The log file is the constant SYSLOGFILENAME or, if undefined, '.log_error'.
-*/
+ */
 function log_error($report, $action='', $fatal=true) {
 	log_report($report, defined("SYSLOGFILENAME") ? SYSLOGFILENAME : '.log_error', $action,
 // 		!$fatal && !DEV_VERSION ? null :
@@ -404,14 +414,16 @@ function log_error($report, $action='', $fatal=true) {
 			(DEV_VERSION ? '<br /><pre>'.print_r(debug_backtrace(), 1).'</pre>' : ''));
 }
 
-/** Logs a sql error.
+/**
+ * Log a sql error
+ * 
  * @param $report The report to log.
  * @param $action The action associated to the report. Default value is an empty string.
  * @see log_report()
 
- * Logs a sql error.
+ * Log a sql error
  * The log file is the constant PDOLOGFILENAME or, if undefined, '.pdo_error'.
-*/
+ */
 function sql_error($report, $action='') {
 	log_report($report, defined("PDOLOGFILENAME") ? PDOLOGFILENAME : '.pdo_error', $action, null);// NULL to do nothing
 // 	log_report($report, defined("PDOLOGFILENAME") ? PDOLOGFILENAME : '.pdo_error', $action, null);//, t('errorOccurredWithDB'));
@@ -425,7 +437,7 @@ function sql_error($report, $action='') {
  * @return The escaped string.
 
  * Escape the text $str from special characters.
-*/
+ */
 function escapeText($str, $flags=ENT_NOQUOTES) {
 	return htmlentities(str_replace("\'", "'", $str), $flags, 'UTF-8', false); 	
 }
@@ -467,7 +479,7 @@ define('ESCAPE_DOUBLEQUOTES_TOHTML', ESCAPE_DOUBLEQUOTES|ESCAPE_TOHTML);
  * Display text as HTML
  * 
  * @param $text The string to display
-*/
+ */
 function displayText($text) {
 	echo text2HTML($text);
 }
@@ -481,12 +493,14 @@ function text2HTML($text) {
 	return nl2br(escapeText($text));
 }
 
-/** Formats a string to be a html attribute value
- * @param mixed $var The variable to format.
- * @return The escaped string.
-
-* Escape the text $str from special characters for HTML Attribute usage.
-*/
+/**
+ * Format a string to be a html attribute value
+ * 
+ * @param mixed $var The variable to format
+ * @return The escaped string
+ * 
+ * Escape the text $str from special characters for HTML Attribute usage
+ */
 function htmlFormATtr($var) {
 	if( !is_scalar($var) ) {
 		$var = json_encode($var);
@@ -495,36 +509,42 @@ function htmlFormATtr($var) {
 	if( defined('ENT_HTML5') ) {
 		$flags |= ENT_HTML5;
 	}
-	return htmlentities($var, $flags, 'UTF-8', false); 	
+	return htmlentities($var, $flags, 'UTF-8', false);
 }
 
-/** Encodes to an internal URL
+/**
+ * Encode to an internal URL
+ * 
  * @param $u The URL to encode.
  * @return The encoded URL
  * 
- * Encodes to URL and secures some more special characters.
-*/
+ * Encode to URL and secures some more special characters
+ */
 function iURLEncode($u) {
 	return str_replace(array(".", '%2F'), array(":46", ''), urlencode($u));
 }
 
-/** Decodes from an internal URL
+/**
+ * Decode from an internal URL
+ * 
  * @param $u The URL to decode.
  * @return The decoded URL
  * 
- * Decodes from URL.
-*/
+ * Decode from URL
+ */
 function iURLDecode($u) {
 	return urldecode(str_replace(":46", ".", $u));
 }
 
-/** Parse Fields array to string
- * @param $fields The fields array.
- * @param $quote The quote to escape key.
- * @return A string as fields list.
+/**
+ * Parse Fields array to string
  * 
- * It parses a field array to a fields list for queries.
-*/
+ * @param $fields The fields array
+ * @param $quote The quote to escape key
+ * @return A string as fields list
+ * 
+ * It parses a field array to a fields list for queries
+ */
 function parseFields(array $fields, $quote='"') {
 	$list = '';
 	foreach($fields as $key => $value) {
@@ -543,10 +563,10 @@ function parseFields(array $fields, $quote='"') {
  * @return mixed The value from $apath in $array.
  * @see build_apath()
  *
- * Gets value from an Array Path using / as separator.
+ * Get value from an Array Path using / as separator.
  * Returns null if parameters are invalids, $default if the path is not found else the value.
  * If $default is not null and returned value is null, you can infer your parameters are invalids.
-*/
+ */
 function apath_get($array, $apath, $default=null, $pathRequired=false) {
 	if( empty($array) || !is_array($array) || $apath === NULL ) {
 		return $default;
@@ -609,7 +629,7 @@ function apath_setp(&$array, $apath, $value, $overwrite=true) {
  *
  * Builds an array associating all values with their apath of the given one using / as separator.
  * e.g Array('path'=>array('to'=>array('value'=>'value'))) => Array('path/to/value'=>'value')
-*/
+ */
 function build_apath($array, $prefix='') {
 	if( empty($array) || !is_array($array) ) {
 		return array();
@@ -635,7 +655,7 @@ function build_apath($array, $prefix='') {
  * 
  * Packages should include a _loader.php or loader.php file (it is detected in that order).
  * Class files should be named classname_class.php
-*/
+ */
 function using($pkgPath) {
 	$pkgPath	= LIBSDIR.str_replace('.', '/', $pkgPath);
 	$lowerPath	= strtolower($pkgPath);
@@ -672,7 +692,7 @@ function using($pkgPath) {
  * The semi relative path syntax has priority over the full relative path syntax.
  * e.g: ("MyClass", "mylib/myClass") => libs/mylib/myClass_class.php
  * or ("MyClass2", "mylib/myClass2.php") => libs/mylib/myClass.php
-*/
+ */
 function addAutoload($className, $classPath) {
 	ClassLoader::get()->setClass($className, $classPath);
 }
@@ -709,14 +729,14 @@ function addAutoload($className, $classPath) {
 	}
 	return true;
 }
-*/
+ */
 
 /** Starts a new report stream
  * @param string $stream The new report stream name
  * @see endReportStream()
 
  * A new report stream starts, all new reports will be added to this stream.
-*/
+ */
 function startReportStream($stream) {
 // 	global $REPORT_STREAM;
 // 	$REPORT_STREAM = $stream;
@@ -726,7 +746,7 @@ function startReportStream($stream) {
 /** Ends the current stream
  * @see startReportStream()
  * Ends the current stream by setting current stream to the global one, so you can not end global stream.
-*/
+ */
 function endReportStream() {
 	startReportStream('global');
 }
@@ -737,7 +757,7 @@ endReportStream();
  * @param $to Transfers $to this stream. Default value is global.
  * 
  * Transfers the stream reports to another
-*/
+ */
 function transferReportStream($from=null, $to='global') {
 	if( is_null($from) ) {
 		$from = $GLOBALS['REPORT_STREAM'];
@@ -765,7 +785,7 @@ function transferReportStream($from=null, $to='global') {
 
  * Adds the report $message to the list of reports for this $type.
  * The type of the message is commonly 'success' or 'error'.
-*/
+ */
 function addReport($report, $type, $domain='global', $code=null, $severity=0) {
 // 	debug("Add report($report, $type, $domain, $code, $severity)");
 	global $REPORTS, $REPORT_STREAM, $REJREPORTS, $DISABLE_REPORT;
@@ -798,7 +818,7 @@ function addReport($report, $type, $domain='global', $code=null, $severity=0) {
  * @see addReport()
 
  * Adds the report $message to the list of reports for this type 'success'.
-*/
+ */
 function reportSuccess($report, $domain=null) {
 	return addReport($report, 'success', $domain);
 }
@@ -809,7 +829,7 @@ function reportSuccess($report, $domain=null) {
  * @see addReport()
 
  * Adds the report $message to the list of reports for this type 'info'.
-*/
+ */
 function reportInfo($report, $domain=null) {
 	return addReport($report, 'info', $domain);
 }
@@ -821,7 +841,7 @@ function reportInfo($report, $domain=null) {
 
  * Adds the report $message to the list of reports for this type 'warning'.
  * Warning come in some special cases, we meet it when we do automatic checks before loading contents and there is something to report to the user.
-*/
+ */
 function reportWarning($report, $domain=null) {
 	return reportError($report, $domain, 0);
 // 	return addReport($report, 'warning', $domain);
@@ -834,7 +854,7 @@ function reportWarning($report, $domain=null) {
  * @see addReport()
 
  * Adds the report $message to the list of reports for this type 'error'.
-*/
+ */
 function reportError($report, $domain=null, $severity=1) {
 	$code	= null;
 	if( $report instanceof UserException ) {
@@ -856,7 +876,7 @@ function reportError($report, $domain=null, $severity=1) {
  * Check if there is error reports
  * 
  * @return boolean True if there is any error report.
-*/
+ */
 function hasErrorReports() {
 	global $REPORTS;
 	if( empty($REPORTS) ) { return false; }
@@ -878,7 +898,7 @@ function hasErrorReports() {
  * 
  * Register this report to be rejected in the future, addReport() will check it.
  * All previous values for this report will be replaced.
-*/
+ */
 function rejectReport($report, $type=null) {
 	global $REJREPORTS;
 	if( !isset($REJREPORTS) ) { $REJREPORTS = array(); }
@@ -904,7 +924,7 @@ function rejectReport($report, $type=null) {
  * @see getReportsHTML()
 
  * Gets all reports from the list of $domain optionnally filtered by type.
-*/
+ */
 function getReports($stream='global', $type=null, $delete=1) {
 	global $REPORTS;
 	if( empty($REPORTS[$stream]) ) { return array(); }
@@ -933,7 +953,7 @@ function getReports($stream='global', $type=null, $delete=1) {
  * @see getReports()
 
  * Gets all reports from the list of $domain optionnally filtered by type.
-*/
+ */
 function getFlatReports($stream='global', $type=null, $delete=1) {
 	$reports	= array();
 	foreach( getReports($stream, $type, $delete) as $rType => $rTypeReports ) {
@@ -954,7 +974,7 @@ function getFlatReports($stream='global', $type=null, $delete=1) {
  * @see getHTMLReport()
 
  * Gets all reports from the list of $domain and generates the HTML source to display.
-*/
+ */
 function getReportsHTML($stream='global', $rejected=array(), $delete=true) {
 	$reports = getReports($stream, null, $delete);
 	if( empty($reports) ) { return ''; }
@@ -978,7 +998,7 @@ function getReportsHTML($stream='global', $rejected=array(), $delete=true) {
 
  * Returns a valid HTML report.
  * This function is only a HTML generator.
-*/
+ */
 function getHTMLReport($stream, $report, $domain, $type) {
 // 	if( class_exists('HTMLRendering', true) ) {
 // 		return HTMLRendering::renderReport($report, $domain, $type, $stream);
@@ -994,7 +1014,7 @@ function getHTMLReport($stream, $report, $domain, $type) {
  * @see getReportsHTML()
 
  * Displays all reports from the list of $domain and displays generated HTML source.
-*/
+ */
 function displayReportsHTML($stream='global', $rejected=array(), $delete=1) {
 	if( is_array($stream) && empty($rejected) ) {
 		$rejected	= $stream;
@@ -1014,7 +1034,7 @@ function displayReportsHTML($stream='global', $rejected=array(), $delete=1) {
 
  * Gets data from a POST request using the $path.
  * With no parameter or parameter null, all data are returned.
-*/
+ */
 function POST($path=null) {
 	return extractFrom($path, $_POST);
 }
@@ -1027,7 +1047,7 @@ function POST($path=null) {
  * This function is used to key the key value from an array sent by post
  * E.g You use POST to delete an item from a list, it's name is delete[ID], where ID is the ID of this item
  * If you call hasPOSTKey("delete", $itemID), the function will return true if a delete item is defined and $itemID will contain the ID of the item to delete.
-*/
+ */
 function hasPOSTKey($path=null, &$value=null) {
 	$v = POST($path);
 	if( !$v || !is_array($v) ) { return false; }
@@ -1043,7 +1063,7 @@ function hasPOSTKey($path=null, &$value=null) {
 
  * Gets data from a GET request using the $path.
  * With no parameter or parameter null, all data are returned.
-*/
+ */
 function GET($path=null) {
 	return extractFrom($path, $_GET);
 }
@@ -1056,7 +1076,7 @@ function GET($path=null) {
  * Check the POST status to retrieve data from a form.
  * You can specify the name of your submit button as first parameter.
  * We advise to use the name of your submit button, but you can also use another important field of your form.
-*/
+ */
 function isPOST($apath=null) {
 	// !empty because $_POST is always set in case of web access, but is an empty array
 	return !empty($_POST) && ($apath===NULL || POST($apath)!==NULL);
@@ -1070,7 +1090,7 @@ function isPOST($apath=null) {
  * Check the GET status to retrieve data from a form.
  * You can specify the name of your submit button as first parameter.
  * We advise to use the name of your submit button, but you can also use another important field of your form.
-*/
+ */
 function isGET($apath=null) {
 	// !empty because $_GET is always set in case of web access, but is an empty array
 	return !empty($_GET) && ($apath===NULL || GET($apath)!==NULL);
@@ -1083,7 +1103,7 @@ function isGET($apath=null) {
 
  * Gets data from an array using the $apath.
  * If $apath is null, all data are returned.
-*/
+ */
 function extractFrom($apath, $array) {
 	return $apath===NULL ? $array : apath_get($array, $apath);
 // 	return is_null($path) ? $array : ( (!is_null($v = apath_get($array, $path))) ? $v : false) ;
@@ -1096,7 +1116,7 @@ function extractFrom($apath, $array) {
 * @return A HTML source with the "value" attribute.
 *
 * Gets the HTML value attribut from an array of data if this $name exists.
-*/
+ */
 function htmlValue($name, $data=null, $default='') {
 	fillFormData($data);
 	$v = apath_get($data, $name, $default);
@@ -1116,7 +1136,7 @@ function htmlValue($name, $data=null, $default='') {
 * @warning This function is under conflict with name attribute and last form data values, prefer htmlOptions()
 *
 * Generates the HTML source for a SELECT from the $data.
-*/
+ */
 function htmlSelect($name, $values, $data=null, $selected=null, $prefix='', $domain='global', $tagAttr='') {
 	fillFormData($data);
 	$namePath = explode('/', $name);
@@ -1160,7 +1180,7 @@ function htmlSelect($name, $values, $data=null, $selected=null, $prefix='', $dom
 * You can use your own combination with defined constants OPT_VALUE_IS_VALUE, OPT_VALUE_IS_KEY, OPT_LABEL_IS_VALUE and OPT_LABEL_IS_KEY.
 * Common combinations are OPT_LABEL2VALUE, OPT_VALUE2LABEL and OPT_VALUE.
 * The label is prefixed with $prefix and translated using t(). This function allows bidimensional arrays in $values, used as option group.
-*/
+ */
 function htmlOptions($fieldPath, $values, $default=null, $matches=null, $prefix='', $domain='global') {
 	if( $matches===NULL ) { $matches = OPT_VALUE2LABEL; }
 	// Value of selected/default option
@@ -1215,7 +1235,7 @@ function htmlOption($elValue, $label=null, $selected=false, $addAttr='') {
 *
 * Generates a HTML source as selected attribute for a SELECT.
 * This function is useful for very customized select which could not use htmlSelect().
-*/
+ */
 // function htmlOptionValue($field, $value, $data=null, $attr='selected') {
 // 	if( is_null($data) ) {
 // 		$data = isset($GLOBALS['formData']) ? $GLOBALS['formData'] : POST();
@@ -1429,7 +1449,7 @@ function convertSpecialChars($string) {
  * @return The slug version.
  *
  * Converts string to lower case and converts all special characters. 
-*/
+ */
 function toSlug($string, $case=null) {
 	$string = str_replace(' ', '', ucwords(str_replace('&', 'and', strtolower($string))));
 	if( isset($case) ) {
@@ -1448,7 +1468,7 @@ function toSlug($string, $case=null) {
  * @return string The slug version.
  *
  * Converts string to lower case and converts all special characters. 
-*/
+ */
 function slug($string, $case=null) {
 // 	$string = preg_replace('#[^a-z0-9\-_]#i', '', ucwords(str_replace('&', 'and',strtolower($string))));
 	$string	= strtr(ucwords(str_replace('&', 'and', strtolower($string)))
@@ -1477,7 +1497,7 @@ defifn('UPPERCAMELCASE',	CAMELCASE | 1<<1);
 /** Gets the string of a boolean
  * @param $b The boolean.
 * @return The boolean's string.
-*/
+ */
 function b($b) {
 	return $b ? 'TRUE' : 'FALSE';
 }
@@ -1516,7 +1536,7 @@ function hashString($str) {
  * @return The date using 'dateFormat' translation key
  * 
  * Date format is storing a date, not a specific moment, we don't care about timezone
-*/
+ */
 function sql2Time($datetime) {
 	return strtotime($datetime.' GMT');
 }
@@ -1527,7 +1547,7 @@ function sql2Time($datetime) {
  * @return string The date using 'dateFormat' translation key
  * 
  * Date format is storing a date, not a specific moment, we don't care about timezone
-*/
+ */
 function d($time=TIME, $utc=false) {
 // 	return !empty($time) ? strftime(t('dateFormat'), is_numeric($time) ? $time : strtotime($time)) : null;
 	return df('dateFormat', $time, $utc ? false : null);
@@ -1542,7 +1562,7 @@ function d($time=TIME, $utc=false) {
  * @return string The date using 'datetimeFormat' translation key
  * 
  * Datetime format is storing a specific moment, we care about timezone
-*/
+ */
 function dt($time=TIME, $utc=false) {
 	return df('datetimeFormat', $time, $utc ? false : null);
 }
@@ -1555,7 +1575,7 @@ function dt($time=TIME, $utc=false) {
  * @return string The date formatted using $format
  * 
  * Datetime format is storing a specific moment, we care about timezone
-*/
+ */
 function df($format, $time=TIME, $tz=null) {
 	if( $tz === false ) {
 		$tz = 'UTC';
@@ -1591,7 +1611,7 @@ function dateToTime($date) {
  * 
  * Convert the system time format to the user time format
  * The system uses the constant SYSTEM_TIME_FORMAT to get the default format '%H:%M', you can define it by yourself.
-*/
+ */
 function ft($time=null) {
 	$userFormat	= translate('timeFormat', SYSTEM_TIME_FORMAT);
 	if( $userFormat===SYSTEM_TIME_FORMAT ) { return $time; }
@@ -1635,7 +1655,7 @@ function parseTime($time, $format=SYSTEM_TIME_FORMAT) {
  * @return string The date using sql format
  * 
  * Date format is storing a date, not a specific moment, we don't care about timezone
-*/
+ */
 function sqlDate($time=TIME) {
 // 	return gmstrftime('%Y-%m-%d', $time);
 	return strftime('%Y-%m-%d', $time);
@@ -1646,14 +1666,14 @@ function sqlDate($time=TIME) {
  * @return string The date using sql format
  * 
  * Datetime format is storing a specific moment, we care about timezone
-*/
+ */
 function sqlDatetime($time=TIME) {
 	return gmstrftime('%Y-%m-%d %H:%M:%S', $time);
 }
 
 /** Gets the client public IP
  * @return The ip of the client
-*/
+ */
 function clientIP() {
 	if( isset($_SERVER['REMOTE_ADDR']) ) {
 		return $_SERVER['REMOTE_ADDR'];
@@ -1668,7 +1688,7 @@ function clientIP() {
 
 /** Gets the id of the current user
  * @return The user's id
-*/
+ */
 function userID() {
 	global $USER;
 	return !empty($USER) ? $USER->id() : 0;
@@ -1680,7 +1700,7 @@ function userID() {
  * @return string The generated password.
  * 
  * Letters are randomly uppercased
-*/
+ */
 function generatePassword($length=10, $chars='abcdefghijklmnopqrstuvwxyz0123456789') {
 	$max = strlen($chars)-1;
 	$r = '';
@@ -1697,7 +1717,7 @@ function generatePassword($length=10, $chars='abcdefghijklmnopqrstuvwxyz01234567
  * @return int
  * 
  * Return the timestamp of the current day of $time according to the midnight hour.
-*/
+ */
 function dayTime($time=null, $gmt=true) {
 	if( $time === NULL ) { $time = time(); }
 	return $time - $time%86400 - ($gmt ? date('Z') : 0);
@@ -1709,7 +1729,7 @@ function dayTime($time=null, $gmt=true) {
  * @see dayTime()
  *
  * Returns the timestamp of the $day of current month of $time according to the midnight hour.
-*/
+ */
 function monthTime($day=1, $time=null) {
 	if( $time === NULL ) { $time = time(); }
 	return dayTime($time - (date('j', $time)-$day)*86400);
