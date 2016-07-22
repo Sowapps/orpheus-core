@@ -3,7 +3,7 @@
 namespace Orpheus\Core;
 
 /**
- * The Official Orpheus class loader
+ * Official Orpheus class loader
  *
  * @author Florent HAZARD <florent@orpheus-framework.com>
  */
