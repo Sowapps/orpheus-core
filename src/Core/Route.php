@@ -39,13 +39,26 @@ abstract class Route {
 	 */
 	protected static $resolverClass;
 	// We kept a string to get it lighter, there is no need of more feature for that
-	
+
+	/**
+	 * Suggest resolve $class
+	 * 
+	 * @param string $class
+	 * @see setResolver()
+	 *
+	 * The difference with setResolver() is that only set if there is no current value
+	 */
 	public static function suggestResolver($class) {
 		if( !static::$resolverClass ) {
 			static::setResolver($class);
 		}
 	}
-	
+
+	/**
+	 * Set the resolver class
+	 *
+	 * @param string $class
+	 */
 	public static function setResolver($class) {
 		if( !method_exists($class, 'getRoute') ) {
 			// Check getCurrentRoute

@@ -3,17 +3,31 @@
 namespace Orpheus\Core;
 
 /**
+ * The Official Orpheus class loader
  *
  * @author Florent HAZARD <florent@orpheus-framework.com>
  */
 class ClassLoader {
 	
+	/**
+	 * The known class mapping
+	 * 
+	 * @var unknown
+	 */
 	protected $classes;
 	
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->classes	= array();
 	}
 	
+	/**
+	 * Get the string representation of the ClassLoader
+	 * 
+	 * @return string
+	 */
 	public function __toString() {
 		return 'orpheus-ClassLoader';
 	}
@@ -70,18 +84,9 @@ class ClassLoader {
 	 * @throws \Exception
 	 */
 	public function setClass($className, $classPath) {
-// 		global $AUTOLOADS;
 		$className = strtolower($className);
-// 		if( !empty($AUTOLOADS[$className]) ) {
-// 			return false;
-// 		}
-		// Auto
-// 		if( empty($classPath) ) {
-// 			$bt	 	= debug_backtrace();
-// 			$path	= dirname($bt[0]['file']);
-// 		}
+		$path = null;
 		if(
-// 			isset($path) ||
 			// Pure object naming with only lib name and exact class name
 			existsPathOf(LIBSDIR.$classPath.'/'.$className.'.php', $path) ||
 			// Pure object naming
@@ -99,9 +104,6 @@ class ClassLoader {
 		return true;
 		
 	}
-	
-	
-	/* *** Singleton part *** */
 	
 	/**
 	 * The active autoloader

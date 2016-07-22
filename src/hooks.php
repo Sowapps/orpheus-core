@@ -1,17 +1,14 @@
 <?php
+/**
+ * The core hooks
+ * 
+ * Declare some core hooks
+ */
+
 use Orpheus\Hook\Hook;
 
 /**
- * @brief The hooks' default callbacks
- * 
- * PHP File containing default registering of hooks' callbacks.
- */
-
-// using('hooks');
-
-
-/** Callback for Hook 'runModule'
- * 
+ * Callback for Hook 'runModule'
  */
 Hook::register(HOOK_RUNMODULE, function ($Module) {
 	if( defined('TERMINAL') ) { return; }

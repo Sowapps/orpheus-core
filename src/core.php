@@ -43,12 +43,14 @@ function permanentRedirectTo($destination=null) {
 	redirectTo($destination);
 }
 
-/** Redirects the client to a destination by HTML
+/** 
+ * Redirect the client to a destination by HTML
+ * 
  * @param $destination The destination to go.
  * @param $time The time in seconds to wait before refresh.
  * @param $die True to stop the script.
 
- * Redirects the client to a $destination using the HTML meta tag.
+ * Redirect the client to a $destination using the HTML meta tag.
  * Does not stop the running script, it only displays.
  */
 function htmlRedirectTo($destination, $time=3, $die=0) {
@@ -190,7 +192,8 @@ function ssh2_run($command, $SSH2S=null) {
 	return $stream;
 }
 
-/** Scans a directory cleanly.
+/** 
+ * Scans a directory cleanly.
  * @param $dir The directory to scan.
  * @param $sorting_order True to reverse results order. Default value is False.
  * @return An array of the files in this directory.
@@ -564,7 +567,7 @@ function parseFields(array $fields, $quote='"') {
  * @see build_apath()
  *
  * Get value from an Array Path using / as separator.
- * Returns null if parameters are invalids, $default if the path is not found else the value.
+ * Return null if parameters are invalids, $default if the path is not found else the value.
  * If $default is not null and returned value is null, you can infer your parameters are invalids.
  */
 function apath_get($array, $apath, $default=null, $pathRequired=false) {
@@ -645,7 +648,8 @@ function build_apath($array, $prefix='') {
 	return $r;
 }
 
-/** Imports the required class(es).
+/** 
+ * Imports the required class(es).
  * @param $pkgPath The package path.
  * @warning You should only use lowercase for package names.
  * @deprecated use namespaces, packages and autoload system
@@ -684,7 +688,8 @@ function using($pkgPath) {
 	require_once existsPathOf($lowerPath.'_class.php', $path) ? $path : pathOf($pkgPath.'.php');
 }
 
-/** Add a class to the autoload.
+/** 
+ * Add a class to the autoload.
  * @param $className The class name
  * @param $classPath The class path
  * 
@@ -731,7 +736,8 @@ function addAutoload($className, $classPath) {
 }
  */
 
-/** Starts a new report stream
+/** 
+ * Starts a new report stream
  * @param string $stream The new report stream name
  * @see endReportStream()
 
@@ -743,7 +749,8 @@ function startReportStream($stream) {
 	$GLOBALS['REPORT_STREAM'] = $stream;
 }
 
-/** Ends the current stream
+/** 
+ * Ends the current stream
  * @see startReportStream()
  * Ends the current stream by setting current stream to the global one, so you can not end global stream.
  */
@@ -752,7 +759,8 @@ function endReportStream() {
 }
 endReportStream();
 
-/** Transfers the stream reports to another
+/** 
+ * Transfers the stream reports to another
  * @param $from Transfers $from this stream. Default value is null (current stream).
  * @param $to Transfers $to this stream. Default value is global.
  * 
@@ -774,7 +782,8 @@ function transferReportStream($from=null, $to='global') {
 	return true;
 }
 
-/** Adds a report
+/** 
+ * Adds a report
  * @param $report string The report (Commonly a string or an UserException).
  * @param $type string The type of the message.
  * @param $domain string The domain to use to automatically translate the message. Default value is 'global'.
@@ -812,7 +821,8 @@ function addReport($report, $type, $domain='global', $code=null, $severity=0) {
 	return true;
 }
 
-/** Reports a success
+/** 
+ * Reports a success
  * @param $report string The message to report.
  * @param $domain string The domain fo the message. Not used for translation. Default value is global.
  * @see addReport()
@@ -823,7 +833,8 @@ function reportSuccess($report, $domain=null) {
 	return addReport($report, 'success', $domain);
 }
 
-/** Reports an information to the user
+/** 
+ * Reports an information to the user
  * @param string $report The message to report.
  * @param string $domain The domain fo the message. Not used for translation. Default value is global.
  * @see addReport()
@@ -834,7 +845,8 @@ function reportInfo($report, $domain=null) {
 	return addReport($report, 'info', $domain);
 }
 
-/** Reports a warning
+/** 
+ * Reports a warning
  * @param string $report The message to report.
  * @param string $domain The domain fo the message. Not used for translation. Default value is the domain of Exception in case of UserException else 'global'.
  * @see addReport()
@@ -847,7 +859,8 @@ function reportWarning($report, $domain=null) {
 // 	return addReport($report, 'warning', $domain);
 }
 
-/** Reports an error
+/** 
+ * Reports an error
  * @param string $report The report.
  * @param string $domain The domain fo the message. Default value is the domain of Exception in case of UserException else 'global'.
  * @param integer $severity The severity of the error, commonly 1 for standard user error and 0 for warning. Default value is 1.
@@ -923,7 +936,7 @@ function rejectReport($report, $type=null) {
  * @param boolean $delete True to delete entries from the list. Default value is true.
  * @see getReportsHTML()
 
- * Gets all reports from the list of $domain optionnally filtered by type.
+ * Get all reports from the list of $domain optionnally filtered by type.
  */
 function getReports($stream='global', $type=null, $delete=1) {
 	global $REPORTS;
@@ -945,14 +958,16 @@ function getReports($stream='global', $type=null, $delete=1) {
 	return $r;
 }
 
-/** Gets some/all reports as flatten array
+/** 
+ * Get some/all reports as flatten array
+ * 
  * @param string $stream The stream to get the reports. Default value is "global".
  * @param string $type Filter results by report type. Default value is null.
  * @param boolean $delete True to delete entries from the list. Default value is true.
  * @return array[].
  * @see getReports()
 
- * Gets all reports from the list of $domain optionnally filtered by type.
+ * Get all reports from the list of $domain optionnally filtered by type.
  */
 function getFlatReports($stream='global', $type=null, $delete=1) {
 	$reports	= array();
@@ -965,7 +980,9 @@ function getFlatReports($stream='global', $type=null, $delete=1) {
 	return $reports;
 }
 
-/** Gets some/all reports as HTML
+/** 
+ * Get some/all reports as HTML
+ * 
  * @param	$stream string The stream to get the reports. Default value is 'global'.
  * @param	$rejected array An array of rejected messages. Default value is an empty array.
  * @param	$delete boolean True to delete entries from the list. Default value is true.
@@ -973,7 +990,7 @@ function getFlatReports($stream='global', $type=null, $delete=1) {
  * @see displayReportsHTML()
  * @see getHTMLReport()
 
- * Gets all reports from the list of $domain and generates the HTML source to display.
+ * Get all reports from the list of $domain and generates the HTML source to display.
  */
 function getReportsHTML($stream='global', $rejected=array(), $delete=true) {
 	$reports = getReports($stream, null, $delete);
@@ -990,13 +1007,15 @@ function getReportsHTML($stream='global', $rejected=array(), $delete=true) {
 	return $reportHTML;
 }
 
-/** Gets one report as HTML
+/** 
+ * Get one report as HTML
+ * 
  * @param string $stream	The stream of the report.
  * @param string $report	The message to report.
  * @param string $domain	The domain of the report.
  * @param string $type		The type of the report.
 
- * Returns a valid HTML report.
+ * Return a valid HTML report.
  * This function is only a HTML generator.
  */
 function getHTMLReport($stream, $report, $domain, $type) {
@@ -1007,7 +1026,9 @@ function getHTMLReport($stream, $report, $domain, $type) {
 		<div class="report report_'.$stream.' '.$type.' '.$domain.'">'.nl2br($report).'</div>';
 }
 
-/** Displays reports as HTML
+/** 
+ * Display reports as HTML
+ * 
  * @param string $stream The stream to display. Default value is 'global'.
  * @param string[] $rejected An array of rejected messages. Can be the first parameter.
  * @param boolean $delete True to delete entries from the list.
@@ -1026,20 +1047,24 @@ function displayReportsHTML($stream='global', $rejected=array(), $delete=1) {
 	</div>';
 }
 
-/** Gets POST data
+/** 
+ * Get POST data
+ * 
  * @param string $path The path to retrieve. The default value is null (retrieves all data).
  * @return mixed Data using the path or all data from POST array.
  * @see isPOST()
  * @see extractFrom()
 
- * Gets data from a POST request using the $path.
+ * Get data from a POST request using the $path.
  * With no parameter or parameter null, all data are returned.
  */
 function POST($path=null) {
 	return extractFrom($path, $_POST);
 }
 
-/** Checks an existing post key
+/** 
+ * Check an existing post key
+ * 
  * @param $path string The path to the array. The default value is null (search in POST).
  * @param $value int The output value of the item to delete.
  * @return True if there is an item to delete
@@ -1055,20 +1080,24 @@ function hasPOSTKey($path=null, &$value=null) {
 	return true;
 }
 
-/** Gets GET data
+/** 
+ * Get GET data
+ * 
  * @param $path The path to retrieve. The default value is null (retrieves all data).
  * @return Data using the path or all data from GET array.
  * @see isGET()
  * @see extractFrom()
 
- * Gets data from a GET request using the $path.
+ * Get data from a GET request using the $path.
  * With no parameter or parameter null, all data are returned.
  */
 function GET($path=null) {
 	return extractFrom($path, $_GET);
 }
 
-/** Checks the POST status
+/** 
+ * Check the POST status
+ * 
  * @param $apath The apath to test.
  * @return True if the request is a POST one. Compares also the $key if not null.
  * @see POST()
@@ -1082,7 +1111,9 @@ function isPOST($apath=null) {
 	return !empty($_POST) && ($apath===NULL || POST($apath)!==NULL);
 }
 
-/** Checks the GET status
+/** 
+ * Check the GET status
+ * 
  * @param $apath The apath to test.
  * @return True if the request is a GET one. Compares also the $key if not null.
  * @see GET()
@@ -1096,12 +1127,14 @@ function isGET($apath=null) {
 	return !empty($_GET) && ($apath===NULL || GET($apath)!==NULL);
 }
 
-/** Extracts data from array using apath
+/** 
+ * Extract data from array using apath
+ * 
  * @param $apath The apath to retrieve. null retrieves all data.
  * @param $array The array of data to browse.
  * @return Data using the apath or all data from the given array.
 
- * Gets data from an array using the $apath.
+ * Get data from an array using the $apath.
  * If $apath is null, all data are returned.
  */
 function extractFrom($apath, $array) {
@@ -1109,13 +1142,15 @@ function extractFrom($apath, $array) {
 // 	return is_null($path) ? $array : ( (!is_null($v = apath_get($array, $path))) ? $v : false) ;
 }
 
-/** Gets the HTML value
-* @param $name The name of the field
-* @param $data The array of data where to look for. Default value is $formData (if exist) or $_POST
-* @param $default The default value if $name is not defined in $data
-* @return A HTML source with the "value" attribute.
-*
-* Gets the HTML value attribut from an array of data if this $name exists.
+/**
+ * Get the HTML value
+ * 
+ * @param $name The name of the field
+ * @param $data The array of data where to look for. Default value is $formData (if exist) or $_POST
+ * @param $default The default value if $name is not defined in $data
+ * @return A HTML source with the "value" attribute.
+ *
+ * Get the HTML value attribut from an array of data if this $name exists.
  */
 function htmlValue($name, $data=null, $default='') {
 	fillFormData($data);
@@ -1123,19 +1158,21 @@ function htmlValue($name, $data=null, $default='') {
 	return !empty($v) ? " value=\"{$v}\"" : '';
 }
 
-/** Generates the HTML source for a SELECT
-* @param $name The name of the field.
-* @param $values The values to build the dropdown menu.
-* @param $data The array of data where to look for. Default value is $formData (if exist) or $_POST
-* @param $selected The selected value from the data. Default value is null (no selection).
-* @param $prefix The prefix to use for the text name of values. Default value is an empty string.
-* @param $domain The domain to apply the Key. Default value is 'global'.
-* @param $tagAttr Additional attributes for the SELECT tag.
-* @return A HTML source for the built SELECT tag.
-* @see htmlOptions
-* @warning This function is under conflict with name attribute and last form data values, prefer htmlOptions()
-*
-* Generates the HTML source for a SELECT from the $data.
+/**
+ * Generate the HTML source for a select tag
+ * 
+ * @param string $name The name of the field.
+ * @param array $values The values to build the dropdown menu.
+ * @param array $data The array of data where to look for. Default value is $formData (if exist) or $_POST
+ * @param string $selected The selected value from the data. Default value is null (no selection).
+ * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
+ * @param string $domain The domain to apply the Key. Default value is 'global'.
+ * @param string $tagAttr Additional attributes for the SELECT tag.
+ * @return string A HTML source for the built SELECT tag.
+ * @see htmlOptions
+ * @warning This function is under conflict with name attribute and last form data values, prefer htmlOptions()
+ *
+ * Generate the HTML source for a select tag from the $data.
  */
 function htmlSelect($name, $values, $data=null, $selected=null, $prefix='', $domain='global', $tagAttr='') {
 	fillFormData($data);
@@ -1165,21 +1202,23 @@ function htmlSelect($name, $values, $data=null, $selected=null, $prefix='', $dom
 	</select>";
 }
 
-/** Generates the HTML source for options of a SELECT
-* @param $fieldPath string The name path to the field.
-* @param $values string[] The values to build the dropdown menu.
-* @param $default string|integer The default selected value. Default value is null (no selection).
-* @param $matches integer Define the associativity between array and option values. Default value is OPT_VALUE2LABEL (as null).
-* @param $prefix string The prefix to use for the text name of values. Default value is an empty string.
-* @param $domain string The domain to apply the Key. Default value is 'global'.
-* @return A HTML source for the built SELECT tag.
-* @see htmlOption()
-*
-* Generates the HTML source for a SELECT from the $data.
-* For associative arrays, we commonly use the value=>label model (OPT_VALUE2LABEL) but sometimes for associative arrays we could prefer the label=>value model (OPT_LABEL2VALUE).
-* You can use your own combination with defined constants OPT_VALUE_IS_VALUE, OPT_VALUE_IS_KEY, OPT_LABEL_IS_VALUE and OPT_LABEL_IS_KEY.
-* Common combinations are OPT_LABEL2VALUE, OPT_VALUE2LABEL and OPT_VALUE.
-* The label is prefixed with $prefix and translated using t(). This function allows bidimensional arrays in $values, used as option group.
+/**
+ * Generate the HTML source for options of a select tag
+ * 
+ * @param string $fieldPath The name path to the field.
+ * @param array $values The values to build the dropdown menu.
+ * @param string $default The default selected value. Default value is null (no selection).
+ * @param integer $matches Define the associativity between array and option values. Default value is OPT_VALUE2LABEL (as null).
+ * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
+ * @param string $domain The domain to apply the Key. Default value is 'global'.
+ * @return string A HTML source for the built SELECT tag.
+ * @see htmlOption()
+ *
+ * Generate the HTML source for a SELECT from the $data.
+ * For associative arrays, we commonly use the value=>label model (OPT_VALUE2LABEL) but sometimes for associative arrays we could prefer the label=>value model (OPT_LABEL2VALUE).
+ * You can use your own combination with defined constants OPT_VALUE_IS_VALUE, OPT_VALUE_IS_KEY, OPT_LABEL_IS_VALUE and OPT_LABEL_IS_KEY.
+ * Common combinations are OPT_LABEL2VALUE, OPT_VALUE2LABEL and OPT_VALUE.
+ * The label is prefixed with $prefix and translated using t(). This function allows bidimensional arrays in $values, used as option group.
  */
 function htmlOptions($fieldPath, $values, $default=null, $matches=null, $prefix='', $domain='global') {
 	if( $matches===NULL ) { $matches = OPT_VALUE2LABEL; }
@@ -1224,24 +1263,6 @@ function htmlOption($elValue, $label=null, $selected=false, $addAttr='') {
 	if( !$label ) { $label = $elValue; }
 	return '<option '.valueField($elValue).($selected ? ' selected="selected"' : '').' '.$addAttr.'>'.$label.'</option>';
 }
-
-/** Generates a selected attribute
-* @param $fieldPath The field path to use to define name.
-* @param $default The default value.
-* @param $addAttr additional attributes.
-* @return A HTML source for the built selected attribute.
-* @see htmlSelect()
-* @see htmlOptions()
-*
-* Generates a HTML source as selected attribute for a SELECT.
-* This function is useful for very customized select which could not use htmlSelect().
- */
-// function htmlOptionValue($field, $value, $data=null, $attr='selected') {
-// 	if( is_null($data) ) {
-// 		$data = isset($GLOBALS['formData']) ? $GLOBALS['formData'] : POST();
-// 	}
-// 	return (isset($data[$field]) && $value == $data[$field]) ? 'selected="selected"' : '';
-// }
 
 global $FORM_EDITABLE;
 $FORM_EDITABLE	= true;
@@ -1321,6 +1342,14 @@ function htmlCheckBox($fieldPath, $value=null, $default=false, $addAttr='') {
 		) ? ' checked' : '').($value!==NULL ? ' value="'.$value.'"' : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
+/**
+ * Convert a apath to a HTML name attribute
+ * 
+ * @param string $apath
+ * @return string
+ * 
+ * e.g user/password => user[password]
+ */
 function apath_html($apath) {
 	$apath = explode('/', $apath);
 	$htmlName = '';
@@ -1330,10 +1359,12 @@ function apath_html($apath) {
 	return $htmlName;
 }
 
-/** Gets input form data
+/** 
+ * Get input form data
+ * 
  * @return POST() or global $formData if set.
  *
- * Gets input form data from POST.
+ * Get input form data from POST.
  * Developers can specify an array of data to use by filling global $formData.
  * This function is designed to be used internally to have compliant way to get input form data.
  */
@@ -1341,19 +1372,23 @@ function getFormData() {
 	return isset($GLOBALS['formData']) ? $GLOBALS['formData'] : POST();
 }
 
-/** Fills the given data from input form
+/** 
+ * Fill the given data from input form
+ * 
  * @param $data The data to fill, as pointer.
  * @return The resulting $data.
  * @see getFormData()
  *
- * Fills the given pointer data array with input form data if null.
+ * Fill the given pointer data array with input form data if null.
  * This function is designed to only offset the case where $data is null.
  */
 function fillFormData(&$data) {
 	return $data = is_null($data) ? getFormData() : $data;
 }
 
-/** Fills the given value from input form
+/** 
+ * Fill the given value from input form
+ * 
  * @param $value The value to fill, as pointer.
  * @param $fieldPath The apath to the input form value.
  * @param $default The default value if not found. Default value is null (apath_get()'s default).
@@ -1362,7 +1397,7 @@ function fillFormData(&$data) {
  * @see getFormData()
  * @see apath_get()
  *
- * Fills the given pointer value with input form data or uses default.
+ * Fill the given pointer value with input form data or uses default.
  */
 function fillInputValue(&$value, $fieldPath, $default=null, $pathRequired=false) {
 	$value = apath_get(getFormData(), $fieldPath, $default, $pathRequired);
@@ -1372,11 +1407,13 @@ function fillInputValue(&$value, $fieldPath, $default=null, $pathRequired=false)
 	return $value !== NULL;
 }
 
-/** Converts special characters to non-special ones
+/** 
+ * Convert special characters to non-special ones
+ * 
  * @param $string The string to convert.
  * @return The string wih no special characters.
  *
- * Replaces all special characters in $string by the non-special version of theses.
+ * Replace all special characters in $string by the non-special version of theses.
  */
 function convertSpecialChars($string) {
 	// Replaces all letter special characters.
@@ -1443,12 +1480,14 @@ function convertSpecialChars($string) {
 	return $string;
 }
 
-/** Converts the string into a slug
+/** 
+ * Convert the string into a slug
+ * 
  * @param $string The string to convert.
  * @param $case The case style to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
  * @return The slug version.
  *
- * Converts string to lower case and converts all special characters. 
+ * Convert string to lower case and converts all special characters. 
  */
 function toSlug($string, $case=null) {
 	$string = str_replace(' ', '', ucwords(str_replace('&', 'and', strtolower($string))));
@@ -1462,12 +1501,14 @@ function toSlug($string, $case=null) {
 	return convertSpecialChars($string);
 }
 
-/** Converts the string into a slug
+/** 
+ * Convert the string into a slug
+ * 
  * @param string $string The string to convert.
  * @param int $case The case style flag to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
  * @return string The slug version.
  *
- * Converts string to lower case and converts all special characters. 
+ * Convert string to lower case and converts all special characters. 
  */
 function slug($string, $case=null) {
 // 	$string = preg_replace('#[^a-z0-9\-_]#i', '', ucwords(str_replace('&', 'and',strtolower($string))));
@@ -1489,20 +1530,19 @@ defifn('CAMELCASE',			1<<0);
 defifn('LOWERCAMELCASE',	CAMELCASE);
 defifn('UPPERCAMELCASE',	CAMELCASE | 1<<1);
 
-// /** Converts the boolean into a string
-// function bool2str($v) {
-// 	return ($v ? 'True' : 'False');
-// }
-
-/** Gets the string of a boolean
+/** 
+ * Get the string of a boolean
+ * 
  * @param $b The boolean.
-* @return The boolean's string.
+ * @return The boolean's string.
  */
 function b($b) {
 	return $b ? 'TRUE' : 'FALSE';
 }
 
-/** Splits a string by string in limited values
+/** 
+ * Split a string by string in limited values
+ * 
  * @param $delimiter	The boundary string.
  * @param $string		The input string.
  * @param $limit		The limit of values exploded.
@@ -1510,7 +1550,7 @@ function b($b) {
  * @return array The exploded array with a defined limit of values.
  * @see explode()
  * 
- * Splits a string by string in a limited number of values.
+ * Split a string by string in a limited number of values.
  * The main difference with explode() is this function complete missing values with $default.
  * If you want $limit optional, use explode()
  */
@@ -1531,7 +1571,9 @@ function hashString($str) {
 	return hash('sha512', $salt.$str.'7');
 }
 
-/** Gets the date as string
+/** 
+ * Get the date as string
+ * 
  * @param $time The UNIX timestamp.
  * @return The date using 'dateFormat' translation key
  * 
@@ -1543,6 +1585,7 @@ function sql2Time($datetime) {
 
 /**
  * Format the date as string
+ * 
  * @param mixed $time The UNIX timestamp
  * @return string The date using 'dateFormat' translation key
  * 
@@ -1558,6 +1601,7 @@ function d($time=TIME, $utc=false) {
 
 /**
  * Format the date time as string
+ * 
  * @param mixed $time The UNIX timestamp
  * @return string The date using 'datetimeFormat' translation key
  * 
@@ -1569,6 +1613,7 @@ function dt($time=TIME, $utc=false) {
 
 /**
  * Format the date time as string
+ * 
  * @param $format The format to use
  * @param mixed $time The UNIX timestamp
  * @param mixed $tz Timezone to use. False for UTC, Null for default or a string to specify the one to use
@@ -1596,6 +1641,7 @@ function df($format, $time=TIME, $tz=null) {
 
 /**
  * Convert date to time
+ * 
  * @param mixed $date The date or UNIX timestamp
  * @return int The UNIX timestamp
  *
@@ -1605,7 +1651,9 @@ function dateToTime($date) {
 	return is_numeric($date) ? $date : strtotime($date.' GMT');
 }
 
-/** Gets the date time as string
+/** 
+ * Get the date time as string
+ * 
  * @param $time The time with %H:%M format.
  * @return The formatted time using 'timeFormat' translation key
  * 
@@ -1650,7 +1698,9 @@ function parseTime($time, $format=SYSTEM_TIME_FORMAT) {
 	return $matches;
 }
 
-/** Gets the date as string in SQL format
+/** 
+ * Get the date as string in SQL format
+ * 
  * @param int $time The UNIX timestamp.
  * @return string The date using sql format
  * 
@@ -1661,7 +1711,9 @@ function sqlDate($time=TIME) {
 	return strftime('%Y-%m-%d', $time);
 }
 
-/** Gets the date time as string in SQL format
+/** 
+ * Get the date time as string in SQL format
+ * 
  * @param int $time The UNIX timestamp.
  * @return string The date using sql format
  * 
@@ -1671,7 +1723,9 @@ function sqlDatetime($time=TIME) {
 	return gmstrftime('%Y-%m-%d %H:%M:%S', $time);
 }
 
-/** Gets the client public IP
+/** 
+ * Get the client public IP
+ * 
  * @return The ip of the client
  */
 function clientIP() {
@@ -1686,7 +1740,9 @@ function clientIP() {
 	return 'undefined';
 }
 
-/** Gets the id of the current user
+/** 
+ * Get the id of the current user
+ * 
  * @return The user's id
  */
 function userID() {
@@ -1694,7 +1750,9 @@ function userID() {
 	return !empty($USER) ? $USER->id() : 0;
 }
 
-/** Generates a new password
+/** 
+ * Generate a new password
+ * 
  * @param integer $length The length of the generated password. Default value is 10.
  * @param string $chars The characters to use to generate password. Default value is 'abcdefghijklmnopqrstuvwxyz0123456789'
  * @return string The generated password.
@@ -1713,6 +1771,7 @@ function generatePassword($length=10, $chars='abcdefghijklmnopqrstuvwxyz01234567
 
 /**
  * Calculate the day timestamp using the given integer
+ * 
  * @param int $time The time to get the day time. Default value is current timestamp.
  * @return int
  * 
@@ -1723,24 +1782,28 @@ function dayTime($time=null, $gmt=true) {
 	return $time - $time%86400 - ($gmt ? date('Z') : 0);
 }
 
-/** Returns the timestamp of the $day of the month using the given integer
+/**
+ * Return the timestamp of the $day of the month using the given integer
+ * 
  * @param $day The day of the month to get the timestamp. Default value is 1, the first day of the month.
  * @param $time The time to get the month timestamp. Default value is current timestamp.
  * @see dayTime()
  *
- * Returns the timestamp of the $day of current month of $time according to the midnight hour.
+ * Return the timestamp of the $day of current month of $time according to the midnight hour.
  */
 function monthTime($day=1, $time=null) {
 	if( $time === NULL ) { $time = time(); }
 	return dayTime($time - (date('j', $time)-$day)*86400);
 }
 
-/** Standardizes the phone number to FR country format
+/**
+ * Standardize the phone number to FR country format
+ * 
  * @param $number The input phone number.
  * @param $delimiter The delimiter for series of digits. Default value is current timestamp. Default value is '.'.
  * @param $limit The number of digit in a serie separated by delimiter. Optional, the default value is 2.
  *
- * Returns a standard phone number for FR country format.
+ * Return a standard phone number for FR country format.
  */
 function standardizePhoneNumber_FR($number, $delimiter='.', $limit=2) {
 	// If there is not delimiter we try to put one
@@ -1911,6 +1974,7 @@ function array_peer($array, $peerGlue=': ') {
 
 /**
  * Make a string's first-only character uppercase
+ * 
  * @param string $str
  * @return string
  */
@@ -1920,6 +1984,7 @@ function str_ucfirst($str) {
 
 /**
  * Uppercase the first-only character of each word in a string
+ * 
  * @param string $str
  * @return string
  */
@@ -1949,6 +2014,7 @@ function str_last($str) {
 
 /**
  * Reverse values
+ * 
  * @param mixed $val1
  * @param mixed $val2
  */
@@ -2072,7 +2138,7 @@ function calculateAge($birthday, $relativeTo='today') {
 }
 
 /**
- * Finds whether the given variable is a closure
+ * Find whether the given variable is a closure
  * 
  * @param mixed $v
  * @return boolean True if $v is a closure

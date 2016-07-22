@@ -1,12 +1,13 @@
 <?php
 /**
- * @brief The validators
+ * The validators
  * 
  * PHP File containing all basic validators for a website.
  */
 
-/** Checks if the input is an email address.
-
+/** 
+ * Check if the input is an email address.
+ * 
  * @param $email The email address to check.
  * @return True if $email si a valid email address.
  */
@@ -14,8 +15,9 @@ function is_email($email) {
 	return filter_var($email, FILTER_VALIDATE_EMAIL);
 }
 
-/** Checks if the input is a name.
-
+/** 
+ * Check if the input is a name.
+ * 
  * @param $name The name to check.
  * @param $charnb_max The maximum length of the given name. Default value is 50.
  * @param $charnb_min The minimum length of the given name. Default value is 3.
@@ -28,8 +30,9 @@ function is_name($name, $charnb_max=50, $charnb_min=3) {
 	return preg_match('#^[a-z0-9\-\_]{'.$charnb_min.','.$charnb_max.'}$#i', $name);
 }
 
-/** Checks if the input is a personal name.
-
+/** 
+ * Check if the input is a personal name.
+ * 
  * @param $name The name to check.
  * @param $charnb_max The maximum length of the given name. Default value is 50.
  * @param $charnb_min The minimum length of the given name. Default value is 3.
@@ -43,8 +46,9 @@ function is_personalname($name, $charnb_max=50, $charnb_min=3) {
 	return preg_match('#^[^\^\<\>\*\+\(\)\[\]\{\}\"\~\&\=\:\;\`\|\#\@\%\/\\\\[:cntrl:]]{'.$charnb_min.','.$charnb_max.'}$#i', $name);
 }
 
-/** Checks if the input is an ID Number.
-
+/** 
+ * Check if the input is an ID Number.
+ * 
  * @param $Number The number to check.
  * @return True if $Number si a valid integer.
  * 
@@ -58,19 +62,21 @@ function is_ID($Number) {
 define('DATE_FORMAT_LOCALE',	0);
 define('DATE_FORMAT_SQL',		1);
 define('DATE_FORMAT_GNU',		2);
-/** Checks if the input is a date.
 
-* @param $date string The date to check.
-* @param $withTime boolean True to use datetime format, optional. Default value is false.
-* @param $time integer The output timestamp of the data, optional.
-* @param $country string The country to use the date format, optional. Default and unique value is FR, not used.
-* @return True if $date si a valid date.
-*
-* The date have to be well formatted and valid.
-* The FR date format is DD/MM/YYYY and time format is HH:MM:SS
-* Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
-* Fill missing informations with 0.
-*/
+/** 
+ * Check if the input is a date.
+ * 
+ * @param $date string The date to check.
+ * @param $withTime boolean True to use datetime format, optional. Default value is false.
+ * @param $time integer The output timestamp of the data, optional.
+ * @param $country string The country to use the date format, optional. Default and unique value is FR, not used.
+ * @return True if $date si a valid date.
+ *
+ * The date have to be well formatted and valid.
+ * The FR date format is DD/MM/YYYY and time format is HH:MM:SS
+ * Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
+ * Fill missing informations with 0.
+ */
 function is_date($date, $withTime=false, &$time=false, $format=null) {
 	/* @var DateTime $dateTime */
 // 	debug('is_date('.$date.', '.b($withTime).', '.$time.', '.$country.')');
@@ -98,14 +104,25 @@ function is_date($date, $withTime=false, &$time=false, $format=null) {
 	return !!$dateTime;
 }
 
+/**
+ * Check $time is a real time representation
+ * 
+ * @param string $time
+ * @param array $matches
+ * @return boolean
+ * 
+ * Could use global translation "timeFormat" to check this is a time
+ * e.g Basically validate 12:50
+ */
 function is_time($time, &$matches=null) {
 	$format	= hasTranslation('timeFormat') ? t('timeFormat') : '%H:%M';
 	//(?:[0-1][0-9]|2[0-3]):[0-5][0-9]
 	return preg_match(timeFormatToRegex($format), $time, $matches);
 }
 
-/** Checks if the input is an url.
-
+/** 
+ * Check if the input is an url.
+ * 
  * @param $Url The url to check.
  * @param $protocol Not used yet. Default to SCHEME constant, not used.
  * @return True if $Url si a valid url.
@@ -114,8 +131,9 @@ function is_url($Url, $protocol=null) {
 	return filter_var($Url, FILTER_VALIDATE_URL);
 }
 
-/** Checks if the input is an ip address.
-
+/** 
+ * Check if the input is an ip address.
+ * 
  * @param $ip The url to check.
  * @param $flags The flags for the check.
  * @return True if $ip si a valid ip address.
@@ -125,8 +143,9 @@ function is_ip($ip, $flags=null) {
 	return filter_var($ip, FILTER_VALIDATE_IP, $flags);
 }
 
-/** Checks if the input is a phone number.
-
+/** 
+ * Check if the input is a phone number.
+ * 
  * @param $number The phone number to check.
  * @param $country The country to use to validate the phone number, default is FR, this is the only possible value
  * @return True if $number si a valid phone number.

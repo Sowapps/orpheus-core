@@ -4,10 +4,15 @@ namespace Orpheus\Config;
 /**
  * The ini config class
  * 
- * This class use ini files to get configuration.
+ * This class uses ini files to get configuration.
  */
 class IniConfig extends Config {
 	
+	/**
+	 * Extension for this config files
+	 * 
+	 * @var string
+	 */
 	protected static $extension = 'ini';
 
 	/**
@@ -20,7 +25,7 @@ class IniConfig extends Config {
 	 * Else $source is a full path to the ini configuration file.
 	 */
 	public static function parse($source) {
-		$path	= static::getFilePath($source);
+		$path = static::getFilePath($source);
 		return $path ? parse_ini_file($path, true) : array();
 	}
 }

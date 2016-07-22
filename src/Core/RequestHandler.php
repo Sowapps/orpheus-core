@@ -16,17 +16,32 @@ abstract class RequestHandler {
 	const TYPE_HTTP = 'http';
 	
 	/**
-	 * @var String
+	 * @var string
 	 */
 	protected static $handlerClasses = array();
 	// We kept a string to get it lighter, there is no need of more feature for that
 	
+	/**
+	 * Suggest handle $class for $type
+	 * 
+	 * @param string $type
+	 * @param string $class
+	 * @see setHandler()
+	 * 
+	 * The difference with setHandler() is that only set if there is no current value
+	 */
 	public static function suggestHandler($type, $class) {
 		if( !isset(static::$handlerClasses[$type]) ) {
 			static::setHandler($type, $class);
 		}
 	}
-	
+
+	/**
+	 * Set handle $class for $type
+	 *
+	 * @param string $type
+	 * @param string $class
+	 */
 	public static function setHandler($type, $class) {
 		if( !method_exists($class, 'handleCurrentRequest') ) {
 			// Check getCurrentRoute
@@ -36,9 +51,9 @@ abstract class RequestHandler {
 	}
 
 	/**
-	 * Get the handler
+	 * Get the handler of $type
 	 * 
-	 * @param int $type
+	 * @param string $type
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -52,7 +67,7 @@ abstract class RequestHandler {
 	/**
 	 * Get the Route Class
 	 * 
-	 * @param int $type
+	 * @param string $type
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -64,7 +79,7 @@ abstract class RequestHandler {
 	/**
 	 * Handle the current request
 	 * 
-	 * @param int $type
+	 * @param string $type
 	 * @return string
 	 * @throws \Exception
 	 */
