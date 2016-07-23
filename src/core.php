@@ -1250,6 +1250,18 @@ function htmlOptions($fieldPath, $values, $default=null, $matches=null, $prefix=
 	}
 	return $opts;
 }
+
+/**
+ * Display htmlOptions()
+ * 
+ * @param string $fieldPath The name path to the field.
+ * @param array $values The values to build the dropdown menu.
+ * @param string $default The default selected value. Default value is null (no selection).
+ * @param integer $matches Define the associativity between array and option values. Default value is OPT_VALUE2LABEL (as null).
+ * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
+ * @param string $domain The domain to apply the Key. Default value is 'global'.
+ * @see htmlOptions()
+ */
 function _htmlOptions($fieldPath, $values, $default=null, $matches=null, $prefix='', $domain='global') {
 	echo htmlOptions($fieldPath, $values, $default, $matches, $prefix, $domain);
 }
@@ -1262,6 +1274,15 @@ define('OPT_LABEL2VALUE'	 , OPT_VALUE_IS_VALUE | OPT_LABEL_IS_KEY);
 define('OPT_VALUE2LABEL'	 , OPT_VALUE_IS_KEY | OPT_LABEL_IS_VALUE);
 define('OPT_VALUE'			 , OPT_VALUE_IS_VALUE | OPT_LABEL_IS_VALUE);
 
+/**
+ * Generate HTML option tag
+ * 
+ * @param string $elValue
+ * @param string $label
+ * @param boolean $selected
+ * @param string $addAttr
+ * @return string
+ */
 function htmlOption($elValue, $label=null, $selected=false, $addAttr='') {
 	if( !$label ) { $label = $elValue; }
 	return '<option '.valueField($elValue).($selected ? ' selected="selected"' : '').' '.$addAttr.'>'.$label.'</option>';
@@ -1269,67 +1290,188 @@ function htmlOption($elValue, $label=null, $selected=false, $addAttr='') {
 
 global $FORM_EDITABLE;
 $FORM_EDITABLE	= true;
+
+/**
+ * Generate disabled HTML attribute
+ * 
+ * @return string 
+ * 
+ * Is this function useful ?
+ */
 function htmlDisabledAttr() {
 	global $FORM_EDITABLE;
 	return $FORM_EDITABLE ? '' : ' disabled';
 }
+
+/**
+ * Generate HTML form intput name & value
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ * @return string
+ */
 function formInput($fieldPath, $default=null) {
 	return ' name="'.apath_html($fieldPath).'"'.inputValue($fieldPath, $default);
 }
+
+/**
+ * Display formInput()
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ */
 function _formInput($fieldPath, $default=null) {
 	echo formInput($fieldPath, $default);
 }
+
+/**
+ * Get value of $fieldPath
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ * @return string
+ */
 function valueOf($fieldPath, $default=null) {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
 	return $value!=null ? $value : '';
 }
+
+/**
+ * Generate HTMl value attribute from $fieldPath
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ * @return string
+ */
 function inputValue($fieldPath, $default=null) {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
 	return $value!=null ? valueField($value) : '';
 }
+
+/**
+ * Display inputValue()
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ */
 function _inputValue($fieldPath, $default=null) {
 	echo inputValue($fieldPath, $default);
 }
+
+/**
+ * Generate HTML value attribute
+ * 
+ * @param string $v The value
+ * @return string
+ */
 function valueField($v) {
 	return ' value="'.addcslashes($v, '"').'"';
 }
+
+/**
+ * Generate HTML upload input
+ * 
+ * @param string $fieldPath
+ * @param string $addAttr
+ * @return string
+ */
 function htmlFileUpload($fieldPath, $addAttr='') {
 	return '<input type="file" name="'.apath_html($fieldPath).'" '.$addAttr.htmlDisabledAttr().'/>';
 }
 
+/**
+ * Generate HTML password input
+ *
+ * @param string $fieldPath
+ * @param string $addAttr
+ * @return string
+ */
 function htmlPassword($fieldPath, $addAttr='') {
 	return '<input type="password" name="'.apath_html($fieldPath).'" '.$addAttr.htmlDisabledAttr().'/>';
 }
 
-function _htmlText($fieldPath, $default='', $addAttr='', $formatter=null) {
-	echo htmlText($fieldPath, $default, $addAttr, $formatter);
-}
+/**
+ * Generate text input from parameters
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ * @param string $addAttr
+ * @param callback $formatter
+ * @param string $type
+ * @return string
+ */
 function htmlText($fieldPath, $default='', $addAttr='', $formatter=null, $type='text') {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
 	return '<input type="'.$type.'" name="'.apath_html($fieldPath).'" '.valueField(isset($value) ? isset($formatter) ? call_user_func($formatter, $value) : $value : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
+/**
+ * Display htmlText()
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ * @param string $addAttr
+ * @param callback $formatter
+ */
+function _htmlText($fieldPath, $default='', $addAttr='', $formatter=null) {
+	echo htmlText($fieldPath, $default, $addAttr, $formatter);
+}
+
+/**
+ * Generate textarea from parameters
+ * 
+ * @param string $fieldPath
+ * @param string $default
+ * @param string $addAttr
+ * @return string
+ */
 function htmlTextArea($fieldPath, $default='', $addAttr='') {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
 	return '<textarea name="'.apath_html($fieldPath).'" '.$addAttr.htmlDisabledAttr().'>'.$value.'</textarea>';
 }
 
+/**
+ * Generate HTML hidden input
+ *
+ * @param string $fieldPath
+ * @param string $default
+ * @param string $addAttr
+ * @return string
+ */
 function htmlHidden($fieldPath, $default='', $addAttr='') {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
 	return '<input type="hidden" name="'.apath_html($fieldPath).'" '.(isset($value) ? valueField($value).' ' : '').$addAttr.htmlDisabledAttr().'/>';
 }
 
+/**
+ * Generate HTML radio input
+ *
+ * @param string $fieldPath
+ * @param string $elValue
+ * @param string $default
+ * @param string $addAttr
+ * @return string
+ */
 function htmlRadio($fieldPath, $elValue, $default=false, $addAttr='') {
 	$value = null;
 	$selected = fillInputValue($value, $fieldPath) ? $value==$elValue : $default;
 	return '<input type="radio" name="'.apath_html($fieldPath).'" '.valueField($elValue).' '.($selected ? 'checked="checked"' : '').' '.$addAttr.htmlDisabledAttr().'/>';
 }
 
+/**
+ * Generate HTML checkbox input
+ *
+ * @param string $fieldPath
+ * @param string $value
+ * @param string $default
+ * @param string $addAttr
+ * @return string
+ */
 function htmlCheckBox($fieldPath, $value=null, $default=false, $addAttr='') {
 	// Checkbox : Null => Undefined, False => Unchecked, 'on' => Checked
 	// 			If Value found,	we consider this one, else we use default

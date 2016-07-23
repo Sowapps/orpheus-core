@@ -1,4 +1,7 @@
 <?php
+/**
+ * Config
+ */
 
 namespace Orpheus\Config;
 
