@@ -1538,7 +1538,7 @@ function fillFormData(&$data) {
  * @param $fieldPath The apath to the input form value.
  * @param $default The default value if not found. Default value is null (apath_get()'s default).
  * @param $pathRequired True if the path is required. Default value is False (apath_get()'s default).
- * @return True if got value is not null (found).
+ * @return boolean True if got value is not null (found).
  * @see getFormData()
  * @see apath_get()
  *
@@ -1555,8 +1555,8 @@ function fillInputValue(&$value, $fieldPath, $default=null, $pathRequired=false)
 /** 
  * Convert special characters to non-special ones
  * 
- * @param $string The string to convert.
- * @return The string wih no special characters.
+ * @param string $string The string to convert.
+ * @return string The string wih no special characters.
  *
  * Replace all special characters in $string by the non-special version of theses.
  */
@@ -1630,7 +1630,7 @@ function convertSpecialChars($string) {
  * 
  * @param $string The string to convert.
  * @param $case The case style to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
- * @return The slug version.
+ * @return string The slug version.
  *
  * Convert string to lower case and converts all special characters. 
  */
@@ -1678,8 +1678,8 @@ defifn('UPPERCAMELCASE',	CAMELCASE | 1<<1);
 /** 
  * Get the string of a boolean
  * 
- * @param $b The boolean.
- * @return The boolean's string.
+ * @param boolean $b The boolean
+ * @return string The boolean's string
  */
 function b($b) {
 	return $b ? 'TRUE' : 'FALSE';
@@ -1688,10 +1688,10 @@ function b($b) {
 /** 
  * Split a string by string in limited values
  * 
- * @param $delimiter	The boundary string.
- * @param $string		The input string.
- * @param $limit		The limit of values exploded.
- * @param $default		The default value to use if missing.
+ * @param string $delimiter The boundary string
+ * @param string $string The input string
+ * @param int $limit The limit of values exploded
+ * @param string $default The default value to use if missing
  * @return array The exploded array with a defined limit of values.
  * @see explode()
  * 
@@ -1707,6 +1707,7 @@ function explodeList($delimiter, $string, $limit, $default=null) {
  * Hash string with salt
  * 
  * @param string $str
+ * @return string
  * 
  * Hash input string with salt (constant USER_SALT) using SHA512
  */
@@ -1720,7 +1721,7 @@ function hashString($str) {
  * Get the date as string
  * 
  * @param string $datetime The datetime
- * @return The date using 'dateFormat' translation key
+ * @return string The date using 'dateFormat' translation key
  * 
  * Date format is storing a date, not a specific moment, we don't care about timezone
  */
@@ -1802,7 +1803,7 @@ function dateToTime($date) {
  * Get the date time as string
  * 
  * @param $time The time with %H:%M format.
- * @return The formatted time using 'timeFormat' translation key
+ * @return string The formatted time using 'timeFormat' translation key
  * 
  * Convert the system time format to the user time format
  * The system uses the constant SYSTEM_TIME_FORMAT to get the default format '%H:%M', you can define it by yourself.
@@ -1824,6 +1825,7 @@ defifn('SYSTEM_TIME_FORMAT', '%H:%M');
  * Create time format regex from strftime format
  * 
  * @param string $format
+ * @return string
  */
 function timeFormatToRegex($format) {
 	return '#^'.str_replace(array('%H', '%M'), array('([0-1][0-9]|2[0-3])', '([0-5][0-9])'), $format).'$#';
@@ -1834,6 +1836,7 @@ function timeFormatToRegex($format) {
  * 
  * @param string $time Parsed time
  * @param string $format Format to use
+ * @return array
  * @throws Exception
  */
 function parseTime($time, $format=SYSTEM_TIME_FORMAT) {
@@ -1873,7 +1876,7 @@ function sqlDatetime($time=TIME) {
 /** 
  * Get the client public IP
  * 
- * @return The ip of the client
+ * @return string The ip of the client
  */
 function clientIP() {
 	if( isset($_SERVER['REMOTE_ADDR']) ) {
@@ -1890,7 +1893,7 @@ function clientIP() {
 /** 
  * Get the id of the current user
  * 
- * @return The user's id
+ * @return int|string The user's id
  */
 function userID() {
 	global $USER;
@@ -1935,6 +1938,7 @@ function dayTime($time=null, $gmt=true) {
  * 
  * @param $day The day of the month to get the timestamp. Default value is 1, the first day of the month.
  * @param $time The time to get the month timestamp. Default value is current timestamp.
+ * @return int
  * @see dayTime()
  *
  * Return the timestamp of the $day of current month of $time according to the midnight hour.
@@ -1950,6 +1954,7 @@ function monthTime($day=1, $time=null) {
  * @param $number The input phone number.
  * @param $delimiter The delimiter for series of digits. Default value is current timestamp. Default value is '.'.
  * @param $limit The number of digit in a serie separated by delimiter. Optional, the default value is 2.
+ * @return string
  *
  * Return a standard phone number for FR country format.
  */
@@ -1970,6 +1975,7 @@ function standardizePhoneNumber_FR($number, $delimiter='.', $limit=2) {
  * 
  * @param integer $number The number
  * @param integer $length The length to add zero
+ * @return string
  */
 function leadZero($number, $length=2) {
 	return sprintf('%0'.$length.'d', $number);
@@ -1979,6 +1985,7 @@ function leadZero($number, $length=2) {
  * Format duration to closest unit
  * 
  * @param integer $duration Duration in seconds
+ * @return string
  */
 function formatDuration_Shortest($duration) {
 	$formats = array('days'=>86400, 'hours'=>3600, 'minutes'=>60);
@@ -1994,6 +2001,7 @@ function formatDuration_Shortest($duration) {
  * 
  * @param array $array1
  * @param array $array2
+ * @return int
  */
 function count_intersect_keys($array1, $array2) {
 	return count(array_intersect_key($array1, $array2));
@@ -2003,6 +2011,7 @@ function count_intersect_keys($array1, $array2) {
  * Get the mime type of the given file path
  * 
  * @param string $filePath
+ * @return string
  */
 function getMimeType($filePath) {
 	if( function_exists('finfo_open') ) {
@@ -2016,6 +2025,7 @@ function getMimeType($filePath) {
  * Ensure path avaibility as folder
  * 
  * @param string $filePath
+ * @return boolean
  */
 function checkDir($filePath) {
 	return is_dir($filePath) || mkdir($filePath, 0772, true);
@@ -2115,6 +2125,7 @@ function array_apply($array, $callback, $userdata=null, &$success=null) {
  * Concat key and value in an array with a glue
  * @param string[] $array
  * @param string $peerGlue
+ * @return array
  */
 function array_peer($array, $peerGlue=': ') {
 	return array_apply($array, function(&$v, $k) use($peerGlue) { $v = $k.$peerGlue.$v; });
@@ -2178,6 +2189,7 @@ function reverse_values(&$val1, &$val2) {
  * @param integer $value
  * @param integer $min
  * @param integer $max
+ * @return boolean
  */
 function between($value, $min, $max) {
 	return $min <= $value && $value <= $max;
