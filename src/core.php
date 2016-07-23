@@ -122,7 +122,8 @@ function sendJSON($data) {
 /**
  * Send a RESTful JSON response to the client.
  *
- * @param $data The data to send
+ * @param mixed $data The data to send
+ * @param int $code
  * 
  * Send data and end script. This function takes care of exceptions and codes.
  */
@@ -437,8 +438,9 @@ function sql_error($report, $action='') {
 /**
  * Escape a text
  * 
- * @param $str The string to escape.
- * @return The escaped string.
+ * @param $str The string to escape
+ * @param $flags The flags of htmlentities()
+ * @return The escaped string
 
  * Escape the text $str from special characters.
  */
@@ -1588,6 +1590,7 @@ function sql2Time($datetime) {
  * Format the date as string
  * 
  * @param mixed $time The UNIX timestamp
+ * @param boolean $utc Is the time UTC
  * @return string The date using 'dateFormat' translation key
  * 
  * Date format is storing a date, not a specific moment, we don't care about timezone
@@ -1604,6 +1607,7 @@ function d($time=TIME, $utc=false) {
  * Format the date time as string
  * 
  * @param mixed $time The UNIX timestamp
+ * @param boolean $utc Is the time UTC
  * @return string The date using 'datetimeFormat' translation key
  * 
  * Datetime format is storing a specific moment, we care about timezone
@@ -1643,7 +1647,7 @@ function df($format, $time=TIME, $tz=null) {
 /**
  * Convert date to time
  * 
- * @param mixed $date The date or UNIX timestamp
+ * @param int|string $date The date or UNIX timestamp
  * @return int The UNIX timestamp
  *
  * Allow any strtotime format to be converted to time, if time passed, it just returns it.
@@ -1774,6 +1778,7 @@ function generatePassword($length=10, $chars='abcdefghijklmnopqrstuvwxyz01234567
  * Calculate the day timestamp using the given integer
  * 
  * @param int $time The time to get the day time. Default value is current timestamp.
+ * @param boolean $gmt Is the time GMT
  * @return int
  * 
  * Return the timestamp of the current day of $time according to the midnight hour.
@@ -2130,7 +2135,7 @@ define('SESSION_WITH_HTTPTOKEN',	1<<1);
 /**
  * Calculate age from $birthday $relativeTo a date
  * 
- * @param unknown $birthday
+ * @param int $birthday
  * @param string $relativeTo
  * @return int
  */
@@ -2149,13 +2154,13 @@ function is_closure($v) {
 }
 
 /**
- * Finds whether the given variable is an exception
+ * Test the given variable is an exception
  *
- * @param mixed $v
+ * @param mixed $e
  * @return boolean True if $v is an Exception
  */
-function is_exception($t) {
-	return is_object($t) && ($t instanceof Exception);
+function is_exception($e) {
+	return is_object($e) && ($e instanceof Exception);
 }
 
 /**

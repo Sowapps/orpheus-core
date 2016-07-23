@@ -8,8 +8,8 @@
 /** 
  * Check if the input is an email address.
  * 
- * @param $email The email address to check.
- * @return True if $email si a valid email address.
+ * @param string $email The email address to check.
+ * @return boolean True if $email si a valid email address.
  */
 function is_email($email) {
 	return filter_var($email, FILTER_VALIDATE_EMAIL);
@@ -18,10 +18,10 @@ function is_email($email) {
 /** 
  * Check if the input is a name.
  * 
- * @param $name The name to check.
- * @param $charnb_max The maximum length of the given name. Default value is 50.
- * @param $charnb_min The minimum length of the given name. Default value is 3.
- * @return True if $name si a name.
+ * @param string $name The name to check.
+ * @param int $charnb_max The maximum length of the given name. Default value is 50.
+ * @param int $charnb_min The minimum length of the given name. Default value is 3.
+ * @return boolean True if $name si a name.
  * @sa is_personalname()
  * 
  * The name is a slug with no special characters.
@@ -33,10 +33,10 @@ function is_name($name, $charnb_max=50, $charnb_min=3) {
 /** 
  * Check if the input is a personal name.
  * 
- * @param $name The name to check.
- * @param $charnb_max The maximum length of the given name. Default value is 50.
- * @param $charnb_min The minimum length of the given name. Default value is 3.
- * @return True if $name si a name.
+ * @param string $name The name to check.
+ * @param int $charnb_max The maximum length of the given name. Default value is 50.
+ * @param int $charnb_min The minimum length of the given name. Default value is 3.
+ * @return boolean True if $name si a name.
  * @sa is_name()
  * 
  * The name can not contain programming characters like control characters, '<', '>' or '='...
@@ -49,14 +49,14 @@ function is_personalname($name, $charnb_max=50, $charnb_min=3) {
 /** 
  * Check if the input is an ID Number.
  * 
- * @param $Number The number to check.
- * @return True if $Number si a valid integer.
+ * @param mixed $number The number to check.
+ * @return boolean True if $number si a valid integer.
  * 
  * The ID number is an integer.
  */
-function is_ID($Number) {
-	$Number = "$Number";
-	return is_scalar($Number) && ctype_digit($Number) && $Number > 0;
+function is_ID($number) {
+	$number = "$number";
+	return is_scalar($number) && ctype_digit($number) && $number > 0;
 }
 
 define('DATE_FORMAT_LOCALE',	0);
@@ -66,11 +66,11 @@ define('DATE_FORMAT_GNU',		2);
 /** 
  * Check if the input is a date.
  * 
- * @param $date string The date to check.
- * @param $withTime boolean True to use datetime format, optional. Default value is false.
- * @param $time integer The output timestamp of the data, optional.
- * @param $country string The country to use the date format, optional. Default and unique value is FR, not used.
- * @return True if $date si a valid date.
+ * @param string $date The date to check.
+ * @param boolean $withTime True to use datetime format, optional. Default value is false.
+ * @param integer $time The output timestamp of the data, optional.
+ * @param int $format The date format to check, see constants DATE_FORMAT_*
+ * @return boolean True if $date si a valid date.
  *
  * The date have to be well formatted and valid.
  * The FR date format is DD/MM/YYYY and time format is HH:MM:SS
@@ -123,20 +123,20 @@ function is_time($time, &$matches=null) {
 /** 
  * Check if the input is an url.
  * 
- * @param $Url The url to check.
- * @param $protocol Not used yet. Default to SCHEME constant, not used.
- * @return True if $Url si a valid url.
+ * @param string $url The url to check.
+ * @param string $protocol Not used yet. Default to SCHEME constant, not used.
+ * @return boolean True if $url si a valid url.
  */
-function is_url($Url, $protocol=null) {
-	return filter_var($Url, FILTER_VALIDATE_URL);
+function is_url($url, $protocol=null) {
+	return filter_var($url, FILTER_VALIDATE_URL);
 }
 
 /** 
  * Check if the input is an ip address.
  * 
- * @param $ip The url to check.
- * @param $flags The flags for the check.
- * @return True if $ip si a valid ip address.
+ * @param string $ip The url to check.
+ * @param int $flags The flags for the check.
+ * @return boolean True if $ip si a valid ip address.
  * @sa filter_var()
  */
 function is_ip($ip, $flags=null) {
@@ -146,9 +146,9 @@ function is_ip($ip, $flags=null) {
 /** 
  * Check if the input is a phone number.
  * 
- * @param $number The phone number to check.
- * @param $country The country to use to validate the phone number, default is FR, this is the only possible value
- * @return True if $number si a valid phone number.
+ * @param string $number The phone number to check.
+ * @param string $country The country to use to validate the phone number, default is FR, this is the only possible value
+ * @return boolean True if $number si a valid phone number.
  * 
  * It can only validate french phone number.
  * The separator can be '.', ' ' or '-', it can be ommitted.

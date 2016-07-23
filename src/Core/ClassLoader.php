@@ -1,4 +1,7 @@
 <?php
+/**
+ * ClassLoader
+ */
 
 namespace Orpheus\Core;
 
