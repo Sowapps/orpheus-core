@@ -79,7 +79,7 @@ class ClassLoader {
 	 * Set the file path to the class
 	 * 
 	 * @param string $className
-	 * @param string $className
+	 * @param string $classPath
 	 * @return boolean
 	 * @throws \Exception
 	 */

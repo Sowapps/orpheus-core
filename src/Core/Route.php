@@ -1,4 +1,7 @@
 <?php
+/**
+ * Route
+ */
 
 namespace Orpheus\Core;
 
@@ -35,7 +38,9 @@ abstract class Route {
 	public abstract function getName();
 	
 	/**
-	 * @var String
+	 * Class of the resolver
+	 * 
+	 * @var string
 	 */
 	protected static $resolverClass;
 	// We kept a string to get it lighter, there is no need of more feature for that

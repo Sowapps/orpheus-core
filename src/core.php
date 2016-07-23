@@ -1,15 +1,16 @@
 <?php
-use Orpheus\Core\ClassLoader;
-use Orpheus\Exception\UserException;
-use Orpheus\Hook\Hook;
-use \Exception as Exception;
-use Orpheus\Exception\UserReportsException;
-use Orpheus\Config\Config;
 /**
  * The core functions
  * 
  * PHP File containing all system functions.
  */
+
+use \Exception as Exception;
+use Orpheus\Config\Config;
+use Orpheus\Core\ClassLoader;
+use Orpheus\Exception\UserException;
+use Orpheus\Exception\UserReportsException;
+use Orpheus\Hook\Hook;
 
 /**
  * Redirect the client to a destination by HTTP

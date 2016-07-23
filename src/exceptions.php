@@ -1,4 +1,8 @@
 <?php
+/**
+ * Multiple UserException classes
+ */
+
 namespace Orpheus\Exception;
 
 /**

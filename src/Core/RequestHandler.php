@@ -1,4 +1,7 @@
 <?php
+/**
+ * RequestHandler
+ */
 
 namespace Orpheus\Core;
 
@@ -16,6 +19,8 @@ abstract class RequestHandler {
 	const TYPE_HTTP = 'http';
 	
 	/**
+	 * Handler classes by type
+	 * 
 	 * @var string
 	 */
 	protected static $handlerClasses = array();
