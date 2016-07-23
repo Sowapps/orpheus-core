@@ -1706,7 +1706,7 @@ function explodeList($delimiter, $string, $limit, $default=null) {
 /**
  * Hash string with salt
  * 
- * @param unknown $str
+ * @param string $str
  * 
  * Hash input string with salt (constant USER_SALT) using SHA512
  */
@@ -1719,7 +1719,7 @@ function hashString($str) {
 /** 
  * Get the date as string
  * 
- * @param $time The UNIX timestamp.
+ * @param string $datetime The datetime
  * @return The date using 'dateFormat' translation key
  * 
  * Date format is storing a date, not a specific moment, we don't care about timezone

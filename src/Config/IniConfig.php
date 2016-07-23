@@ -1,4 +1,8 @@
 <?php
+/**
+ * IniConfig
+ */
+
 namespace Orpheus\Config;
 
 /**
