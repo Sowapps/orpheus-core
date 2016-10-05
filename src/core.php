@@ -1770,6 +1770,9 @@ function dt($time=TIME, $utc=false) {
  * Datetime format is storing a specific moment, we care about timezone
  */
 function df($format, $time=TIME, $tz=null) {
+	if( $time === null ) {
+		return '';
+	}
 	if( $tz === false ) {
 		$tz = 'UTC';
 	}
