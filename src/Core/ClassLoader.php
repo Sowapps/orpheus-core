@@ -15,7 +15,7 @@ class ClassLoader {
 	/**
 	 * The known class mapping
 	 * 
-	 * @var unknown
+	 * @var array
 	 */
 	protected $classes;
 	
@@ -154,5 +154,13 @@ class ClassLoader {
 		return !!static::$loader;
 	}
 	
+	/**
+	 * Get the known classes
+	 * 
+	 * @return array
+	 */
+	public function getClasses() {
+		return $this->classes;
+	}
 }
 
