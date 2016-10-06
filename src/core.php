@@ -2222,12 +2222,15 @@ function deleteCookie($name) {
  * Start a secured PHP Session and initialize Orpheus
  */
 function startSession($type=SESSION_WITH_COOKIE) {
-// 	global $ERROR_ACTION;
 	/**
 	 * By default, browsers share cookies across subdomains
 	 * So, we change the session name (also the cookie name) according to host
 	 * and specify host as .domain.com (prefixed by a dot).
 	 */
+	if( session_status() !== PHP_SESSION_NONE ) {
+		// Already started
+		return;
+	}
 	
 	Hook::trigger(HOOK_STARTSESSION, $type);
 	if( bintest($type, SESSION_WITH_COOKIE) ) {
