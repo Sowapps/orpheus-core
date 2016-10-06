@@ -2287,6 +2287,8 @@ function startSession($type=SESSION_WITH_COOKIE) {
 			throw new UserException('movedSession');
 		}
 	}
+	
+	Hook::trigger(HOOK_SESSIONSTARTED, $type);
 }
 defifn('SESSION_SHARE_ACROSS_SUBDOMAIN',	false);
 define('SESSION_WITH_COOKIE',		1<<0);
