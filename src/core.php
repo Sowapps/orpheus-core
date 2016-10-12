@@ -1799,7 +1799,13 @@ function df($format, $time=TIME, $tz=null) {
  * Allow any strtotime format to be converted to time, if time passed, it just returns it.
  */
 function dateToTime($date) {
-	return is_numeric($date) ? $date : strtotime($date.' GMT');
+	if( is_numeric($date) ) {
+		return $date;
+	}
+	if( $date instanceof DateTime ) {
+		return $date->getTimestamp();
+	}
+	return strtotime($date.' GMT');
 }
 
 /** 
