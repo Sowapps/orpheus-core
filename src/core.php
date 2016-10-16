@@ -300,6 +300,32 @@ function formatException($e) {
 }
 
 /**
+ * Get the debug trace filtered by $filterStartWith 
+ * 
+ * @param string $filterStartWith Exclude functions starting with this value
+ * @return array The filtered backtrace
+ */
+function getDebugTrace($filterStartWith=null) {
+	$backtrace = debug_backtrace();
+	unset($backtrace[0]);
+	if( $filterStartWith !== null ) {
+		$prev = null;
+		foreach( $backtrace as $i => $trace ) {
+			if( stripos($trace['function'], $filterStartWith) === 0 ) {
+				if( $prev !== null ) {
+					unset($backtrace[$prev]);
+				}
+				$prev = $i;
+		
+			} else {
+				break;
+			}
+		}
+	}
+	return array_values($backtrace);
+}
+
+/**
  * Log a report in a file
  * 
  * @param $report The report to log.
@@ -310,10 +336,10 @@ function formatException($e) {
 
  * Log an error in a file serializing data to JSON.
  * Each line of the file is a JSON string of the reports.
- * The log folder is the constant LOGSPATH or, if undefined, the current one.
+ * The log folder is the constant LOGSPATH.
  * Take care of this behavior:
  *	If message is NULL, it won't display any report
- *	Else if ERROR_LEVEL is DEV_LEVEL, displays report
+ *	Else if DEV_VERSION, displays report
  *	Else if message is empty, throw exception
  *	Else it displays the message.
  */
@@ -321,28 +347,38 @@ function log_report($report, $file, $action='', $message='') {
 	if( !is_scalar($report) ) {
 		if( $report instanceof Exception ) {
 			$exception = $report;
+			$report	= $exception->getMessage();
+		} else {
+			$report	= stringify($report);
 		}
-		$report	= 'NON-SCALAR::'.stringify($report);//."\n".print_r($report, 1);
+// 		$report	= 'NON-SCALAR::'.stringify($report);//."\n".print_r($report, 1);
 	}
-	$Error = array('id'=>uniqid('OL', true), 'date' => date('c'), 'report' => $report, 'action' => $action);
-	$logFilePath = ((defined("LOGSPATH") && is_dir(LOGSPATH)) ? LOGSPATH : '').$file;
+	$error = array(
+		'id' => uniqid('OL', true),
+		'date' => date('c'),
+		'report' => $report,
+		'action' => $action,
+		'trace' => isset($exception) ? $exception->getTrace() : getDebugTrace('log'),
+		'crc32' => crc32(isset($exception) ? formatException($exception) : $report)
+	);
+	$logFilePath = LOGSPATH.$file;
 	try {
-		file_put_contents($logFilePath, json_encode($Error)."\n", FILE_APPEND);
+		file_put_contents($logFilePath, json_encode($error)."\n", FILE_APPEND);
 	} catch( Exception $e ) {
-		$Error['report'] .= "<br />\n<b>And we met an error logging this report:</b><br />\n".stringify($e);
+		$error['report'] .= "<br />\n<b>And we met an error logging this report:</b><br />\n".stringify($e);
 	}
 	if( DEV_VERSION && isset($exception) ) {
 		displayException($exception, $action);
 	}
 	if( $message !== NULL ) {// Yeh != NULL, not !empty, null cause no report to user
 		if( DEV_VERSION ) {
-			$Error['message']	= $message;
-			$Error['page']		= nl2br(htmlentities($GLOBALS['Page']));
+			$error['message']	= $message;
+			$error['page']		= nl2br(htmlentities($GLOBALS['Page']));
 			// Display a pretty formatted error report
 			global $RENDERING;
-			if( !class_exists($RENDERING) || !$RENDERING::doDisplay('error', $Error) ) {
+			if( !class_exists($RENDERING) || !$RENDERING::doDisplay('error', $error) ) {
 				// If we fail in our display of this error, this is fatal.
-				echo print_r($Error, 1);
+				echo print_r($error, 1);
 			}
 		} else if( empty($message) ) {
 			throw new Exception('fatalErrorOccurred');
