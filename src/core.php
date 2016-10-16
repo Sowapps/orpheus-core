@@ -359,7 +359,7 @@ function log_report($report, $file, $action='', $message='') {
 		'report' => $report,
 		'action' => $action,
 		'trace' => isset($exception) ? $exception->getTrace() : getDebugTrace('log'),
-		'crc32' => crc32(isset($exception) ? formatException($exception) : $report)
+		'crc32' => crc32(isset($exception) ? formatException($exception) : $report).''
 	);
 	$logFilePath = LOGSPATH.$file;
 	try {
