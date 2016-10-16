@@ -196,13 +196,13 @@ function ssh2_run($command, $SSH2S=null) {
 
 /** 
  * Scans a directory cleanly.
- * @param $dir The directory to scan.
- * @param $sorting_order True to reverse results order. Default value is False.
- * @return An array of the files in this directory.
+ * @param string $dir The path to the directory to scan.
+ * @param boolean $sorting_order True to reverse results order. Default value is False.
+ * @return string[] An array of the files in this directory.
 
  * Scans a directory and returns a clean result.
  */
-function cleanscandir($dir, $sorting_order=0) {
+function cleanscandir($dir, $sorting_order=false) {
 	try {
 		$result = scandir($dir);
 	} catch(Exception $e) {
