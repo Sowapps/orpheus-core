@@ -320,12 +320,12 @@ function formatException($e) {
 function log_report($report, $file, $action='', $message='') {
 	if( !is_scalar($report) ) {
 		if( $report instanceof Exception ) {
-			$exception	= $report;
+			$exception = $report;
 		}
 		$report	= 'NON-SCALAR::'.stringify($report);//."\n".print_r($report, 1);
 	}
-	$Error	= array('date' => date('c'), 'report' => $report, 'action' => $action);
-	$logFilePath	= ((defined("LOGSPATH") && is_dir(LOGSPATH)) ? LOGSPATH : '').$file;
+	$Error = array('id'=>uniqid('OL', true), 'date' => date('c'), 'report' => $report, 'action' => $action);
+	$logFilePath = ((defined("LOGSPATH") && is_dir(LOGSPATH)) ? LOGSPATH : '').$file;
 	try {
 		file_put_contents($logFilePath, json_encode($Error)."\n", FILE_APPEND);
 	} catch( Exception $e ) {
