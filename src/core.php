@@ -360,11 +360,10 @@ function log_report($report, $file, $action='', $message='') {
  * @param $action The action associated to the report. Default value is an empty string.
  * @see log_report()
 
- * Log a debug.
- * The log file is the constant DEBUGFILENAME or, if undefined, '.debug'.
+ * Log a debug. The log file is the constant LOGFILE_DEBUG.
  */
 function log_debug($report, $action='') {
-	log_report($report, defined("DEBUGFILENAME") ? DEBUGFILENAME : '.debug', $action, null);
+	log_report($report, LOGFILE_DEBUG, $action, null);
 }
 
 /**
@@ -381,23 +380,8 @@ function log_debug($report, $action='') {
 function log_hack($report, $action='', $message=null) {
 	global $USER;
 	log_report($report.' 
-[ IP: '.$_SERVER['REMOTE_ADDR'].'; User: '.(isset($USER) ? "$USER #".$USER->id() : 'N/A').'; agent: '.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'N/A').'; referer: '.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'N/A').' ]', defined("HACKLOGFILENAME") ? HACKLOGFILENAME : '.hack', $action, $message);
-}
-
-/**
- * Log a system error
- * 
- * @param $report The report to log.
- * @param $action The action associated to the report. Default value is an empty string.
- * @param $silent True to not display any report. Default value is false.
- * @see log_report()
- * @deprecated
-
- * Log a system error.
- * The log file is the constant SYSLOGFILENAME or, if undefined, '.log_error'.
- */
-function sys_error($report, $action='', $silent=false) {
-	log_report($report, defined("SYSLOGFILENAME") ? SYSLOGFILENAME : '.log_error', $action, $silent ? null : '');
+[ IP: '.$_SERVER['REMOTE_ADDR'].'; User: '.(isset($USER) ? "$USER #".$USER->id() : 'N/A').'; agent: '.(isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'N/A').'; referer: '.(isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'N/A').' ]',
+		LOGFILE_HACK, $action, $message);
 }
 
 /**
@@ -412,7 +396,7 @@ function sys_error($report, $action='', $silent=false) {
  * The log file is the constant SYSLOGFILENAME or, if undefined, '.log_error'.
  */
 function log_error($report, $action='', $fatal=true) {
-	log_report($report, defined("SYSLOGFILENAME") ? SYSLOGFILENAME : '.log_error', $action,
+	log_report($report, LOGFILE_SYSTEM, $action,
 // 		!$fatal && !DEV_VERSION ? null :
 		!$fatal ? null :
 			(is_string($fatal) ? $fatal : "A fatal error occurred, retry later.<br />\nUne erreur fatale est survenue, veuillez re-essayer plus tard.").
@@ -430,9 +414,7 @@ function log_error($report, $action='', $fatal=true) {
  * The log file is the constant PDOLOGFILENAME or, if undefined, '.pdo_error'.
  */
 function sql_error($report, $action='') {
-	log_report($report, defined("PDOLOGFILENAME") ? PDOLOGFILENAME : '.pdo_error', $action, null);// NULL to do nothing
-// 	log_report($report, defined("PDOLOGFILENAME") ? PDOLOGFILENAME : '.pdo_error', $action, null);//, t('errorOccurredWithDB'));
-// 	throw new SQLException('errorOccurredWithDB');
+	log_report($report, LOGFILE_SQL, $action, null);// NULL to do nothing
 }
 
 /**
