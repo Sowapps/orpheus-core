@@ -454,19 +454,6 @@ function sql_error($report, $action='') {
 }
 
 /**
- * Escape a text
- * 
- * @param $str The string to escape
- * @param $flags The flags of htmlentities()
- * @return The escaped string
-
- * Escape the text $str from special characters.
- */
-function escapeText($str, $flags=ENT_NOQUOTES) {
-	return htmlentities(str_replace("\'", "'", $str), $flags, 'UTF-8', false); 	
-}
-
-/**
  * Escape quotes from a string
  *
  * @param $str The string to escape.
