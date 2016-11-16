@@ -1902,7 +1902,7 @@ function clientIP() {
 		return explode(' ', $_SERVER['SSH_CLIENT'], 2)[0];
 		// else [SSH_CONNECTION] => REMOTE_IP REMOTE_PORT LOCAL_IP LOCAL_PORT
 	}
-	return 'undefined';
+	return '127.0.0.1';
 }
 
 /** 
