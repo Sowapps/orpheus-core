@@ -2340,8 +2340,8 @@ function is_exception($e) {
 /**
  * Get microsecond as UNIX format
  *
- * @return number
+ * @return number|string
  */
-function ms() {
-	return round(microtime(true)*1000);
+function ms($precision=null) {
+	return $precision !== null ? number_format(microtime(true), $precision, '.', '') : round(microtime(true)*1000);
 }
