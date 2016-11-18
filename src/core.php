@@ -367,20 +367,27 @@ function log_report($report, $file, $action='', $message='') {
 	} catch( Exception $e ) {
 		$error['report'] .= "<br />\n<b>And we met an error logging this report:</b><br />\n".stringify($e);
 	}
-	if( DEV_VERSION && isset($exception) ) {
+	if( DEV_VERSION ) {
+// 	if( DEV_VERSION && isset($exception) ) {
+		if( !isset($exception) ) {
+			$exception = new Exception($report);
+		}
 		displayException($exception, $action);
+		die();
 	}
 	if( $message !== NULL ) {// Yeh != NULL, not !empty, null cause no report to user
-		if( DEV_VERSION ) {
-			$error['message']	= $message;
-			$error['page']		= nl2br(htmlentities($GLOBALS['Page']));
-			// Display a pretty formatted error report
-			global $RENDERING;
-			if( !class_exists($RENDERING) || !$RENDERING::doDisplay('error', $error) ) {
-				// If we fail in our display of this error, this is fatal.
-				echo print_r($error, 1);
-			}
-		} else if( empty($message) ) {
+// 		if( DEV_VERSION ) {
+// 			displayException($exception, $action);
+// 			$error['message']	= $message;
+// 			$error['page']		= nl2br(htmlentities($GLOBALS['Page']));
+// 			// Display a pretty formatted error report
+// 			global $RENDERING;
+// 			if( !class_exists($RENDERING) || !$RENDERING::doDisplay('error', $error) ) {
+// 				// If we fail in our display of this error, this is fatal.
+// 				echo print_r($error, 1);
+// 			}
+// 		} else
+		if( empty($message) ) {
 			throw new Exception('fatalErrorOccurred');
 			
 		} else {
