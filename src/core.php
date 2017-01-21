@@ -328,10 +328,11 @@ function getDebugTrace($filterStartWith=null) {
 /**
  * Log a report in a file
  * 
- * @param $report The report to log.
- * @param $file The log file path.
- * @param $action The action associated to the report. Default value is an empty string.
- * @param $message The message to display. Default is an empty string. See description for details.
+ * @param string|Exception $report The report to log.
+ * @param string $file The log file path.
+ * @param string $action The action associated to the report. Default value is an empty string.
+ * @param string $message The message to display. Default is an empty string. See description for details.
+ * @param boolean $noException True to not throw any exception (in DEV mode for now)
  * @warning This function require a writable log file.
 
  * Log an error in a file serializing data to JSON.
@@ -343,7 +344,7 @@ function getDebugTrace($filterStartWith=null) {
  *	Else if message is empty, throw exception
  *	Else it displays the message.
  */
-function log_report($report, $file, $action='', $message='') {
+function log_report($report, $file, $action='', $message='', $noException=false) {
 	if( !is_scalar($report) ) {
 		if( $report instanceof Exception ) {
 			$exception = $report;
@@ -367,10 +368,10 @@ function log_report($report, $file, $action='', $message='') {
 	} catch( Exception $e ) {
 		$error['report'] .= "<br />\n<b>And we met an error logging this report:</b><br />\n".stringify($e);
 	}
-	if( DEV_VERSION ) {
+	if( DEV_VERSION && !$noException ) {
 // 	if( DEV_VERSION && isset($exception) ) {
 		if( !isset($exception) ) {
-			$exception = new Exception($report);
+			$exception = new \Exception($report);
 		}
 		displayException($exception, $action);
 		die();
@@ -449,23 +450,24 @@ function log_error($report, $action='', $fatal=true) {
 /**
  * Log a sql error
  * 
- * @param $report The report to log.
- * @param $action The action associated to the report. Default value is an empty string.
+ * @param string|Exception $report The report to log
+ * @param string $action The action associated to the report. Default value is an empty string
+ * @param boolean $noException True to not throw any exception (in DEV mode for now)
  * @see log_report()
 
  * Log a sql error
  * The log file is the constant PDOLOGFILENAME or, if undefined, '.pdo_error'.
  */
-function sql_error($report, $action='') {
-	log_report($report, LOGFILE_SQL, $action, null);// NULL to do nothing
+function sql_error($report, $action='', $noException=false) {
+	log_report($report, LOGFILE_SQL, $action, null, $noException);// NULL to do nothing
 }
 
 /**
  * Escape quotes from a string
  *
- * @param $str The string to escape.
- * @param $flags The flags option.
- * @return The escaped string.
+ * @param string $str The string to escape
+ * @param int $flags The flags option
+ * @return string The escaped string
 
  * Escape the text $str from quotes using smart flags.
  */
