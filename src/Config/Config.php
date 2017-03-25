@@ -163,10 +163,10 @@ abstract class Config {
 	 */
 	public function loadFrom($package, $source, $cached=true) {
 		try {
-			if( class_exists('Orpheus\Cache\FSCache', true) ) {
+			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
 				$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app').'-config';
 				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \ 
-				$cache = new Orpheus\Cache\FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime(static::getFilePath($source, $package)));
+				$cache = new \Orpheus\Cache\FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime(static::getFilePath($source, $package)));
 				$parsed = null;
 				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
 					$parsed	= static::parse($source);
