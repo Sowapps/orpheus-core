@@ -128,9 +128,9 @@ abstract class Config {
 	 */
 	public function load($source, $cached=true) {
 		try {
-			if( class_exists('Orpheus\Cache\FSCache', true) ) {
+			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
 				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \ 
-				$cache = new Orpheus\Cache\FSCache('config', strtr($source, '/\\', '--'), filemtime(static::getFilePath($source)));
+				$cache = new \Orpheus\Cache\FSCache('config', strtr($source, '/\\', '--'), filemtime(static::getFilePath($source)));
 				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
 					$parsed	= static::parse($source);
 					$cache->set($parsed);
