@@ -54,7 +54,7 @@ abstract class Config {
 	 * - 'all' : It returns an array containing all configuration items.
 	 */
 	public function __get($key) {
-		if( $key == 'all' ) {
+		if( $key === 'all' ) {
 			return $this->asArray();
 		}
 		return apath_get($this->config, $key);
@@ -70,7 +70,7 @@ abstract class Config {
 	 * - 'all' : It sets all the array containing all configuration items.
 	 */
 	public function __set($key, $value) {
-		if( $key == 'all' && is_array($value) ) {
+		if( $key === 'all' && is_array($value) ) {
 			$this->config = $value;
 			return;
 		}
@@ -113,22 +113,16 @@ abstract class Config {
 	 */
 	public function load($source, $cached=true) {
 		try {
-			if( class_exists('FSCache', true) ) {
-// 				debug('Cache class exists');
+			if( class_exists('Orpheus\Cache\FSCache', true) ) {
 				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \ 
-// 				debug('Config time for '.$source.' is '.sqlDatetime(filemtime(static::getFilePath($source))));
-				$cache	= new FSCache('config', strtr($source, '/\\', '--'), filemtime(static::getFilePath($source)));
+				$cache = new Orpheus\Cache\FSCache('config', strtr($source, '/\\', '--'), filemtime(static::getFilePath($source)));
 				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
-// 					debug('No cache, parsing config');
 					$parsed	= static::parse($source);
-// 					debug('Config parsed', $parsed);
 					$cache->set($parsed);
-// 					debug('Cache set');
 				}
 			} else {
 				$parsed	= static::parse($source);
 			}
-// 			debug('$parsed', $parsed);
 			$this->add($parsed);
 			return true;
 			
