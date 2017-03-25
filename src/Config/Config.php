@@ -101,12 +101,27 @@ abstract class Config {
 		if( empty($conf) ) { return ; }
 		$this->config = array_merge($this->config, $conf);
 	}
+
+	/**
+	 * Check if source is available
+	 * 
+	 * @param string $source An identifier to get the source.
+	 * @return boolean True if source is available
+	 */
+	public function checkSource($source) {
+		try {
+			return !!static::getFilePath($source);
+// 			return is_readable($source) || is_readable(static::getFilePath($source));
+		} catch( Exception $e ) {
+			return false;
+		}
+	}
 	
 	/**
 	 * Load new configuration from source
 	 * 
-	 * @param $source An identifier to get the source
-	 * @param $cached True if this configuration should be cached
+	 * @param string $source An identifier to get the source
+	 * @param boolean $cached True if this configuration should be cached
 	 * @return boolean True if this configuration was loaded successfully
 	 * 
 	 * Load a configuration from a source identified by $source.
@@ -137,26 +152,69 @@ abstract class Config {
 	}
 
 	/**
-	 * Check if source is available
-	 * 
-	 * @param string $source An identifier to get the source.
-	 * @return boolean True if source is available
+	 * Load new configuration from source in package
+	 *
+	 * @param string $package The package to include config (null to get app config)
+	 * @param string $source An identifier to get the source
+	 * @param boolean $cached True if this configuration should be cached
+	 * @return boolean True if this configuration was loaded successfully
+	 *
+	 * Load a configuration from a source identified by $source.
 	 */
-	public function checkSource($source) {
+	public function loadFrom($package, $source, $cached=true) {
 		try {
-			return !!static::getFilePath($source);
-// 			return is_readable($source) || is_readable(static::getFilePath($source));
+			if( class_exists('Orpheus\Cache\FSCache', true) ) {
+				$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app').'-config';
+				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \ 
+				$cache = new Orpheus\Cache\FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime(static::getFilePath($source, $package)));
+				$parsed = null;
+				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
+					$parsed	= static::parse($source);
+					$cache->set($parsed);
+				}
+			} else {
+				$parsed	= static::parse($source);
+			}
+			$this->add($parsed);
+			return true;
+			
+		} catch( CacheException $e ) {
+			log_error($e, 'Caching parsed source '.$source, false);
+			
 		} catch( Exception $e ) {
-			return false;
+			// If not found, we do nothing
+			log_error($e, 'Caching parsed source '.$source, false);
 		}
+		return false;
+	}
+	
+	/**
+	 * Build new configuration source from package
+	 * 
+	 * @param $package The package to include config (null to get app config)
+	 * @param string $source An identifier to build the source
+	 * @param boolean $cached True if this configuration should be cached
+	 * @return Config
+	 * 
+	 * Build a configuration from $source using load() method.
+	 * If it is not a minor configuration, that new configuration is added to the main configuration.
+	 */
+	public static function buildFrom($package, $source, $cached=true) {
+		if( get_called_class() === get_class() ) {
+			throw new \Exception('Use a subclass of '.get_class().' to build your configuration');
+		}
+		$newConf = new static();
+		$newConf->loadFrom($package, $source, $cached);
+		return $newConf;
 	}
 	
 	/**
 	 * Build new configuration source
 	 * 
-	 * @param $source An identifier to build the source.
-	 * @param $minor True if this is a minor configuration.
-	 * @param $cached True if this configuration should be cached.
+	 * @param string $source An identifier to build the source
+	 * @param boolean $minor True if this is a minor configuration
+	 * @param boolean $cached True if this configuration should be cached
+	 * @return Config
 	 * 
 	 * Build a configuration from $source using load() method.
 	 * If it is not a minor configuration, that new configuration is added to the main configuration.
@@ -182,8 +240,8 @@ abstract class Config {
 	/** 
 	 * Get configuration from the main configuration object
 	 * 
-	 * @param $key The key to get the value.
-	 * @param $default The default value to use.
+	 * @param string $key The key to get the value.
+	 * @param mixed $default The default value to use.
 	 * @return string A config value.
 	 * 
 	 * Calls __get() method from main configuration object.
@@ -191,17 +249,15 @@ abstract class Config {
 	public static function get($key, $default=null) {
 		if( !isset(static::$main) ) {
 			return $default;
-			//throw new Exception('No Main Config');
 		}
-// 		debug('static::$main', static::$main);
 		return isset(static::$main->$key) ? static::$main->$key : $default;
 	}
 	
 	/** 
 	 * Set configuration to the main configuration object
 	 * 
-	 * @param $key The key to set the value.
-	 * @param $value The new config value.
+	 * @param string $key The key to set the value.
+	 * @param mixed $value The new config value.
 	 * 
 	 * Call __set() method to main configuration object.
 	 */
@@ -241,29 +297,38 @@ abstract class Config {
 	 * Get the file path
 	 * 
 	 * @param string $source An identifier to get the source.
+	 * @param string $package The package to get file path (null to get app file path). Default is null
 	 * @return array The configuration file path according to how Orpheus files are organized.
 	 * 
 	 * Get the configuration file path in CONFDIR.
 	 */
-	public static function getFilePath($source) {
+	public static function getFilePath($source, $package=null) {
 		if( is_readable($source) ) {
 			return $source;
 		}
 		$configFile	= $source.'.'.static::$extension;
-		foreach( static::$repositories as $repos ) {
-			if( is_readable($repos.$configFile) ) {
-				return $repos.$configFile;
+		if( $package ) {
+			$path = VENDORPATH.$package.'/'.CONFDIR.$configFile;
+			if( !is_file($path) || !is_readable($path) ) {
+				throw new \Exception('Unable to find config source "'.$source.'" in package '.$package.', looking at '.$path);
 			}
+			return $path;
+		} else {
+			foreach( static::$repositories as $repos ) {
+				if( is_readable($repos.$configFile) ) {
+					return $repos.$configFile;
+				}
+			}
+			return pathOf(CONFDIR.$configFile, true);
 		}
-		return pathOf(CONFDIR.$configFile, true);
 	}
 
 
 	/**
 	 * Parse configuration from given source
 	 * 
-	 * @param $source An identifier or a path to get the source.
-	 * @return The loaded configuration array.
+	 * @param $source An identifier or a path to get the source
+	 * @return The loaded configuration array
 	 */
 	public static function parse($source) {
 		throw new \Exception('The class "'.get_called_class().'" should override the `parse()` static method from "'.get_class().'"');
