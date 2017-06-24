@@ -1,7 +1,7 @@
 <?php
 /**
  * Config
-*/
+ */
 
 namespace Orpheus\Config;
 
@@ -11,21 +11,21 @@ namespace Orpheus\Config;
  * This class is the core for config classes inherited from custom configuration.
  */
 abstract class Config {
-
+	
 	/**
 	 * Contains the main configuration, reachable from everywhere.
 	 *
 	 * @var Config
 	 */
 	protected static $main;
-
+	
 	/**
 	 * The config uses cache
 	 *
 	 * @var boolean
 	 */
 	protected static $caching = true;
-
+	
 	/**
 	 * Contains the configuration for this Config Object.
 	 * Must be inherited from ConfigCore.
@@ -33,7 +33,7 @@ abstract class Config {
 	 * @var array
 	 */
 	protected $config = array();
-
+	
 	/**
 	 * Get this config as array
 	 *
@@ -42,7 +42,7 @@ abstract class Config {
 	public function asArray() {
 		return $this->config;
 	}
-
+	
 	/**
 	 * The magic function to get config
 	 *
@@ -59,7 +59,7 @@ abstract class Config {
 		}
 		return apath_get($this->config, $key);
 	}
-
+	
 	/**
 	 * The magic function to set config
 	 * @param $key The key to set the value.
@@ -78,7 +78,7 @@ abstract class Config {
 			$this->config[$key] = $value;
 		}
 	}
-
+	
 	/**
 	 * Magic isset
 	 *
@@ -89,7 +89,7 @@ abstract class Config {
 	public function __isset($key) {
 		return isset($this->config[$key]);
 	}
-
+	
 	/**
 	 * Add configuration to this object
 	 *
@@ -101,7 +101,7 @@ abstract class Config {
 		if( empty($conf) ) { return ; }
 		$this->config = array_merge($this->config, $conf);
 	}
-
+	
 	/**
 	 * Check if source is available
 	 *
@@ -116,7 +116,7 @@ abstract class Config {
 			return false;
 		}
 	}
-
+	
 	/**
 	 * Load new configuration from source
 	 *
@@ -141,17 +141,17 @@ abstract class Config {
 			}
 			$this->add($parsed);
 			return true;
-				
+			
 		} catch( CacheException $e ) {
 			log_error($e, 'Caching parsed source '.$source, false);
-				
+			
 		} catch( Exception $e ) {
 			// If not found, we do nothing
 			log_error($e, 'Caching parsed source '.$source, false);
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Load new configuration from source in package
 	 *
@@ -179,17 +179,17 @@ abstract class Config {
 			}
 			$this->add($parsed);
 			return true;
-				
+			
 		} catch( CacheException $e ) {
 			log_error($e, 'Caching parsed source '.$source, false);
-				
+			
 		} catch( Exception $e ) {
 			// If not found, we do nothing
 			log_error($e, 'Caching parsed source '.$source, false);
 		}
 		return false;
 	}
-
+	
 	/**
 	 * Build new configuration source from package
 	 *
@@ -209,7 +209,7 @@ abstract class Config {
 		$newConf->loadFrom($package, $source, $cached);
 		return $newConf;
 	}
-
+	
 	/**
 	 * Build new configuration source
 	 *
@@ -237,7 +237,7 @@ abstract class Config {
 		$newConf->load($source, $cached);
 		return $newConf;
 	}
-
+	
 	/**
 	 * Get configuration from the main configuration object
 	 *
@@ -253,7 +253,7 @@ abstract class Config {
 		}
 		return isset(static::$main->$key) ? static::$main->$key : $default;
 	}
-
+	
 	/**
 	 * Set configuration to the main configuration object
 	 *
@@ -268,14 +268,14 @@ abstract class Config {
 		}
 		static::$main->$key = $value;
 	}
-
+	
 	/**
 	 * The repositories
 	 *
 	 * @var array
 	 */
 	protected static $repositories	= array();
-
+	
 	/**
 	 * Add a repository to load configs
 	 *
@@ -284,7 +284,7 @@ abstract class Config {
 	public static function addRepository($repos) {
 		static::$repositories[]	= $repos;
 	}
-
+	
 	/**
 	 * Add a repository library to load configs
 	 *
@@ -293,9 +293,9 @@ abstract class Config {
 	public static function addRepositoryLibrary($library) {
 		static::addRepository(pathOf(LIBSDIR.$library).CONFDIR);
 	}
-
+	
 	// 	protected static $testCounter = 0;
-
+	
 	/**
 	 * Get the file path
 	 *
@@ -317,23 +317,26 @@ abstract class Config {
 		// 			die();
 		// 		}
 		$configFile	= $source.'.'.static::$extension;
+		$path = null;
 		if( $package ) {
 			$path = VENDORPATH.$package.'/'.CONFDIR.$configFile;
-			if( !is_file($path) || !is_readable($path) ) {
-				throw new \Exception('Unable to find config source "'.$source.'" in package '.$package.', looking at '.$path);
-			}
-			return $path;
 		} else {
 			foreach( static::$repositories as $repos ) {
 				if( is_readable($repos.$configFile) ) {
-					return $repos.$configFile;
+					$path = $repos.$configFile;
 				}
 			}
-			return pathOf(CONFDIR.$configFile, true);
+			if( !$path) {
+				$path = pathOf(CONFDIR.$configFile, true);
+			}
 		}
+		if( !is_file($path) || !is_readable($path) ) {
+			throw new \Exception('Unable to find config source "'.$source.'"');
+		}
+		return $path;
 	}
-
-
+	
+	
 	/**
 	 * Parse configuration from given source
 	 *
@@ -345,7 +348,7 @@ abstract class Config {
 	public static function parse($path) {
 		throw new \Exception('The class "'.get_called_class().'" should override the `parse()` static method from "'.get_class().'"');
 	}
-
+	
 	/**
 	 * Test if config is caching
 	 *
@@ -354,7 +357,7 @@ abstract class Config {
 	public static function isCaching() {
 		return self::$caching;
 	}
-
+	
 	/**
 	 * Set if config is caching
 	 *
