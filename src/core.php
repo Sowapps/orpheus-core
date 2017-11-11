@@ -32,7 +32,7 @@ function redirectTo($destination=null) {
 /**
  * Redirect permanently the client to a destination by HTTP
  * 
- * @param $destination The destination to go. Default value is SCRIPT_NAME.
+ * @param string $destination The destination to go. Default value is SCRIPT_NAME.
  * @see redirectTo()
 
  * Redirects permanently the client to a $destination using the HTTP headers.
@@ -40,16 +40,15 @@ function redirectTo($destination=null) {
  */
 function permanentRedirectTo($destination=null) {
 	header('HTTP/1.1 301 Moved Permanently', true, 301);
-// 	header('HTTP/1.1 301 Moved Permanently', false, 301);
 	redirectTo($destination);
 }
 
 /** 
  * Redirect the client to a destination by HTML
  * 
- * @param $destination The destination to go.
- * @param $time The time in seconds to wait before refresh.
- * @param $die True to stop the script.
+ * @param string $destination The destination to go.
+ * @param int $time The time in seconds to wait before refresh.
+ * @param boolean $die True to stop the script.
 
  * Redirect the client to a $destination using the HTML meta tag.
  * Does not stop the running script, it only displays.
@@ -66,7 +65,7 @@ function htmlRedirectTo($destination, $time=3, $die=0) {
  * 
  * @param int $value The value to compare.
  * @param int $reference The reference for the comparison.
- * @return True if $value is binary included in $reference.
+ * @return boolean True if $value is binary included in $reference.
 
  * Do a binary test, compare $value with $reference.
  * This function is very useful to do binary comparison for rights and inclusion in a value.
@@ -78,10 +77,10 @@ function bintest($value, $reference) {
 /**
  * Send a packaged response to the client.
  * 
- * @param $code string The response code.
- * @param $other array Other data to send to the client. Default value is an empty string.
- * @param $domain string The translation domain. Default value is 'global'.
- * @param $desc string The alternative description code. Default value is $code.
+ * @param string $code The response code.
+ * @param array $other Other data to send to the client. Default value is an empty string.
+ * @param string $domain The translation domain. Default value is 'global'.
+ * @param string $desc The alternative description code. Default value is $code.
 
  * The response code is a status code, commonly a string.
  * User $Other to send arrays and objects to the client.
@@ -102,23 +101,15 @@ function sendResponse($code, $other='', $domain='global', $desc=null) {
 /**
  * Send a JSON response to the client.
  *
- * @param $data The data to send
+ * @param mixed $data The data to send
  * 
  * Send data and end script
  */
 function sendJSON($data) {
 	header('Content-Type: application/json');
-// 	header('Content-Type',	'application/json; charset=UTF-8');
-// 	debug('sendJSON');
 	die(json_encode($data));
 }
 
-// define('HTTP_OK',						200);
-// define('HTTP_BAD_REQUEST',				400);
-// define('HTTP_UNAUTHORIZED',				401);
-// define('HTTP_FORBIDDEN',				403);
-// define('HTTP_NOT_FOUND',				404);
-// define('HTTP_INTERNAL_SERVER_ERROR',	500);
 /**
  * Send a RESTful JSON response to the client.
  *
@@ -128,14 +119,6 @@ function sendJSON($data) {
  * Send data and end script. This function takes care of exceptions and codes.
  */
 function sendRESTfulJSON($data, $code=null) {
-	/*
-	if( $data instanceof RESTResponse ) {
-		if( !$code ) {
-			$code = $data->getCode();
-		}
-		$data = $data->getBody();
-	}
-	*/
 	if( !$code ) {
 		if( $data instanceof Exception ) {
 			$code = ($data->getCode() < 100) ? $data->getCode() : HTTP_INTERNAL_SERVER_ERROR;
@@ -156,8 +139,6 @@ function sendRESTfulJSON($data, $code=null) {
 		if( $data instanceof Exception ) {
 			sendResponse($data->getMessage());
 		} else {
-// 			if( is_string($data) ) {
-// 			}
 			sendResponse($data);
 		}
 	} else {
@@ -169,9 +150,9 @@ function sendRESTfulJSON($data, $code=null) {
 /**
  * Run a SSH2 command.
  * 
- * @param $command The command to execute.
- * @param $SSH2S Local settings for the connection.
- * @return The stream from ssh2_exec()
+ * @param string $command The command to execute.
+ * @param array $SSH2S Local settings for the connection.
+ * @return resource The stream from ssh2_exec()
 
  * Runs a command on a SSH2 connection.
  * You can pass the connection settings array in argument but you can declare a global variable named $SSH2S too.
@@ -1071,6 +1052,7 @@ function displayReportsHTML($stream='global', $rejected=array(), $delete=1) {
  * @return mixed Data using the path or all data from POST array.
  * @see isPOST()
  * @see extractFrom()
+ * @deprecated
 
  * Get data from a POST request using the $path.
  * With no parameter or parameter null, all data are returned.
@@ -1085,6 +1067,7 @@ function POST($path=null) {
  * @param $path string The path to the array. The default value is null (search in POST).
  * @param $value int The output value of the item to delete.
  * @return True if there is an item to delete
+ * @deprecated
 
  * This function is used to key the key value from an array sent by post
  * E.g You use POST to delete an item from a list, it's name is delete[ID], where ID is the ID of this item
@@ -1104,6 +1087,7 @@ function hasPOSTKey($path=null, &$value=null) {
  * @return Data using the path or all data from GET array.
  * @see isGET()
  * @see extractFrom()
+ * @deprecated
 
  * Get data from a GET request using the $path.
  * With no parameter or parameter null, all data are returned.
@@ -1115,9 +1099,10 @@ function GET($path=null) {
 /** 
  * Check the POST status
  * 
- * @param $apath The apath to test.
- * @return True if the request is a POST one. Compares also the $key if not null.
+ * @param string $apath The apath to test.
+ * @return boolean True if the request is a GET one. Compares also the $key if not null.
  * @see POST()
+ * @deprecated
  * 
  * Check the POST status to retrieve data from a form.
  * You can specify the name of your submit button as first parameter.
@@ -1131,9 +1116,10 @@ function isPOST($apath=null) {
 /** 
  * Check the GET status
  * 
- * @param $apath The apath to test.
- * @return True if the request is a GET one. Compares also the $key if not null.
+ * @param string $apath The apath to test.
+ * @return boolean True if the request is a GET one. Compares also the $key if not null.
  * @see GET()
+ * @deprecated
  * 
  * Check the GET status to retrieve data from a form.
  * You can specify the name of your submit button as first parameter.
@@ -1147,25 +1133,24 @@ function isGET($apath=null) {
 /** 
  * Extract data from array using apath
  * 
- * @param $apath The apath to retrieve. null retrieves all data.
- * @param $array The array of data to browse.
- * @return Data using the apath or all data from the given array.
+ * @param string $apath The apath to retrieve. null retrieves all data.
+ * @param array $array The array of data to browse.
+ * @return mixed Data using the apath or all data from the given array.
 
  * Get data from an array using the $apath.
  * If $apath is null, all data are returned.
  */
 function extractFrom($apath, $array) {
 	return $apath===NULL ? $array : apath_get($array, $apath);
-// 	return is_null($path) ? $array : ( (!is_null($v = apath_get($array, $path))) ? $v : false) ;
 }
 
 /**
  * Get the HTML value
  * 
- * @param $name The name of the field
- * @param $data The array of data where to look for. Default value is $formData (if exist) or $_POST
- * @param $default The default value if $name is not defined in $data
- * @return A HTML source with the "value" attribute.
+ * @param string $name The name of the field
+ * @param string $data The array of data where to look for. Default value is $formData (if exist) or $_POST
+ * @param string $default The default value if $name is not defined in $data
+ * @return string A HTML source with the "value" attribute.
  *
  * Get the HTML value attribut from an array of data if this $name exists.
  */
