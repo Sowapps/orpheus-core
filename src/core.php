@@ -581,7 +581,7 @@ function apath_get($array, $apath, $default=null, $pathRequired=false) {
 		// Else container exists, but element not found.
 		return ($pathRequired && $suffix !== NULL) ? null : $default;
 	}
-	return $suffix !== NULL ? apath_get($array[$key], $suffix) : $array[$key];
+	return $suffix !== NULL && $suffix !== '' ? apath_get($array[$key], $suffix) : $array[$key];
 }
 
 /**
