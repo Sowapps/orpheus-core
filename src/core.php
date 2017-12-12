@@ -581,7 +581,7 @@ function apath_get($array, $apath, $default=null, $pathRequired=false) {
 		// Else container exists, but element not found.
 		return ($pathRequired && $suffix !== NULL) ? null : $default;
 	}
-	return $suffix !== NULL ? apath_get($array[$key], $suffix) : $array[$key];
+	return ($suffix === NULL || $suffix === '') ? $array[$key] : apath_get($array[$key], $suffix);
 }
 
 /**
@@ -597,16 +597,12 @@ function apath_get($array, $apath, $default=null, $pathRequired=false) {
  */
 function apath_setp(&$array, $apath, $value, $overwrite=true) {
 	if( $array === NULL ) {
-		$array	= array();
+		$array = array();
 	}
-// 	debug("Set array $apath to value $value", $array);
-// 	if( empty($array) || !is_array($array) || $apath === NULL ) {
-// 		return null;
-// 	}
 	
 	list($key, $suffix)	= explodeList('/', $apath, 2);//('/', $apath, 2);
 	// The path ends here
-	if( $suffix === NULL ) {
+	if( $suffix === NULL || $suffix === '' ) {
 		// NULL value will always be overwritten
 		if( $overwrite === true || !isset($array[$key]) ) {
 			$array[$key] = $value;
@@ -615,7 +611,7 @@ function apath_setp(&$array, $apath, $value, $overwrite=true) {
 	}
 	// The path continues
 	if( !isset($array[$key]) ) {
-		$array[$key]	= array();
+		$array[$key] = array();
 	}
 	apath_setp($array[$key], $suffix, $value, $overwrite);
 }
