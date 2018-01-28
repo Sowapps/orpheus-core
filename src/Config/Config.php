@@ -4,6 +4,8 @@
  */
 
 namespace Orpheus\Config;
+use Exception;
+use Orpheus\Cache\CacheException;
 
 /**
  * The config core class
@@ -193,7 +195,7 @@ abstract class Config {
 	/**
 	 * Build new configuration source from package
 	 *
-	 * @param $package The package to include config (null to get app config)
+	 * @param string $package The package to include config (null to get app config)
 	 * @param string $source An identifier to build the source
 	 * @param boolean $cached True if this configuration should be cached
 	 * @return Config
