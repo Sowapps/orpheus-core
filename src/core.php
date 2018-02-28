@@ -571,10 +571,8 @@ function parseFields(array $fields, $quote='"') {
 function apath_get($array, $apath, $default=null, $pathRequired=false) {
 	if( empty($array) || !is_array($array) || $apath === NULL ) {
 		return $default;
-		// Was not returning default value if array was empty
-// 		return null;
 	}
-	list($key, $suffix)	= explodeList('/', $apath, 2);
+	list($key, $suffix) = explodeList('/', $apath, 2);
 	// If element does not exist in array
 	if( !isset($array[$key]) ) {
 		// If has a child, the child could not be found
@@ -599,8 +597,7 @@ function apath_setp(&$array, $apath, $value, $overwrite=true) {
 	if( $array === NULL ) {
 		$array = array();
 	}
-	
-	list($key, $suffix)	= explodeList('/', $apath, 2);//('/', $apath, 2);
+	list($key, $suffix) = explodeList('/', $apath, 2);//('/', $apath, 2);
 	// The path ends here
 	if( $suffix === NULL || $suffix === '' ) {
 		// NULL value will always be overwritten
