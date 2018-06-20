@@ -213,16 +213,20 @@ abstract class Config {
 	 * @param string $package The package to include config (null to get app config)
 	 * @param string $source An identifier to build the source
 	 * @param boolean $cached True if this configuration should be cached
+	 * @param boolean $silent True if ignoring config loading issues
 	 * @return Config
 	 *
 	 * Build a configuration from $source using load() method.
 	 * If it is not a minor configuration, that new configuration is added to the main configuration.
 	 */
-	public static function buildFrom($package, $source, $cached=true) {
+	public static function buildFrom($package, $source, $cached=true, $silent=false) {
 		if( get_called_class() === get_class() ) {
 			throw new \Exception('Use a subclass of '.get_class().' to build your configuration');
 		}
 		$newConf = new static();
+		if($silent && !$newConf->hasSource($source, $package)) {
+			return null;
+		}
 		$newConf->loadFrom($package, $source, $cached);
 		return $newConf;
 	}
