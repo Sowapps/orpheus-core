@@ -332,7 +332,7 @@ abstract class Config {
 				$path = pathOf(CONFDIR.$configFile, true);
 			}
 		}
-		if( !is_file($path) || !is_readable($path) ) {
+		if( !$path || !is_file($path) || !is_readable($path) ) {
 			throw new \Exception('Unable to find config source "'.$source.'"');
 		}
 		return $path;
