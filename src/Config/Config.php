@@ -109,11 +109,26 @@ abstract class Config {
 	 *
 	 * @param string $source An identifier to get the source.
 	 * @return boolean True if source is available
+	 * @deprecated Prefer #hasSource()
 	 */
 	public function checkSource($source) {
 		try {
 			return !!static::getFilePath($source);
 			// 			return is_readable($source) || is_readable(static::getFilePath($source));
+		} catch( Exception $e ) {
+			return false;
+		}
+	}
+	
+	/**
+	 * Check if source is available
+	 *
+	 * @param string $source An identifier to get the source.
+	 * @return boolean True if source is available
+	 */
+	public function hasSource($source, $package=null) {
+		try {
+			return !!static::getFilePath($source, $package);
 		} catch( Exception $e ) {
 			return false;
 		}
