@@ -5,11 +5,10 @@
  * PHP File containing all system functions.
  */
 
-use \Exception as Exception;
+use Exception as Exception;
 use Orpheus\Config\Config;
 use Orpheus\Core\ClassLoader;
 use Orpheus\Exception\UserException;
-use Orpheus\Exception\UserReportsException;
 use Orpheus\Hook\Hook;
 
 /**
@@ -333,7 +332,6 @@ function log_report($report, $file, $action='', $message='', $noException=false)
 		} else {
 			$report	= stringify($report);
 		}
-// 		$report	= 'NON-SCALAR::'.stringify($report);//."\n".print_r($report, 1);
 	}
 	$error = array(
 		'id' => uniqid('OL', true),
@@ -350,7 +348,6 @@ function log_report($report, $file, $action='', $message='', $noException=false)
 		$error['report'] .= "<br />\n<b>And we met an error logging this report:</b><br />\n".stringify($e);
 	}
 	if( DEV_VERSION && !$noException ) {
-// 	if( DEV_VERSION && isset($exception) ) {
 		if( !isset($exception) ) {
 			$exception = new \Exception($report);
 		}
@@ -358,20 +355,8 @@ function log_report($report, $file, $action='', $message='', $noException=false)
 		die();
 	}
 	if( $message !== NULL ) {// Yeh != NULL, not !empty, null cause no report to user
-// 		if( DEV_VERSION ) {
-// 			displayException($exception, $action);
-// 			$error['message']	= $message;
-// 			$error['page']		= nl2br(htmlentities($GLOBALS['Page']));
-// 			// Display a pretty formatted error report
-// 			global $RENDERING;
-// 			if( !class_exists($RENDERING) || !$RENDERING::doDisplay('error', $error) ) {
-// 				// If we fail in our display of this error, this is fatal.
-// 				echo print_r($error, 1);
-// 			}
-// 		} else
 		if( empty($message) ) {
 			throw new Exception('fatalErrorOccurred');
-			
 		} else {
 			die($message);
 		}
@@ -692,40 +677,6 @@ function using($pkgPath) {
 function addAutoload($className, $classPath) {
 	ClassLoader::get()->setClass($className, $classPath);
 }
-/*
-function addAutoload($className, $classPath) {
-	global $AUTOLOADS;
-	$className = strtolower($className);
-	if( !empty($AUTOLOADS[$className]) ) {
-		return false;
-	}
-	if(
-		// Pure object naming
-		existsPathOf(LIBSDIR.$classPath.'.php', $path) ||
-		// Old Orpheus naming
-		existsPathOf(LIBSDIR.$classPath.'_class.php', $path) ||
-		// Full path
-		existsPathOf(LIBSDIR.$classPath, $path)
-	) {
-		$AUTOLOADS[$className] = $path;
-// 		$AUTOLOADS[$className] = $classPath.'.php';
-		
-// 	} else
-// 	if(  ) {
-// 		// Old Orpheus naming
-// 		$AUTOLOADS[$className] = $classPath.'_class.php';
-		
-// 	} else
-// 	if( existsPathOf(LIBSDIR.$classPath) ) {
-// 		// Full naming
-// 		$AUTOLOADS[$className] = $classPath;
-		
-	} else {
-		throw new Exception("Class file of \"{$className}\" not found.");
-	}
-	return true;
-}
- */
 
 /** 
  * Starts a new report stream
@@ -735,8 +686,6 @@ function addAutoload($className, $classPath) {
  * A new report stream starts, all new reports will be added to this stream.
  */
 function startReportStream($stream) {
-// 	global $REPORT_STREAM;
-// 	$REPORT_STREAM = $stream;
 	$GLOBALS['REPORT_STREAM'] = $stream;
 }
 
@@ -787,7 +736,6 @@ function transferReportStream($from=null, $to='global') {
  * The type of the message is commonly 'success' or 'error'.
  */
 function addReport($report, $type, $domain='global', $code=null, $severity=0) {
-// 	debug("Add report($report, $type, $domain, $code, $severity)");
 	global $REPORTS, $REPORT_STREAM, $REJREPORTS, $DISABLE_REPORT;
 	if( !empty($DISABLE_REPORT) ) { return false; }
 	if( !$domain ) {
@@ -808,7 +756,6 @@ function addReport($report, $type, $domain='global', $code=null, $severity=0) {
 	}
 	$report	= t($report, $domain);// Added recently, require tests
 	$REPORTS[$REPORT_STREAM][$type][] = array('code'=>$code, 'report'=>$report, 'domain'=>$domain, 'severity'=>$severity);
-// 	$REPORTS[$REPORT_STREAM][$type][] = array('c'=>$report, 'r'=>t($report, $domain), 'd'=>$domain);
 	return true;
 }
 
@@ -847,7 +794,6 @@ function reportInfo($report, $domain=null) {
  */
 function reportWarning($report, $domain=null) {
 	return reportError($report, $domain, 0);
-// 	return addReport($report, 'warning', $domain);
 }
 
 /** 
@@ -862,12 +808,6 @@ function reportWarning($report, $domain=null) {
 function reportError($report, $domain=null, $severity=1) {
 	$code	= null;
 	if( $report instanceof UserException ) {
-// 		if( class_exists('InvalidFieldException') && $report instanceof InvalidFieldException ) {
-// 		if( $report instanceof InvalidFieldException ) {
-// 			// InvalidFieldException translates the message when using __toString method, so we need to get the original code
-// 			// Should be improved by object inheritance
-// 			$code	= $report->getMessage();
-// 		}
 		$code = $report->getMessage();
 		if( $domain === NULL ) {
 			$domain = $report->getDomain();
@@ -884,7 +824,6 @@ function reportError($report, $domain=null, $severity=1) {
 function hasErrorReports() {
 	global $REPORTS;
 	if( empty($REPORTS) ) { return false; }
-// 	foreach($REPORTS as $stream => $types) {
 	foreach($REPORTS as $types) {
 		if( !empty($types['error']) ) {
 			return true;
@@ -1010,9 +949,6 @@ function getReportsHTML($stream='global', $rejected=array(), $delete=true) {
  * This function is only a HTML generator.
  */
 function getHTMLReport($stream, $report, $domain, $type) {
-// 	if( class_exists('HTMLRendering', true) ) {
-// 		return HTMLRendering::renderReport($report, $domain, $type, $stream);
-// 	} 
 	return '
 		<div class="report report_'.$stream.' '.$type.' '.$domain.'">'.nl2br($report).'</div>';
 }
@@ -1470,9 +1406,6 @@ function htmlCheckBox($fieldPath, $value=null, $default=false, $addAttr='') {
 	// 			If Value found,	we consider this one, else we use default
 	$selected = false;
 	fillInputValue($selected, $fieldPath, $default, true);
-// 	debug("htmlCheckBox($fieldPath)", $selected);
-// 	debug("is_array($selected) => ".b(is_array($selected)));
-// 	debug("$value!==NULL && is_array($selected) && in_array($value, $selected) => ".b($value!==NULL && is_array($selected) && in_array($value, $selected)));
 	return '<input type="checkbox" name="'.apath_html($fieldPath).($value!==NULL ? '[]' : '').'"'.(
 		(
 			($selected === true) || // Single value => TRUE
@@ -1618,14 +1551,14 @@ function convertSpecialChars($string) {
 	return $string;
 }
 
-/** 
+/**
  * Convert the string into a slug
- * 
- * @param $string The string to convert.
- * @param $case The case style to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
+ *
+ * @param string $string The string to convert.
+ * @param int $case The case style to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
  * @return string The slug version.
  *
- * Convert string to lower case and converts all special characters. 
+ * Convert string to lower case and converts all special characters.
  */
 function toSlug($string, $case=null) {
 	$string = str_replace(' ', '', ucwords(str_replace('&', 'and', strtolower($string))));
@@ -1649,7 +1582,6 @@ function toSlug($string, $case=null) {
  * Convert string to lower case and converts all special characters. 
  */
 function slug($string, $case=null) {
-// 	$string = preg_replace('#[^a-z0-9\-_]#i', '', ucwords(str_replace('&', 'and',strtolower($string))));
 	$string	= strtr(ucwords(str_replace('&', 'and', strtolower($string)))
 		," .'\"", '----');
 	if( isset($case) ) {

@@ -13,8 +13,14 @@ namespace Orpheus\Core;
 class ClassLoader {
 	
 	/**
+	 * The active autoloader
+	 *
+	 * @var ClassLoader
+	 */
+	protected static $loader;
+	/**
 	 * The known class mapping
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $classes;
@@ -23,64 +29,47 @@ class ClassLoader {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->classes	= array();
+		$this->classes = [];
 	}
 	
 	/**
 	 * Get the string representation of the ClassLoader
-	 * 
+	 *
 	 * @return string
 	 */
 	public function __toString() {
 		return 'orpheus-ClassLoader';
 	}
 	
-
-	/**
-	 * Unregister object from the SPL
-	 */
-	public function unregister() {
-		spl_autoload_unregister(array($this, 'loadClass'));
-	}
-	
-	/**
-	 * Register object to the SPL
-	 * 
-	 * @param boolean
-	 */
-	public function register($prepend=false) {
-		spl_autoload_register(array($this, 'loadClass'), true, $prepend);
-	}
-	
 	/**
 	 * Load class file
-	 * 
+	 *
 	 * @param string $className
 	 * @throws \Exception
 	 */
 	public function loadClass($className) {
 		try {
-// 			global $AUTOLOADS;
+			// 			global $AUTOLOADS;
 			// PHP's class' names are not case sensitive.
 			$bFile = strtolower($className);
-
+			
 			// If the class file path is known in the our array
 			if( !empty($this->classes[$bFile]) ) {
-				$path	= null;
-				$path	= $this->classes[$bFile];
+				$path = null;
+				$path = $this->classes[$bFile];
 				require_once $path;
 				if( !class_exists($className, false) && !interface_exists($className, false) ) {
-					throw new \Exception('Wrong use of Autoloads, the class "'.$className.'" should be declared in the given file "'.$path.'". Please use Class Loader correctly.');
+					throw new \Exception('Wrong use of Autoloads, the class "' . $className . '" should be declared in the given file "' . $path . '". Please use Class Loader correctly.');
 				}
 			}
 		} catch( Exception $e ) {
-			log_error($e, 'loading_class_'.$className);
+			log_error($e, 'loading_class_' . $className);
 		}
 	}
 	
 	/**
 	 * Set the file path to the class
-	 * 
+	 *
 	 * @param string $className
 	 * @param string $classPath
 	 * @return boolean
@@ -91,13 +80,13 @@ class ClassLoader {
 		$path = null;
 		if(
 			// Pure object naming with only lib name and exact class name
-			existsPathOf(LIBSDIR.$classPath.'/'.$className.'.php', $path) ||
+			existsPathOf(LIBSDIR . $classPath . '/' . $className . '.php', $path) ||
 			// Pure object naming
-			existsPathOf(LIBSDIR.$classPath.'.php', $path) ||
+			existsPathOf(LIBSDIR . $classPath . '.php', $path) ||
 			// Old Orpheus naming
-			existsPathOf(LIBSDIR.$classPath.'_class.php', $path) ||
+			existsPathOf(LIBSDIR . $classPath . '_class.php', $path) ||
 			// Full path
-			existsPathOf(LIBSDIR.$classPath, $path)
+			existsPathOf(LIBSDIR . $classPath, $path)
 		) {
 			$this->classes[$className] = $path;
 			
@@ -109,15 +98,17 @@ class ClassLoader {
 	}
 	
 	/**
-	 * The active autoloader
-	 * 
-	 * @var ClassLoader
+	 * Get the known classes
+	 *
+	 * @return array
 	 */
-	protected static $loader;
+	public function getClasses() {
+		return $this->classes;
+	}
 	
 	/**
 	 * Get the active autoloader
-	 * 
+	 *
 	 * @return ClassLoader
 	 */
 	public static function get() {
@@ -126,10 +117,10 @@ class ClassLoader {
 		}
 		return static::$loader;
 	}
-
+	
 	/**
 	 * Set the active autoloader
-	 * 
+	 *
 	 * @param ClassLoader
 	 */
 	public static function set(ClassLoader $loader) {
@@ -138,29 +129,36 @@ class ClassLoader {
 			static::$loader->unregister();
 		}
 		// Set the new class loader
-		static::$loader	= $loader;
+		static::$loader = $loader;
 		// Register the new one
 		if( static::$loader ) {
 			static::$loader->register(true);
 		}
 	}
-
+	
+	/**
+	 * Unregister object from the SPL
+	 */
+	public function unregister() {
+		spl_autoload_unregister([$this, 'loadClass']);
+	}
+	
+	/**
+	 * Register object to the SPL
+	 *
+	 * @param boolean
+	 */
+	public function register($prepend = false) {
+		spl_autoload_register([$this, 'loadClass'], true, $prepend);
+	}
+	
 	/**
 	 * Check if active loader is valid
-	 * 
+	 *
 	 * @return boolean
 	 */
 	public static function isValid() {
 		return !!static::$loader;
-	}
-	
-	/**
-	 * Get the known classes
-	 * 
-	 * @return array
-	 */
-	public function getClasses() {
-		return $this->classes;
 	}
 }
 
