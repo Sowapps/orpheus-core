@@ -42,7 +42,6 @@ function is_name($name, $charnb_max=50, $charnb_min=3) {
  * The name can not contain programming characters like control characters, '<', '>' or '='...
  */
 function is_personalname($name, $charnb_max=50, $charnb_min=3) {
-	// \'
 	return preg_match('#^[^\^\<\>\*\+\(\)\[\]\{\}\"\~\&\=\:\;\`\|\#\@\%\/\\\\[:cntrl:]]{'.$charnb_min.','.$charnb_max.'}$#i', $name);
 }
 
@@ -60,7 +59,6 @@ function is_ID($number) {
 }
 
 define('DATE_FORMAT_LOCALE',	0);
-// define('DATE_FORMAT_SQL',		1);
 define('DATE_FORMAT_GNU',		1);
 
 /** 
@@ -79,7 +77,6 @@ define('DATE_FORMAT_GNU',		1);
  */
 function is_date($date, $withTime=false, &$time=false, $format=null) {
 	/* @var DateTime $dateTime */
-// 	debug('is_date('.$date.', '.b($withTime).', '.$time.', '.$country.')');
 	if( !$format ) {
 		$time = strtotime($date);
 		if( $time !== false ) {
@@ -88,16 +85,11 @@ function is_date($date, $withTime=false, &$time=false, $format=null) {
 		$format = DATE_FORMAT_LOCALE;
 	}
 	// SQL USES GNU
-// 	if( $format === DATE_FORMAT_SQL ) {
-// 		$dateTime = DateTime::createFromFormat($withTime ? 'd/m/Y H:i:s' : 'd/m/Y|', $date);
-// 	} else
 	if( $format === DATE_FORMAT_GNU ) {
 		$dateTime = DateTime::createFromFormat($withTime ? 'Y-m-d H:i:s' : 'Y-m-d|', $date);
 	} else {
 		$dateTime = DateTime::createFromFormat(t($withTime ? 'datetimeFromFormat' : 'dateFromFormat'), $date);
 	}
-// 	debug('$dateTime', $dateTime);
-// 	die();
 	if( $dateTime ) {
 		$time = $dateTime->getTimestamp();
 	}

@@ -48,22 +48,17 @@ class ClassLoader {
 	 * @throws \Exception
 	 */
 	public function loadClass($className) {
-		try {
-			// 			global $AUTOLOADS;
-			// PHP's class' names are not case sensitive.
-			$bFile = strtolower($className);
-			
-			// If the class file path is known in the our array
-			if( !empty($this->classes[$bFile]) ) {
-				$path = null;
-				$path = $this->classes[$bFile];
-				require_once $path;
-				if( !class_exists($className, false) && !interface_exists($className, false) ) {
-					throw new \Exception('Wrong use of Autoloads, the class "' . $className . '" should be declared in the given file "' . $path . '". Please use Class Loader correctly.');
-				}
+		// PHP's class' names are not case sensitive.
+		$bFile = strtolower($className);
+		
+		// If the class file path is known in the our array
+		if( !empty($this->classes[$bFile]) ) {
+			$path = null;
+			$path = $this->classes[$bFile];
+			require_once $path;
+			if( !class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false) ) {
+				throw new \Exception('Wrong use of Autoloads, the class "' . $className . '" should be declared in the given file "' . $path . '". Please use Class Loader correctly.');
 			}
-		} catch( Exception $e ) {
-			log_error($e, 'loading_class_' . $className);
 		}
 	}
 	
@@ -161,4 +156,3 @@ class ClassLoader {
 		return !!static::$loader;
 	}
 }
-
