@@ -14,7 +14,7 @@
 		]
 	},
 	"require" : {
-		"orpheus/orpheus-hook" : "dev-master"
+	  "orpheus/orpheus-hook": "1.*"
 	},
 	"type" : "library",
 	"license" : "MIT",
