@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The core functions
  *
@@ -2256,4 +2257,18 @@ function is_exception($e) {
  */
 function ms($precision = null) {
 	return $precision !== null ? number_format(microtime(true), $precision, '.', '') : round(microtime(true) * 1000);
+}
+
+function convertHumanSizeToByte($value) {
+	$value = trim($value);
+	$unit = strtolower($value[strlen($value) - 1]);
+	switch( $unit ) {
+		case 'g':
+			$value *= 1024;
+		case 'm':
+			$value *= 1024;
+		case 'k':
+			$value *= 1024;
+	}
+	return $value;
 }
