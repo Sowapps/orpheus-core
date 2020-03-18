@@ -1,5 +1,4 @@
 <?php
-
 /**
  * The core functions
  *
@@ -1442,10 +1441,10 @@ function fillFormData(&$data) {
 /**
  * Fill the given value from input form
  *
- * @param $value The value to fill, as pointer.
- * @param $fieldPath The apath to the input form value.
- * @param $default The default value if not found. Default value is null (apath_get()'s default).
- * @param $pathRequired True if the path is required. Default value is False (apath_get()'s default).
+ * @param string $value The value to fill, as pointer.
+ * @param string $fieldPath The apath to the input form value.
+ * @param string|null $default The default value if not found. Default value is null (apath_get()'s default).
+ * @param bool $pathRequired True if the path is required. Default value is False (apath_get()'s default).
  * @return boolean True if got value is not null (found).
  * @see getFormData()
  * @see apath_get()
@@ -1713,7 +1712,7 @@ function dateToTime($date) {
 /**
  * Get the date time as string
  *
- * @param mixed $time The time with %H:%M format.
+ * @param int|DateTime $time The time with %H:%M format.
  * @return string The formatted time using 'timeFormat' translation key
  *
  * Convert the system time format to the user time format
@@ -1760,12 +1759,15 @@ function parseTime($time, $format = SYSTEM_TIME_FORMAT) {
 /**
  * Get the date as string in SQL format
  *
- * @param int $time The UNIX timestamp.
+ * @param DateTime|int $time The UNIX timestamp.
  * @return string The date using sql format
  *
  * Date format is storing a date, not a specific moment, we don't care about timezone
  */
 function sqlDate($time = TIME) {
+	if( $time instanceof DateTime ) {
+		return $time->format('Y-m-d');
+	}
 	return strftime('%Y-%m-%d', $time);
 }
 
@@ -1778,6 +1780,9 @@ function sqlDate($time = TIME) {
  * Datetime format is storing a specific moment, we care about timezone
  */
 function sqlDatetime($time = TIME) {
+	if( $time instanceof DateTime ) {
+		return $time->format('Y-m-d H:i:s');
+	}
 	return gmstrftime('%Y-%m-%d %H:%M:%S', $time);
 }
 
@@ -2257,18 +2262,4 @@ function is_exception($e) {
  */
 function ms($precision = null) {
 	return $precision !== null ? number_format(microtime(true), $precision, '.', '') : round(microtime(true) * 1000);
-}
-
-function convertHumanSizeToByte($value) {
-	$value = trim($value);
-	$unit = strtolower($value[strlen($value) - 1]);
-	switch( $unit ) {
-		case 'g':
-			$value *= 1024;
-		case 'm':
-			$value *= 1024;
-		case 'k':
-			$value *= 1024;
-	}
-	return $value;
 }
