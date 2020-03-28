@@ -331,7 +331,7 @@ function log_report($report, $file, $action = '', $message = '') {
 	}
 	if( $message ) {
 		// Fatal
-		die($message ?: 'A fatal error occurred');
+		die($message !== true ? $message : 'A fatal error occurred');
 	}
 }
 
@@ -2262,4 +2262,63 @@ function is_exception($e) {
  */
 function ms($precision = null) {
 	return $precision !== null ? number_format(microtime(true), $precision, '.', '') : round(microtime(true) * 1000);
+}
+
+/**
+ * Convert human size to byte unit
+ * Some programs, as of PHP, does not respect binary & decimals unit multiples
+ * 100kB = 1.000 bytes / 100KiB = 1.024 bytes
+ * In case of PHP ini file, 56MB is for PHP 56 * 1024 * 1024 bytes
+ * Source: https://en.wikipedia.org/wiki/Byte#Unit_symbol
+ *
+ * @param string $size The human size to parse
+ * @param bool $forceBinaryStep For to use binary step even if using decimal unit
+ * @return int The byte size
+ */
+function parseHumanSize($size, $forceBinaryStep = false) {
+	if( !preg_match('#^([0-9]+)\s*([a-z]*)$#', strtolower(trim($size)), $matches) ) {
+		throw new Exception(sprintf('Invalid size "%s"', $size));
+	}
+	[, $value, $unit] = $matches;
+	$decimalUnits = ['kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb'];
+	$binaryUnits = ['kib', 'mib', 'gib', 'tib', 'pib', 'eib', 'zib', 'yib'];
+	$step = 1024;
+	if( $unit ) {
+		$unitIndex = array_search($unit, $decimalUnits, true);
+		if( $unitIndex === false ) {
+			$unitIndex = array_search($unit, $binaryUnits, true);
+		} elseif( !$forceBinaryStep ) {
+			$step = 1000;
+		}
+		if( $unitIndex === false ) {
+			throw new Exception(sprintf('Unknown unit "%s" in "%s"', $unit, $size));
+		}
+		$value *= pow($step, $unitIndex + 1);
+	}
+	return $value;
+}
+
+/**
+ * Convert human size to byte unit
+ * You can combine $step and decimal unit as you want
+ * Source: https://en.wikipedia.org/wiki/Byte#Unit_symbol
+ *
+ * @param string $value The byte size to format
+ * @param int $step The step between units
+ * @param bool $useDecimalUnit The unit to use (decimal or binary)
+ * @param int $allowMax Max value allow in one unit. e.g with 10.000, you keep an unit until 9.999
+ * @param string $format The format to use with sprintf(), first string is the value and the second one is the unit.
+ * @return string The formatted size
+ */
+function formatHumanSize($value, $step = 1000, $useDecimalUnit = true, $allowMax = 10000, $format = '%s%s') {
+	$units = $useDecimalUnit ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+	$valueUnit = null;
+	foreach( $units as $unit ) {
+		if( $value < $allowMax ) {
+			break;
+		}
+		$value /= $step;
+		$valueUnit = $unit;
+	}
+	return sprintf($format, (($value > 999 || !is_float($value)) ? formatInt($value) : formatDouble($value)), $valueUnit);
 }

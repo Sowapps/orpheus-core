@@ -5,6 +5,8 @@
 
 namespace Orpheus\Core;
 
+use Exception;
+
 /**
  * Official Orpheus class loader
  *
@@ -45,7 +47,7 @@ class ClassLoader {
 	 * Load class file
 	 *
 	 * @param string $className
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function loadClass($className) {
 		// PHP's class' names are not case sensitive.
@@ -57,7 +59,7 @@ class ClassLoader {
 			$path = $this->classes[$bFile];
 			require_once $path;
 			if( !class_exists($className, false) && !interface_exists($className, false) && !trait_exists($className, false) ) {
-				throw new \Exception('Wrong use of Autoloads, the class "' . $className . '" should be declared in the given file "' . $path . '". Please use Class Loader correctly.');
+				throw new Exception('Wrong use of Autoload, the class "' . $className . '" should be declared in the given file "' . $path . '". Please use Class Loader correctly.');
 			}
 		}
 	}
@@ -68,7 +70,7 @@ class ClassLoader {
 	 * @param string $className
 	 * @param string $classPath
 	 * @return boolean
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function setClass($className, $classPath) {
 		$className = strtolower($className);
@@ -81,12 +83,20 @@ class ClassLoader {
 			// Old Orpheus naming
 			existsPathOf(LIBSDIR . $classPath . '_class.php', $path) ||
 			// Full path
-			existsPathOf(LIBSDIR . $classPath, $path)
+			existsPathOf(LIBSDIR . $classPath, $path) ||
+			// Pure object naming with only lib name and exact class name
+			existsPathOf(SRC_PATH . $classPath . '/' . $className . '.php', $path) ||
+			// Pure object naming
+			existsPathOf(SRC_PATH . $classPath . '.php', $path) ||
+			// Old Orpheus naming
+			existsPathOf(SRC_PATH . $classPath . '_class.php', $path) ||
+			// Full path
+			existsPathOf(SRC_PATH . $classPath, $path)
 		) {
 			$this->classes[$className] = $path;
 			
 		} else {
-			throw new \Exception("ClassLoader : File \"{$classPath}\" of class \"{$className}\" not found.");
+			throw new Exception("ClassLoader : File \"{$classPath}\" of class \"{$className}\" not found.");
 		}
 		return true;
 		
