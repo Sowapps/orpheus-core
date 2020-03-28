@@ -87,11 +87,11 @@ class ClassLoader {
 			// Pure object naming with only lib name and exact class name
 			existsPathOf(SRC_PATH . $classPath . '/' . $className . '.php', $path) ||
 			// Pure object naming
-			existsPathOf(SRC_PATH . $classPath . '.php', $path) ||
+			existsPathOf(SRC_PATH . '/' . $classPath . '.php', $path) ||
 			// Old Orpheus naming
-			existsPathOf(SRC_PATH . $classPath . '_class.php', $path) ||
+			existsPathOf(SRC_PATH . '/' . $classPath . '_class.php', $path) ||
 			// Full path
-			existsPathOf(SRC_PATH . $classPath, $path)
+			existsPathOf(SRC_PATH . '/' . $classPath, $path)
 		) {
 			$this->classes[$className] = $path;
 			
