@@ -8,6 +8,7 @@ namespace Orpheus\Config;
 use Exception;
 use Orpheus\Cache\CacheException;
 use Orpheus\Cache\FSCache;
+use stdClass;
 
 /**
  * The config core class
@@ -47,7 +48,7 @@ abstract class Config {
 	 * The magic function to get config
 	 *
 	 * @param string $key The key to get the value.
-	 * @return string A config value.
+	 * @return string|stdClass A config value.
 	 *
 	 * Return the configuration item with key $key.
 	 * Except for:
@@ -176,7 +177,7 @@ abstract class Config {
 	 */
 	public static function buildFrom($package, $source, $cached = true, $silent = false) {
 		if( get_called_class() === get_class() ) {
-			throw new \Exception('Use a subclass of ' . get_class() . ' to build your configuration');
+			throw new Exception('Use a subclass of ' . get_class() . ' to build your configuration');
 		}
 		$newConf = new static();
 		if( $silent && !$newConf->hasSource($source, $package) ) {
@@ -216,7 +217,7 @@ abstract class Config {
 			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
 				$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app') . '-config';
 				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \
-				$cache = new \Orpheus\Cache\FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
+				$cache = new FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
 				$parsed = null;
 				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
 					$parsed = static::parse($path);
@@ -243,8 +244,7 @@ abstract class Config {
 	 *
 	 * @param string $path The path to the config file
 	 * @return mixed The loaded configuration array
-	 *
-	 * Before 25/03/2017, was taking $source in parameter, now taking a path
+	 * @throws Exception
 	 */
 	public static function parse($path) {
 		throw new Exception('The class "' . get_called_class() . '" should override the `parse()` static method from "' . get_class() . '"');
@@ -253,7 +253,7 @@ abstract class Config {
 	/**
 	 * Add configuration to this object
 	 *
-	 * @param $conf The configuration array to add to the current object.
+	 * @param array $conf The configuration array to add to the current object.
 	 *
 	 * Add the configuration array $conf to this configuration.
 	 */
@@ -265,15 +265,14 @@ abstract class Config {
 	}
 	
 	/**
-	 * Build new configuration source
+	 * Build a configuration from $source using load() method.
+	 * If it is not a minor configuration, that new configuration is added to the main configuration.
 	 *
 	 * @param string $source An identifier to build the source
 	 * @param boolean $minor True if this is a minor configuration
 	 * @param boolean $cached True if this configuration should be cached
 	 * @return Config
-	 *
-	 * Build a configuration from $source using load() method.
-	 * If it is not a minor configuration, that new configuration is added to the main configuration.
+	 * @throws Exception
 	 */
 	public static function build($source, $minor = false, $cached = true) {
 		if( get_called_class() === get_class() ) {
@@ -345,11 +344,11 @@ abstract class Config {
 	
 	/**
 	 * Set configuration to the main configuration object
-	 *
-	 * @param string $key The key to set the value.
-	 * @param mixed $value The new config value.
-	 *
 	 * Call __set() method to main configuration object.
+	 *
+	 * @param string $key The key to set the value
+	 * @param mixed $value The new config value
+	 * @throws Exception
 	 */
 	public static function set($key, $value) {
 		if( !isset(static::$main) ) {
@@ -362,6 +361,7 @@ abstract class Config {
 	 * Add a repository library to load configs
 	 *
 	 * @param string $library The library folder
+	 * @throws Exception
 	 */
 	public static function addRepositoryLibrary($library) {
 		static::addRepository(pathOf(LIBSDIR . $library) . CONFDIR);
