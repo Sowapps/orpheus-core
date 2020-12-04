@@ -182,10 +182,10 @@ function toString($s) {
 /**
  * Format the input Exception to a human-readable string
  *
- * @param Exception $e
+ * @param Throwable $e
  * @return string
  */
-function formatException(Exception $e) {
+function formatException(Throwable $e) {
 	return 'Exception \'' . get_class($e) . '\' with ' . ($e->getMessage() ? " message '{$e->getMessage()}'" : 'no message')
 		. ' in ' . $e->getFile() . ':' . $e->getLine() . "\n<pre>" . $e->getTraceAsString() . '</pre>';
 }
@@ -1340,7 +1340,10 @@ function htmlCheckBox(string $fieldPath, $value = null, $default = false, $addAt
 	fillInputValue($selected, $fieldPath, $default, true);
 	return '<input type="checkbox" name="' . apath_html($fieldPath) . ($value !== null ? '[]' : '') . '"' . (
 		(
-			($selected === true) || // Single value => TRUE
+			($selected === 'on') || // Single checkbox & default html value
+			($selected === '1') || // Single checkbox & default db value
+			($selected === true) || // Default is true
+			($selected === $value) || // Single checkbox & custom value
 			($value !== null && is_array($selected) && in_array($value, $selected)) // Value is in array
 		) ? ' checked' : '') . ($value !== null ? ' value="' . $value . '"' : '') . ' ' . $addAttr . htmlDisabledAttr() . '/>';
 }
@@ -1624,7 +1627,7 @@ function dt($time = TIME, $utc = false) {
  * Datetime format is storing a specific moment, we care about timezone
  */
 function df($format, $time = TIME, $tz = null) {
-	if( $time === null ) {
+	if( $time === null || $time === '' ) {
 		return '';
 	}
 	if( $tz === false ) {
