@@ -82,32 +82,21 @@ define('DATE_FORMAT_GNU', 1);
  *
  * @param string $date The date to check.
  * @param boolean $withTime True to use datetime format, optional. Default value is false.
- * @param integer $time The output timestamp of the data, optional.
+ * @param DateTime $dateTime The output timestamp of the data, optional.
  * @param int $format The date format to check, see constants DATE_FORMAT_*
  * @return boolean True if $date si a valid date.
  *
  * The date have to be well formatted and valid.
  * The FR date format is DD/MM/YYYY and time format is HH:MM:SS
  * Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
- * Fill missing informations with 0.
+ * Fill missing information with 0.
  */
-function is_date($date, $withTime = false, &$time = false, $format = null) {
-	/* @var DateTime $dateTime */
-	if( !$format ) {
-		$time = strtotime($date);
-		if( $time !== false ) {
-			return true;
-		}
-		$format = DATE_FORMAT_LOCALE;
-	}
+function is_date($date, $withTime = false, &$dateTime = false, $format = null) {
 	// SQL USES GNU
 	if( $format === DATE_FORMAT_GNU ) {
 		$dateTime = DateTime::createFromFormat($withTime ? 'Y-m-d H:i:s' : 'Y-m-d|', $date);
 	} else {
 		$dateTime = DateTime::createFromFormat(t($withTime ? 'datetimeFromFormat' : 'dateFromFormat'), $date);
-	}
-	if( $dateTime ) {
-		$time = $dateTime->getTimestamp();
 	}
 	return !!$dateTime;
 }
@@ -124,7 +113,6 @@ function is_date($date, $withTime = false, &$time = false, $format = null) {
  */
 function is_time($time, &$matches = null) {
 	$format = hasTranslation('timeFormat') ? t('timeFormat') : '%H:%M';
-	//(?:[0-1][0-9]|2[0-3]):[0-5][0-9]
 	return preg_match(timeFormatToRegex($format), $time, $matches);
 }
 
