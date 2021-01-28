@@ -1068,7 +1068,7 @@ function htmlSelect(string $name, array $values, $data = null, $selected = null,
  * The label is prefixed with $prefix and translated using t(). This function allows bi-dimensional arrays in $values, used as option group.
  *
  * @param string $fieldPath The name path to the field.
- * @param array $values The values to build the dropdown menu.
+ * @param Traversable $values The values to build the dropdown menu.
  * @param string|null $default The default selected value. Default value is null (no selection).
  * @param int|null $matches Define the associativity between array and option values. Default value is OPT_VALUE2LABEL (as null).
  * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
@@ -1076,7 +1076,7 @@ function htmlSelect(string $name, array $values, $data = null, $selected = null,
  * @return string A HTML source for the built SELECT tag.
  * @see htmlOption()
  */
-function htmlOptions(string $fieldPath, array $values, $default = null, $matches = null, $prefix = '', $domain = 'global') {
+function htmlOptions(string $fieldPath, $values, $default = null, $matches = null, $prefix = '', $domain = 'global') {
 	if( $matches === null ) {
 		$matches = OPT_VALUE2LABEL;
 	}
@@ -1492,6 +1492,7 @@ function convertSpecialChars($string) {
  * @param string $string The string to convert.
  * @param int $case The case style to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
  * @return string The slug version.
+ * @deprecated Use SlugGenerator
  *
  * Convert string to lower case and converts all special characters.
  */
@@ -1513,6 +1514,7 @@ function toSlug($string, $case = null) {
  * @param string $string The string to convert.
  * @param int $case The case style flag to use, values: null (default), LOWERCAMELCASE or UPPERCAMELCASE.
  * @return string The slug version.
+ * @deprecated Use SlugGenerator
  *
  * Convert string to lower case and converts all special characters.
  */
