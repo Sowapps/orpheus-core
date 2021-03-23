@@ -1018,7 +1018,7 @@ function htmlValue($name, $data = null, $default = '') {
  * Generate the HTML source for a select tag
  *
  * @param string $name The name of the field.
- * @param array $values The values to build the dropdown menu.
+ * @param Traversable|array $values The values to build the dropdown menu.
  * @param array|null $data The array of data where to look for. Default value is $formData (if exist) or $_POST
  * @param string|null $selected The selected value from the data. Default value is null (no selection).
  * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
@@ -1068,7 +1068,7 @@ function htmlSelect(string $name, array $values, $data = null, $selected = null,
  * The label is prefixed with $prefix and translated using t(). This function allows bi-dimensional arrays in $values, used as option group.
  *
  * @param string $fieldPath The name path to the field.
- * @param Traversable $values The values to build the dropdown menu.
+ * @param Traversable|array $values The values to build the dropdown menu.
  * @param string|null $default The default selected value. Default value is null (no selection).
  * @param int|null $matches Define the associativity between array and option values. Default value is OPT_VALUE2LABEL (as null).
  * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
