@@ -129,13 +129,11 @@ abstract class Config {
 	
 	/**
 	 * Get the file path
+	 * Get the configuration file path in CONFDIR.
 	 *
 	 * @param string $source An identifier to get the source.
 	 * @param string $package The package to get file path (null to get app file path). Default is null
 	 * @return string The configuration file path, this file exists or an exception is thrown.
-	 * @exception \Exception if file is not found
-	 *
-	 * Get the configuration file path in CONFDIR.
 	 * @throws Exception
 	 */
 	public static function getFilePath($source, $package = null) {
@@ -331,9 +329,7 @@ abstract class Config {
 	 *
 	 * @param string $key The key to get the value.
 	 * @param mixed $default The default value to use.
-	 * @return string A config value.
-	 *
-	 * Calls __get() method from main configuration object.
+	 * @return mixed A config value.
 	 */
 	public static function get($key, $default = null) {
 		if( !isset(static::$main) ) {
