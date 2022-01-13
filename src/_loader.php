@@ -18,4 +18,3 @@ defifn('DOMAIN_LOGS', 'logs');
 require_once 'core.php';
 require_once 'hooks.php';
 require_once 'validators.php';
-require_once 'exceptions.php';
