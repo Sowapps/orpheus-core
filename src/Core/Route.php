@@ -6,6 +6,8 @@
 namespace Orpheus\Core;
 
 use Exception;
+use Orpheus\InputController\ControllerRoute;
+use RuntimeException;
 
 /**
  * Official Route for Orpheus
@@ -69,7 +71,7 @@ abstract class Route {
 	public static function setResolver(string $class) {
 		if( !method_exists($class, 'getRoute') ) {
 			// Check getCurrentRoute
-			throw new Exception('The route resolver class ' . $class . ' does not implement the getRoute() method');
+			throw new RuntimeException('The route resolver class ' . $class . ' does not implement the getRoute() method');
 		}
 		static::$resolverClass = $class;
 	}
@@ -85,7 +87,7 @@ abstract class Route {
 		if( !static::$resolverClass ) {
 			throw new Exception('We did not find any route resolver');
 		}
-		/** @var \Orpheus\InputController\ControllerRoute $class */
+		/** @var ControllerRoute $class */
 		$class = static::$resolverClass;
 		
 		return $class::getRoute($name);
@@ -101,7 +103,7 @@ abstract class Route {
 		if( !static::$resolverClass ) {
 			throw new Exception('We did not find any route resolver');
 		}
-		/** @var \Orpheus\InputController\ControllerRoute $class */
+		/** @var ControllerRoute $class */
 		$class = static::$resolverClass;
 		
 		return $class::getCurrentRouteName();
