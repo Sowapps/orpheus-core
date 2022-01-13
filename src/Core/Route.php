@@ -6,8 +6,6 @@
 namespace Orpheus\Core;
 
 use Exception;
-use Orpheus\InputController\ControllerRoute;
-use RuntimeException;
 
 /**
  * Official Route for Orpheus
@@ -20,33 +18,33 @@ use RuntimeException;
 abstract class Route {
 	
 	/**
-	 * Class of the resolver
-	 *
-	 * @var string
-	 */
-	protected static ?string $resolverClass = null;
-	
-	/**
 	 * Test if the route is accessible in the current context using restrictTo
 	 * This method is sensitive to CHECK_MODULE_ACCESS constant, a true value make it always accessible, never use it in production
 	 *
 	 * @return boolean
 	 */
-	public abstract function isAccessible(): bool;
+	public abstract function isAccessible();
 	
 	/**
 	 * Get the link to this route
 	 *
 	 * @return boolean
 	 */
-	public abstract function getLink(): bool;
+	public abstract function getLink();
 	
 	/**
 	 * Get the name
 	 *
 	 * @return string
 	 */
-	public abstract function getName(): string;
+	public abstract function getName();
+	
+	/**
+	 * Class of the resolver
+	 *
+	 * @var string
+	 */
+	//	protected static $resolverClass;
 	// We kept a string to get it lighter, there is no need of more feature for that
 	
 	/**
@@ -57,41 +55,41 @@ abstract class Route {
 	 *
 	 * The difference with setResolver() is that only set if there is no current value
 	 */
-	public static function suggestResolver(string $class) {
-		if( !static::$resolverClass ) {
-			static::setResolver($class);
-		}
-	}
+	//	public static function suggestResolver($class) {
+	//		if( !static::$resolverClass ) {
+	//			static::setResolver($class);
+	//		}
+	//	}
 	
 	/**
 	 * Set the resolver class
 	 *
 	 * @param string $class
 	 */
-	public static function setResolver(string $class) {
-		if( !method_exists($class, 'getRoute') ) {
-			// Check getCurrentRoute
-			throw new RuntimeException('The route resolver class ' . $class . ' does not implement the getRoute() method');
-		}
-		static::$resolverClass = $class;
-	}
+	//	public static function setResolver(string $class) {
+	//		/** @var static $class */
+	//		if( !method_exists($class, 'getRoute') ) {
+	//			// Check getCurrentRoute
+	//			throw new Exception('The route resolver class '.$class.' does not implement the getRoute() method');
+	//		}
+	//		static::$resolverClass = $class;
+	//	}
 	
 	/**
 	 * Get Route object for this name
 	 *
 	 * @param string $name
-	 * @return Route|null
+	 * @return Route
 	 * @throws Exception
 	 */
-	public static function getRoute(string $name): ?Route {
-		if( !static::$resolverClass ) {
-			throw new Exception('We did not find any route resolver');
-		}
-		/** @var ControllerRoute $class */
-		$class = static::$resolverClass;
-		
-		return $class::getRoute($name);
-	}
+	//	public static function getRoute($name): Route {
+	//		if( !static::$resolverClass ) {
+	//			throw new Exception('We did not find any route resolver');
+	//		}
+	//		/** @var static $class */
+	//		$class = static::$resolverClass;
+	//		return $class::getRoute($name);
+	//	}
 	
 	/**
 	 * Get the current main route name
@@ -99,15 +97,13 @@ abstract class Route {
 	 * @return string
 	 * @throws Exception
 	 */
-	public static function getCurrentRouteName(): string {
-		if( !static::$resolverClass ) {
-			throw new Exception('We did not find any route resolver');
-		}
-		/** @var ControllerRoute $class */
-		$class = static::$resolverClass;
-		
-		return $class::getCurrentRouteName();
-	}
+	//	public static function getCurrentRouteName(): string {
+	//		if( !static::$resolverClass ) {
+	//			throw new Exception('We did not find any route resolver');
+	//		}
+	//		$class = static::$resolverClass;
+	//		return $class::getCurrentRouteName();
+	//	}
 	
 }
 

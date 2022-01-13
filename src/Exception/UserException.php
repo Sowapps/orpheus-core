@@ -46,7 +46,7 @@ class UserException extends RuntimeException {
 	 *
 	 * @return string
 	 */
-	public function getDomain(): string {
+	public function getDomain(): ?string {
 		return $this->domain;
 	}
 	

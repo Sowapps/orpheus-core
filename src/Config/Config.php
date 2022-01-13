@@ -119,7 +119,7 @@ abstract class Config {
 	 * @return boolean True if source is available
 	 * @deprecated Prefer #hasSource()
 	 */
-	public function checkSource($source) {
+	public function checkSource($source): bool {
 		try {
 			return !!static::getFilePath($source);
 		} catch( Exception $e ) {
@@ -134,6 +134,7 @@ abstract class Config {
 	 * @param string $source An identifier to get the source.
 	 * @param string $package The package to get file path (null to get app file path). Default is null
 	 * @return string The configuration file path, this file exists or an exception is thrown.
+	 * @exception Exception if file is not found
 	 * @throws Exception
 	 */
 	public static function getFilePath($source, $package = null) {

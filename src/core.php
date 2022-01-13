@@ -119,6 +119,7 @@ function cleanscandir(string $dir, $sortingOrder = false) {
 	if( $sortingOrder ) {
 		rsort($result);
 	}
+	
 	return $result;
 }
 
@@ -134,6 +135,7 @@ function stringify($s) {
 	} else {
 		$s = "\n" . print_r($s, 1);
 	}
+	
 	return $s;
 }
 
@@ -154,6 +156,7 @@ function toHtml($s) {
 	} elseif( !is_scalar($s) ) {
 		$s = '<pre>' . print_r($s, 1) . '</pre>';
 	}
+	
 	return $s;
 }
 
@@ -176,6 +179,7 @@ function toString($s) {
 	} elseif( !is_scalar($s) ) {
 		$s = print_r($s, 1);
 	}
+	
 	return $s;
 }
 
@@ -212,6 +216,7 @@ function getDebugTrace(?string $filterStartWith = null) {
 			}
 		}
 	}
+	
 	return array_values($backtrace);
 }
 
@@ -351,6 +356,7 @@ function escapeQuotes($str, $flags = ESCAPE_ALLQUOTES) {
 		$in[] = '"';
 		$out[] = $toHTML ? '&quot;' : '\\"';
 	}
+	
 	return str_replace($in, $out, $str);
 }
 
@@ -395,6 +401,7 @@ function htmlFormATtr($var) {
 	if( defined('ENT_HTML5') ) {
 		$flags |= ENT_HTML5;
 	}
+	
 	return htmlentities($var, $flags, 'UTF-8', false);
 }
 
@@ -436,6 +443,7 @@ function parseFields(array $fields, string $quote = '"') {
 	foreach( $fields as $key => $value ) {
 		$list .= (!empty($list) ? ', ' : '') . $quote . $key . $quote . '=' . $value;
 	}
+	
 	return $list;
 }
 
@@ -464,6 +472,7 @@ function apath_get($array, string $apath, $default = null, $pathRequired = false
 		// Else container exists, but element not found.
 		return ($pathRequired && $suffix !== null) ? null : $default;
 	}
+	
 	return ($suffix === null || $suffix === '') ? $array[$key] : apath_get($array[$key], $suffix);
 }
 
@@ -489,6 +498,7 @@ function apath_setp(&$array, $apath, $value, $overwrite = true) {
 		if( $overwrite === true || !isset($array[$key]) ) {
 			$array[$key] = $value;
 		}
+		
 		return;
 	}
 	// The path continues
@@ -521,6 +531,7 @@ function build_apath($array, $prefix = '') {
 			$r[$prefix . $key] = $value;
 		}
 	}
+	
 	return $r;
 }
 
@@ -549,6 +560,7 @@ function using($pkgPath) {
 				require_once $dir . '/' . $file;
 			}
 		}
+		
 		return;
 	}
 	// Including loader of a package
@@ -557,6 +569,7 @@ function using($pkgPath) {
 		if( file_exists($path . '/_loader.php') ) {
 			require_once $path . '/_loader.php';
 		}
+		
 		return;
 	}
 	// Including a class
@@ -624,6 +637,7 @@ function transferReportStream($from = null, $to = 'global') {
 		$REPORTS[$to] = isset($REPORTS[$to]) ? array_merge_recursive($REPORTS[$to], $REPORTS[$from]) : $REPORTS[$from];
 		unset($REPORTS[$from]);
 	}
+	
 	return true;
 }
 
@@ -664,6 +678,7 @@ function addReport($report, $type, $domain = 'global', $code = null, $severity =
 	}
 	$report = t($report, $domain);// Added recently, require tests
 	$REPORTS[$REPORT_STREAM][$type][] = ['code' => $code, 'report' => $report, 'domain' => $domain, 'severity' => $severity];
+	
 	return true;
 }
 
@@ -720,15 +735,14 @@ function reportWarning($report, $domain = null): bool {
  * @see addReport()
  * Adds the report $message to the list of reports for this type 'error'.
  */
-function reportError($report, $domain = null, $severity = 1): bool {
+function reportError($report, ?string $domain = null, int $severity = 1): bool {
 	$code = null;
 	if( $report instanceof UserException ) {
 		$code = $report->getMessage();
-		if( $domain === null ) {
-			$domain = $report->getDomain();
-		}
+		$domain ??= $report->getDomain();
 	}
-	return addReport($report, 'error', $domain === null ? 'global' : $domain, $code, $severity);
+	
+	return addReport($report, 'error', $domain ?? 'global', $code, $severity);
 }
 
 /**
@@ -746,6 +760,7 @@ function hasErrorReports(): bool {
 			return true;
 		}
 	}
+	
 	return false;
 }
 
@@ -801,6 +816,7 @@ function getReports($stream = 'global', $type = null, $delete = true) {
 		if( $delete ) {
 			unset($REPORTS[$stream][$type]);
 		}
+		
 		return [$type => $r];
 	}
 	// All types
@@ -808,6 +824,7 @@ function getReports($stream = 'global', $type = null, $delete = true) {
 	if( $delete ) {
 		$REPORTS[$stream] = [];
 	}
+	
 	return $r;
 }
 
@@ -830,6 +847,7 @@ function getFlatReports($stream = 'global', $type = null, $delete = true) {
 			$reports[] = $report;
 		}
 	}
+	
 	return $reports;
 }
 
@@ -859,6 +877,7 @@ function getReportsHTML($stream = 'global', $rejected = [], $delete = true) {
 			}
 		}
 	}
+	
 	return $reportHTML;
 }
 
@@ -931,6 +950,7 @@ function hasPOSTKey($path = null, &$value = null) {
 		return false;
 	}
 	$value = key($v);
+	
 	return true;
 }
 
@@ -1011,6 +1031,7 @@ function extractFrom($path, $array) {
 function htmlValue($name, $data = null, $default = '') {
 	fillFormData($data);
 	$v = apath_get($data, $name, $default);
+	
 	return !empty($v) ? " value=\"{$v}\"" : '';
 }
 
@@ -1053,6 +1074,7 @@ function htmlSelect(string $name, array $values, $data = null, $selected = null,
 		$opts .= '
 	<option value="' . $dataValue . '" ' . (($dataValue == $selected) ? 'selected="selected"' : '') . ' ' . $addAttr . '>' . t($prefix . $key, $domain) . '</option>';
 	}
+	
 	return "
 	<select {$tagAttr}>{$opts}
 	</select>";
@@ -1105,6 +1127,7 @@ function htmlOptions(string $fieldPath, $values, $default = null, $matches = nul
 		}
 		$opts .= htmlOption($optValue, t($prefix . $optLabel, $domain), is_array($selValue) ? in_array("$optValue", $selValue) : "$selValue" === "$optValue", $addAttr);
 	}
+	
 	return $opts;
 }
 
@@ -1146,6 +1169,7 @@ function htmlOption($elValue, $label = null, $selected = false, $addAttr = '') {
 	if( !$label ) {
 		$label = $elValue;
 	}
+	
 	return '<option ' . valueField($elValue) . ($selected ? ' selected="selected"' : '') . ' ' . $addAttr . '>' . $label . '</option>';
 }
 
@@ -1159,6 +1183,7 @@ $FORM_EDITABLE = true;
  */
 function htmlDisabledAttr() {
 	global $FORM_EDITABLE;
+	
 	return $FORM_EDITABLE ? '' : ' disabled';
 }
 
@@ -1194,6 +1219,7 @@ function _formInput($fieldPath, $default = null) {
 function valueOf(string $fieldPath, $default = null) {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
+	
 	return $value != null ? $value : '';
 }
 
@@ -1207,6 +1233,7 @@ function valueOf(string $fieldPath, $default = null) {
 function inputValue(string $fieldPath, $default = null) {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
+	
 	return $value != null ? valueField($value) : '';
 }
 
@@ -1266,6 +1293,7 @@ function htmlPassword(string $fieldPath, $addAttr = '') {
 function htmlText(string $fieldPath, $default = null, $addAttr = '', $formatter = null, $type = 'text') {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
+	
 	return '<input type="' . $type . '" name="' . apath_html($fieldPath) . '" ' . valueField(isset($value) ? isset($formatter) ? call_user_func($formatter, $value) : $value : '') . ' ' . $addAttr . htmlDisabledAttr() . '/>';
 }
 
@@ -1292,6 +1320,7 @@ function _htmlText($fieldPath, $default = null, $addAttr = '', $formatter = null
 function htmlTextArea(string $fieldPath, $default = null, $addAttr = '') {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
+	
 	return '<textarea name="' . apath_html($fieldPath) . '" ' . $addAttr . htmlDisabledAttr() . '>' . $value . '</textarea>';
 }
 
@@ -1306,6 +1335,7 @@ function htmlTextArea(string $fieldPath, $default = null, $addAttr = '') {
 function htmlHidden(string $fieldPath, $default = null, $addAttr = '') {
 	$value = null;
 	fillInputValue($value, $fieldPath, $default);
+	
 	return '<input type="hidden" name="' . apath_html($fieldPath) . '" ' . (isset($value) ? valueField($value) . ' ' : '') . $addAttr . htmlDisabledAttr() . '/>';
 }
 
@@ -1321,6 +1351,7 @@ function htmlHidden(string $fieldPath, $default = null, $addAttr = '') {
 function htmlRadio(string $fieldPath, $elValue, $default = false, $addAttr = '') {
 	$value = null;
 	$selected = fillInputValue($value, $fieldPath) ? $value == $elValue : $default;
+	
 	return '<input type="radio" name="' . apath_html($fieldPath) . '" ' . valueField($elValue) . ' ' . ($selected ? 'checked="checked"' : '') . ' ' . $addAttr . htmlDisabledAttr() . '/>';
 }
 
@@ -1338,6 +1369,7 @@ function htmlCheckBox(string $fieldPath, $value = null, $default = false, $addAt
 	// 			If Value found,	we consider this one, else we use default
 	$selected = false;
 	fillInputValue($selected, $fieldPath, $default, true);
+	
 	return '<input type="checkbox" name="' . apath_html($fieldPath) . ($value !== null ? '[]' : '') . '"' . (
 		(
 			($selected === 'on') || // Single checkbox & default html value
@@ -1362,6 +1394,7 @@ function apath_html($path) {
 	foreach( $path as $index => $pathPart ) {
 		$htmlName .= ($index) ? '[' . $pathPart . ']' : $pathPart;
 	}
+	
 	return $htmlName;
 }
 
@@ -1410,6 +1443,7 @@ function fillInputValue(&$value, $fieldPath, $default = null, $pathRequired = fa
 	if( $value === null ) {
 		$value = $default;
 	}
+	
 	return $value !== null;
 }
 
@@ -1483,6 +1517,7 @@ function convertSpecialChars($string) {
 	//'','','','','','',''), $string);
 	// Now replaces all other special character by nothing.
 	$string = preg_replace('#[^a-z0-9\-\_\.]#i', '', $string);
+	
 	return $string;
 }
 
@@ -1505,6 +1540,7 @@ function toSlug($string, $case = null) {
 			}
 		}
 	}
+	
 	return convertSpecialChars($string);
 }
 
@@ -1531,6 +1567,7 @@ function slug($string, $case = null) {
 			}
 		}
 	}
+	
 	return convertSpecialChars($string);
 }
 
@@ -1577,6 +1614,7 @@ function explodeList($delimiter, $string, $limit, $default = null) {
 function hashString($str) {
 	//http://www.php.net/manual/en/faq.passwords.php
 	$salt = defined('USER_SALT') ? USER_SALT : '1$@g&';
+	
 	return hash('sha512', $salt . $str . '7');
 }
 
@@ -1644,6 +1682,7 @@ function df($format, $time = TIME, $tz = null) {
 	if( isset($ctz) ) {
 		date_default_timezone_set($ctz);
 	}
+	
 	return $r;
 }
 
@@ -1662,6 +1701,7 @@ function dateToTime($date) {
 	if( $date instanceof DateTime ) {
 		return $date->getTimestamp();
 	}
+	
 	return strtotime($date . ' GMT');
 }
 
@@ -1680,6 +1720,7 @@ function ft($time = null) {
 		return $time;
 	}
 	$times = parseTime(SYSTEM_TIME_FORMAT);
+	
 	return strftime($userFormat, mktime($times[1], $times[2]));
 }
 
@@ -1709,6 +1750,7 @@ function parseTime($time, $format = SYSTEM_TIME_FORMAT) {
 		throw new Exception('invalidTimeParameter');
 	}
 	array_shift($matches);
+	
 	return $matches;
 }
 
@@ -1724,6 +1766,7 @@ function sqlDate($time = TIME) {
 	if( $time instanceof DateTime ) {
 		return $time->format('Y-m-d');
 	}
+	
 	return strftime('%Y-%m-%d', $time);
 }
 
@@ -1742,6 +1785,7 @@ function sqlDatetime($time = TIME) {
 	if( $time instanceof DateTime ) {
 		return $time->format('Y-m-d H:i:s');
 	}
+	
 	return gmstrftime('%Y-%m-%d %H:%M:%S', $time);
 }
 
@@ -1759,6 +1803,7 @@ function clientIp() {
 		return explode(' ', $_SERVER['SSH_CLIENT'], 2)[0];
 		// else [SSH_CONNECTION] => REMOTE_IP REMOTE_PORT LOCAL_IP LOCAL_PORT
 	}
+	
 	return '127.0.0.1';
 }
 
@@ -1769,6 +1814,7 @@ function clientIp() {
  */
 function userID() {
 	global $USER;
+	
 	return !empty($USER) ? $USER->id() : 0;
 }
 
@@ -1789,6 +1835,7 @@ function generatePassword($length = 10, $chars = 'abcdefghijklmnopqrstuvwxyz0123
 		$c = $chars[mt_rand(0, $max)];
 		$r .= mt_rand(0, 1) ? strtoupper($c) : $c;
 	}
+	
 	return $r;
 }
 
@@ -1808,6 +1855,7 @@ function generateRandomString($length = 64, $keyspace = '0123456789abcdefghijklm
 	for( $i = 0; $i < $length; ++$i ) {
 		$string .= $keyspace[mt_rand(0, $max)];
 	}
+	
 	return $string;
 }
 
@@ -1824,6 +1872,7 @@ function dayTime($time = null, $gmt = true) {
 	if( $time === null ) {
 		$time = time();
 	}
+	
 	return $time - $time % 86400 - ($gmt ? date('Z') : 0);
 }
 
@@ -1841,6 +1890,7 @@ function monthTime($day = 1, $time = null) {
 	if( $time === null ) {
 		$time = time();
 	}
+	
 	return dayTime($time - (date('j', $time) - $day) * 86400);
 }
 
@@ -1865,6 +1915,7 @@ function standardizePhoneNumber_FR($number, $delimiter = '.', $limit = 2) {
 	for( $i = strlen($number) - $limit; $i > 3 || ($number[0] != '+' && $i > ($limit - 1)); $i -= $limit ) {
 		$n = $delimiter . substr($number, $i, $limit) . $n;
 	}
+	
 	return substr($number, 0, $i + 2) . $n;
 }
 
@@ -1893,6 +1944,7 @@ function formatDuration_Shortest($duration) {
 			break;
 		}
 	}
+	
 	return t($unit . '_short', 'global', intval($r));
 }
 
@@ -1917,6 +1969,7 @@ function getMimeType($filePath) {
 	if( function_exists('finfo_open') ) {
 		return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filePath);
 	}
+	
 	return mime_content_type($filePath);
 }
 
@@ -1966,6 +2019,7 @@ function array_filterbykeys($array, $keys) {
 			$r[$key] = $array[$key];
 		}
 	}
+	
 	return $r;
 }
 
@@ -2001,6 +2055,7 @@ function array_last($array) {
  */
 function array_get($array, $index, $default = false) {
 	$array = array_values($array);
+	
 	return isset($array[$index]) ? $array[$index] : $default;
 }
 
@@ -2015,6 +2070,7 @@ function array_get($array, $index, $default = false) {
  */
 function array_apply($array, $callback, $userdata = null, &$success = null) {
 	$success = array_walk($array, $callback, $userdata);
+	
 	return $array;
 }
 
@@ -2107,6 +2163,7 @@ function deleteCookie($name) {
 	}
 	unset($_COOKIE[$name]);
 	setcookie($name, '', 1, '/');
+	
 	return true;
 }
 
@@ -2254,6 +2311,7 @@ function parseHumanSize($size, $forceBinaryStep = false) {
 		}
 		$value *= pow($step, $unitIndex + 1);
 	}
+	
 	return $value;
 }
 
@@ -2279,5 +2337,6 @@ function formatHumanSize($value, $step = 1000, $useDecimalUnit = true, $allowMax
 		$value /= $step;
 		$valueUnit = $unit;
 	}
+	
 	return sprintf($format, (($value > 999 || !is_float($value)) ? formatInt($value) : formatDouble($value)), $valueUnit);
 }
