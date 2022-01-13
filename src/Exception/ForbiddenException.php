@@ -1,6 +1,6 @@
 <?php
 /**
- * Multiple UserException classes
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\Exception;
