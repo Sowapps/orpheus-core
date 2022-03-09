@@ -127,7 +127,7 @@ abstract class Config {
 		$configFile = '/' . $source . '.' . static::$extension;
 		$path = null;
 		if( $package ) {
-			$path = VENDOR_PATH . $package . CONFIG_FOLDER . $configFile;
+			$path = VENDOR_PATH . '/' . $package . CONFIG_FOLDER . $configFile;
 		} else {
 			foreach( static::$repositories as $repos ) {
 				if( is_readable($repos . $configFile) ) {
