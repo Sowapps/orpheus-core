@@ -3,7 +3,7 @@
  * Loader File for the core sources
  */
 
-if( !defined('ORPHEUSPATH') ) {
+if( !defined('ORPHEUS_PATH') ) {
 	// Do not load in a non-orpheus environment
 	return;
 }

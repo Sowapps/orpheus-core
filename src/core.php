@@ -225,7 +225,7 @@ function getDebugTrace(?string $filterStartWith = null) {
  *
  * Log an error in a file serializing data to JSON.
  * Each line of the file is a JSON string of the reports.
- * The log folder is the constant LOGSPATH.
+ * The log folder is the constant LOGS_PATH.
  * Take care of this behavior:
  *    If message is NULL, it won't display any report
  *    Else if DEV_VERSION, displays report
@@ -256,7 +256,7 @@ function log_report($report, $file, $action = '', $message = '') {
 		'trace'  => isset($exception) ? $exception->getTrace() : getDebugTrace('log'),
 		'crc32'  => crc32(isset($exception) ? formatException($exception) : $report) . '',
 	];
-	$logFilePath = LOGSPATH . $file;
+	$logFilePath = LOGS_PATH . $file;
 	try {
 		file_put_contents($logFilePath, json_encode($error) . "\n", FILE_APPEND);
 	} catch( Exception $e ) {
@@ -549,7 +549,7 @@ function build_apath($array, $prefix = '') {
  * Class files should be named classname_class.php
  */
 function using($pkgPath) {
-	$pkgPath = LIBSDIR . str_replace('.', '/', $pkgPath);
+	$pkgPath = LIBRARY_FOLDER . str_replace('.', '/', $pkgPath);
 	$lowerPath = strtolower($pkgPath);
 	// Including all contents of a package
 	if( substr($lowerPath, -2) == '.*' ) {
@@ -2227,7 +2227,7 @@ function startSession($type = SESSION_WITH_COOKIE) {
 		// reset in all cases
 		$initSession();
 		if( $movedAction === 'home' ) {
-			redirectTo(DEFAULTLINK);
+			redirectTo(WEB_ROOT);
 		} elseif( $movedAction === 'exception' ) {
 			throw new UserException('movedSession');
 		}

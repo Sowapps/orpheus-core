@@ -25,7 +25,7 @@ class IniConfig extends Config {
 	 * @param string $path The path to the config file
 	 * @return mixed The loaded configuration array
 	 *
-	 * If an identifier, loads a configuration from a .ini file in CONFDIR.
+	 * If an identifier, loads a configuration from a .ini file in CONFIG_FOLDER.
 	 * Else $source is a full path to the ini configuration file.
 	 */
 	public static function parse($path) {

@@ -77,13 +77,13 @@ class ClassLoader {
 		$path = null;
 		if(
 			// Pure object naming with only lib name and exact class name
-			existsPathOf(LIBSDIR . $classPath . '/' . $className . '.php', $path) ||
+			existsPathOf(LIBRARY_FOLDER . '/' . $classPath . '/' . $className . '.php', $path) ||
 			// Pure object naming
-			existsPathOf(LIBSDIR . $classPath . '.php', $path) ||
+			existsPathOf(LIBRARY_FOLDER . '/' . $classPath . '.php', $path) ||
 			// Old Orpheus naming
-			existsPathOf(LIBSDIR . $classPath . '_class.php', $path) ||
+			existsPathOf(LIBRARY_FOLDER . '/' . $classPath . '_class.php', $path) ||
 			// Full path
-			existsPathOf(LIBSDIR . $classPath, $path) ||
+			existsPathOf(LIBRARY_FOLDER . '/' . $classPath, $path) ||
 			// Pure object naming with only lib name and exact class name
 			existsPathOf(SRC_PATH . $classPath . '/' . $className . '.php', $path) ||
 			// Pure object naming
