@@ -1,8 +1,9 @@
 <?php
 /**
  * The core functions
- *
  * PHP File containing all system functions.
+ *
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 use Orpheus\Config\Config;
@@ -256,7 +257,7 @@ function log_report($report, $file, $action = '', $message = '') {
 		'trace'  => isset($exception) ? $exception->getTrace() : getDebugTrace('log'),
 		'crc32'  => crc32(isset($exception) ? formatException($exception) : $report) . '',
 	];
-	$logFilePath = LOGS_PATH . $file;
+	$logFilePath = LOGS_PATH . '/' . $file;
 	try {
 		file_put_contents($logFilePath, json_encode($error) . "\n", FILE_APPEND);
 	} catch( Exception $e ) {
@@ -2038,7 +2039,7 @@ function array_index($array, $key) {
  * Get the last value of $array
  *
  * @param array $array
- * @return mixed
+ * @return mixed|false
  */
 function array_last($array) {
 	// Copy of array, the pointer is not moved

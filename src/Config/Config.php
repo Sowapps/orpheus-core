@@ -124,10 +124,10 @@ abstract class Config {
 		if( is_readable($source) ) {
 			return $source;
 		}
-		$configFile = $source . '.' . static::$extension;
+		$configFile = '/' . $source . '.' . static::$extension;
 		$path = null;
 		if( $package ) {
-			$path = VENDORPATH . $package . CONFIG_FOLDER . '/' . $configFile;
+			$path = VENDOR_PATH . $package . CONFIG_FOLDER . $configFile;
 		} else {
 			foreach( static::$repositories as $repos ) {
 				if( is_readable($repos . $configFile) ) {
@@ -135,7 +135,7 @@ abstract class Config {
 				}
 			}
 			if( !$path ) {
-				$path = pathOf(CONFIG_FOLDER . '/' . $configFile, true);
+				$path = pathOf(CONFIG_FOLDER . $configFile, true);
 			}
 		}
 		if( !$path || !is_file($path) || !is_readable($path) ) {
@@ -151,14 +151,14 @@ abstract class Config {
 	 * Build a configuration from $source using load() method.
 	 * If it is not a minor configuration, that new configuration is added to the main configuration.
 	 *
-	 * @param string $package The package to include config (null to get app config)
+	 * @param string|null $package The package to include config (null to get app config)
 	 * @param string $source An identifier to build the source
 	 * @param boolean $cached True if this configuration should be cached
 	 * @param boolean $silent True if ignoring config loading issues
 	 * @return Config
 	 * @throws Exception
 	 */
-	public static function buildFrom(string $package, string $source, bool $cached = true, bool $silent = false): ?Config {
+	public static function buildFrom(?string $package, string $source, bool $cached = true, bool $silent = false): ?Config {
 		if( get_called_class() === get_class() ) {
 			throw new Exception('Use a subclass of ' . get_class() . ' to build your configuration');
 		}
@@ -188,12 +188,12 @@ abstract class Config {
 	/**
 	 * Load new configuration from source in package
 	 *
-	 * @param string $package The package to include config (null to get app config)
+	 * @param string|null $package The package to include config (null to get app config)
 	 * @param string $source An identifier to get the source
 	 * @param boolean $cached True if this configuration should be cached
 	 * @return boolean True if this configuration was loaded successfully
 	 */
-	public function loadFrom(string $package, string $source, bool $cached = true): bool {
+	public function loadFrom(?string $package, string $source, bool $cached = true): bool {
 		try {
 			$path = static::getFilePath($source, $package);
 			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
@@ -242,7 +242,7 @@ abstract class Config {
 	 * Add the configuration array $conf to this configuration.
 	 */
 	public function add(?array $config) {
-		if( $config ) {
+		if( !$config ) {
 			return;
 		}
 		$this->config = array_merge($this->config, $config);
