@@ -235,11 +235,11 @@ function getDebugTrace(?string $filterStartWith = null) {
  *
  * @param string|Exception $report The report to log.
  * @param string $file The log file path.
- * @param string $action The action associated to the report. Default value is an empty string.
+ * @param string|null $action The action associated to the report. Default value is an empty string.
  * @param string|bool|null $message The message to display. Default is an empty string. See description for details.
  * @warning This function require a writable log file.
  */
-function log_report($report, $file, $action = '', $message = '') {
+function log_report($report, $file, $action = null, $message = null) {
 	$exception = null;
 	if( !is_scalar($report) ) {
 		if( $report instanceof Throwable ) {
@@ -260,20 +260,21 @@ function log_report($report, $file, $action = '', $message = '') {
 	$logFilePath = LOGS_PATH . '/' . $file;
 	try {
 		file_put_contents($logFilePath, json_encode($error) . "\n", FILE_APPEND);
-	} catch( Exception $e ) {
-		$error['report'] .= "<br />\n<b>And we met an error logging this report:</b><br />\n" . stringify($e);
+	} catch( Throwable $e ) {
+		processException($e, false);
 	}
-	if( DEV_VERSION && $message !== false ) {
-		if( !isset($exception) ) {
-			$exception = new Exception($report);
-		}
-		displayException($exception, $action);
-		die();
-	}
-	if( $message ) {
-		// Fatal
-		die($message !== true ? $message : 'A fatal error occurred');
-	}
+	// Stop showing anything and stopping script
+	//	if( DEV_VERSION && $message !== false ) {
+	//		if( !isset($exception) ) {
+	//			$exception = new Exception($report);
+	//		}
+	//		displayException($exception, $action);
+	//		die();
+	//	}
+	//	if( $message ) {
+	//		// Fatal
+	//		die($message !== true ? $message : 'A fatal error occurred');
+	//	}
 }
 
 /**
