@@ -391,19 +391,28 @@ function text2HTML($text) {
  *
  * @param mixed $var The variable to format
  * @return string The escaped string
- *
- * Escape the text $str from special characters for HTML Attribute usage
+ * @deprecated Use htmlAttribute()
  */
 function htmlFormATtr($var) {
-	if( !is_scalar($var) ) {
-		$var = json_encode($var);
+	return htmlAttribute($var);
+}
+
+/**
+ * Format a string to be a html attribute value
+ *
+ * @param mixed $value The variable to format
+ * @return string The escaped string
+ */
+function htmlAttribute($value) {
+	if( !is_scalar($value) ) {
+		$value = json_encode($value);
 	}
 	$flags = ENT_QUOTES | ENT_IGNORE;
 	if( defined('ENT_HTML5') ) {
 		$flags |= ENT_HTML5;
 	}
 	
-	return htmlentities($var, $flags, 'UTF-8', false);
+	return htmlentities($value, $flags, 'UTF-8', false);
 }
 
 /**
