@@ -156,11 +156,10 @@ abstract class Config {
 	 * @param boolean $cached True if this configuration should be cached
 	 * @param boolean $silent True if ignoring config loading issues
 	 * @return Config
-	 * @throws Exception
 	 */
 	public static function buildFrom(?string $package, string $source, bool $cached = true, bool $silent = false): ?Config {
 		if( get_called_class() === get_class() ) {
-			throw new Exception('Use a subclass of ' . get_class() . ' to build your configuration');
+			throw new RuntimeException(sprintf("Use a subclass of %s to build your configuration", get_class()));
 		}
 		$newConf = new static();
 		if( $silent && !$newConf->hasSource($source, $package) ) {
