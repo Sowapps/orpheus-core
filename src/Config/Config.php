@@ -193,33 +193,22 @@ abstract class Config {
 	 * @return boolean True if this configuration was loaded successfully
 	 */
 	public function loadFrom(?string $package, string $source, bool $cached = true): bool {
-		try {
-			$path = static::getFilePath($source, $package);
-			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
-				$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app') . '-config';
-				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \
-				$cache = new FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
-				$parsed = null;
-				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
-					$parsed = static::parse($path);
-					$cache->set($parsed);
-				}
-			} else {
+		$path = static::getFilePath($source, $package);
+		if( class_exists('\Orpheus\Cache\FSCache', true) ) {
+			$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app') . '-config';
+			// strtr fixes an issue with FSCache, FSCache does not allow path, so no / and \
+			$cache = new FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
+			$parsed = null;
+			if( !static::$caching || !$cached || !$cache->get($parsed) ) {
 				$parsed = static::parse($path);
+				$cache->set($parsed);
 			}
-			$this->add($parsed);
-			
-			return true;
-			
-		} catch( CacheException $e ) {
-			log_error($e, 'Caching parsed source ' . $source, false);
-			
-		} catch( Exception $e ) {
-			// If not found, we do nothing
-			log_error($e, 'Caching parsed source ' . $source, false);
+		} else {
+			$parsed = static::parse($path);
 		}
+		$this->add($parsed);
 		
-		return false;
+		return true;
 	}
 	
 	/**
