@@ -252,9 +252,11 @@ function log_report($report, $file, $action = null, $message = null) {
 	$error = [
 		'id'     => uniqid('OL', true),
 		'date'   => date('c'),
+		'file'   => $exception ? $exception->getFile() : null,
+		'line'   => $exception ? $exception->getLine() : null,
 		'report' => $report,
 		'action' => $action,
-		'trace'  => isset($exception) ? $exception->getTrace() : getDebugTrace('log'),
+		'trace'  => $exception ? $exception->getTrace() : getDebugTrace('log'),
 		'crc32'  => crc32(isset($exception) ? formatException($exception) : $report) . '',
 	];
 	$logFilePath = LOGS_PATH . '/' . $file;
