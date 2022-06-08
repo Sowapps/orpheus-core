@@ -377,7 +377,7 @@ define('ESCAPE_DOUBLEQUOTES_TOHTML', ESCAPE_DOUBLEQUOTES | ESCAPE_TOHTML);
  * @param string $text The string to display
  */
 function displayText($text) {
-	echo text2HTML($text);
+	echo text2Html($text);
 }
 
 /**
@@ -385,7 +385,7 @@ function displayText($text) {
  *
  * @param string $text The string to convert
  */
-function text2HTML($text) {
+function text2Html($text) {
 	return nl2br(escapeText($text));
 }
 
@@ -2202,10 +2202,11 @@ function startSession($type = SESSION_WITH_COOKIE) {
 	Hook::trigger(HOOK_STARTSESSION, $type);
 	if( bintest($type, SESSION_WITH_COOKIE) ) {
 		defifn('SESSION_COOKIE_LIFETIME', 86400 * 7);
+		defifn('SESSION_COOKIE_PATH', '/');
 		// Set session cookie parameters, HTTPS session is only HTTPS
 		// Never set the domain, it will apply to subdomains
 		// domain.com shares cookies with all subdomains... HTTP made me cry
-		session_set_cookie_params(SESSION_COOKIE_LIFETIME, PATH, SESSION_SHARE_ACROSS_SUBDOMAIN ? '' : '.' . HOST, HTTPS, true);
+		session_set_cookie_params(SESSION_COOKIE_LIFETIME, SESSION_COOKIE_PATH, SESSION_SHARE_ACROSS_SUBDOMAIN ? '' : '.' . HOST, HTTPS, true);
 	}
 	
 	// Make cookie domain-dependant
