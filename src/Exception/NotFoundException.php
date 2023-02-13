@@ -14,6 +14,8 @@ use Throwable;
  */
 class NotFoundException extends UserException {
 	
+	protected string $channel = LOGFILE_NOT_FOUND;
+	
 	/**
 	 * Constructor
 	 *

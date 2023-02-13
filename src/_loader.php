@@ -9,6 +9,7 @@ if( !defined('ORPHEUS_PATH') ) {
 }
 
 defifn('LOGFILE_SYSTEM', 'system.log');
+defifn('LOGFILE_NOT_FOUND', 'not-found.log');
 defifn('LOGFILE_DEBUG', 'debug.log');
 defifn('LOGFILE_HACK', 'hack.log');
 defifn('LOGFILE_SQL', 'sql.log');

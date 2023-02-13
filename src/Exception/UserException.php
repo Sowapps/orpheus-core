@@ -25,6 +25,13 @@ class UserException extends RuntimeException {
 	protected ?string $domain = null;
 	
 	/**
+	 * The log channel
+	 *
+	 * @var string|null
+	 */
+	protected string $channel = LOGFILE_SYSTEM;
+	
+	/**
 	 * Constructor
 	 *
 	 * @param string|null $message The exception message
@@ -91,6 +98,13 @@ class UserException extends RuntimeException {
 			}
 			die('A fatal error occurred, please report it to an admin.<br />Une erreur fatale est survenue, veuillez contacter un administrateur.<br />');
 		}
+	}
+	
+	/**
+	 * @return string
+	 */
+	public function getChannel(): string {
+		return $this->channel;
 	}
 	
 }
