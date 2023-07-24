@@ -62,7 +62,7 @@ class UserException extends RuntimeException {
 	 *
 	 * @param string|null $domain The new domain
 	 */
-	public function setDomain(?string $domain) {
+	public function setDomain(?string $domain): void {
 		$this->domain = $domain;
 	}
 	

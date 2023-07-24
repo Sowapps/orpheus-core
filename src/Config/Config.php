@@ -19,9 +19,7 @@ use stdClass;
 abstract class Config {
 	
 	/**
-	 * Contains the main configuration, reachable from everywhere.
-	 *
-	 * @var Config
+	 * Contains the main configuration, reachable from everywhere
 	 */
 	protected static ?Config $main = null;
 	
@@ -107,67 +105,8 @@ abstract class Config {
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function getOne(string $key, $default = null) {
+	public function getOne(string $key, $default = null): mixed {
 		return apath_get($this->config, $key, $default);
-	}
-	
-	/**
-	 * Get the file path
-	 * Get the configuration file path in CONFIG_FOLDER.
-	 *
-	 * @param string $source An identifier to get the source.
-	 * @param string|null $package The package to get file path (null to get app file path). Default is null
-	 * @return string The configuration file path, this file exists or an exception is thrown.
-	 * @throws Exception
-	 */
-	public static function getFilePath(string $source, ?string $package = null): string {
-		if( is_readable($source) ) {
-			return $source;
-		}
-		$configFile = '/' . $source . '.' . static::$extension;
-		$path = null;
-		if( $package ) {
-			$path = VENDOR_PATH . '/' . $package . CONFIG_FOLDER . $configFile;
-		} else {
-			foreach( static::$repositories as $repos ) {
-				if( is_readable($repos . $configFile) ) {
-					$path = $repos . $configFile;
-				}
-			}
-			if( !$path ) {
-				$path = pathOf(CONFIG_FOLDER . $configFile, true);
-			}
-		}
-		if( !$path || !is_file($path) || !is_readable($path) ) {
-			throw new Exception('Unable to find config source "' . $source . '"');
-		}
-		
-		return $path;
-	}
-	
-	/**
-	 * Build new configuration source from package
-	 *
-	 * Build a configuration from $source using load() method.
-	 * If it is not a minor configuration, that new configuration is added to the main configuration.
-	 *
-	 * @param string|null $package The package to include config (null to get app config)
-	 * @param string $source An identifier to build the source
-	 * @param boolean $cached True if this configuration should be cached
-	 * @param boolean $silent True if ignoring config loading issues
-	 * @return Config
-	 */
-	public static function buildFrom(?string $package, string $source, bool $cached = true, bool $silent = false): ?Config {
-		if( get_called_class() === get_class() ) {
-			throw new RuntimeException(sprintf("Use a subclass of %s to build your configuration", get_class()));
-		}
-		$newConf = new static();
-		if( $silent && !$newConf->hasSource($source, $package) ) {
-			return null;
-		}
-		$newConf->loadFrom($package, $source, $cached);
-		
-		return $newConf;
 	}
 	
 	/**
@@ -185,6 +124,29 @@ abstract class Config {
 	}
 	
 	/**
+	 * Parse configuration from given source
+	 *
+	 * @param string $path The path to the config file
+	 * @return mixed The loaded configuration array
+	 * @throws Exception
+	 */
+	public static function parse(string $path): array {
+		throw new Exception('The class "' . get_called_class() . '" should override the `parse()` static method from "' . get_class() . '"');
+	}
+	
+	/**
+	 * Add configuration to this object
+	 *
+	 * @param array|null $config The configuration array to add to the current object.
+	 */
+	public function add(?array $config): void {
+		if( !$config ) {
+			return;
+		}
+		$this->config = array_merge($this->config, $config);
+	}
+	
+	/**
 	 * Load new configuration from source in package
 	 *
 	 * @param string|null $package The package to include config (null to get app config)
@@ -193,91 +155,17 @@ abstract class Config {
 	 * @return boolean True if this configuration was loaded successfully
 	 */
 	public function loadFrom(?string $package, string $source, bool $cached = true): bool {
-		$path = static::getFilePath($source, $package);
-		if( class_exists('\Orpheus\Cache\FSCache', true) ) {
-			$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app') . '-config';
-			// strtr fixes an issue with FSCache, FSCache does not allow path, so no / and \
-			$cache = new FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
-			$parsed = null;
-			if( !static::$caching || !$cached || !$cache->get($parsed) ) {
-				$parsed = static::parse($path);
-				$cache->set($parsed);
-			}
-		} else {
-			$parsed = static::parse($path);
-		}
-		$this->add($parsed);
-		
-		return true;
-	}
-	
-	/**
-	 * Parse configuration from given source
-	 *
-	 * @param string $path The path to the config file
-	 * @return mixed The loaded configuration array
-	 * @throws Exception
-	 */
-	public static function parse(string $path) {
-		throw new Exception('The class "' . get_called_class() . '" should override the `parse()` static method from "' . get_class() . '"');
-	}
-	
-	/**
-	 * Add configuration to this object
-	 *
-	 * @param array $config The configuration array to add to the current object.
-	 *
-	 * Add the configuration array $conf to this configuration.
-	 */
-	public function add(?array $config) {
-		if( !$config ) {
-			return;
-		}
-		$this->config = array_merge($this->config, $config);
-	}
-	
-	/**
-	 * Build a configuration from $source using load() method.
-	 * If it is not a minor configuration, that new configuration is added to the main configuration.
-	 *
-	 * @param string $source An identifier to build the source
-	 * @param boolean $minor True if this is a minor configuration
-	 * @param boolean $cached True if this configuration should be cached
-	 * @return Config
-	 * @throws Exception
-	 */
-	public static function build(string $source, bool $minor = false, bool $cached = true): ?Config {
-		if( get_called_class() === get_class() ) {
-			throw new RuntimeException('Use a subclass of ' . get_class() . ' to build your configuration');
-		}
-		if( !$minor ) {
-			if( !isset(static::$main) ) {
-				static::$main = new static();
-				$GLOBALS['CONFIG'] = &static::$main;
-			}
-			static::$main->load($source, $cached);
-			
-			return static::$main;
-		}
-		$newConf = new static();
-		$newConf->load($source, $cached);
-		
-		return $newConf;
-	}
-	
-	/**
-	 * Load new configuration from source
-	 *
-	 * @param string $source An identifier to get the source
-	 * @param boolean $cached True if this configuration should be cached
-	 * @return boolean True if this configuration was loaded successfully
-	 */
-	public function load(string $source, bool $cached = true): bool {
 		try {
-			$path = static::getFilePath($source);
+			$path = static::getFilePath($source, $package);
+			if( !$path ) {
+				return false;
+			}
 			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
-				// strtr fix an issue with FSCache, FSCache does not allow path, so no / and \
-				$cache = new FSCache('config', strtr($source, '/\\', '--'), filemtime($path));
+				// Try to update cache even if we don't want to use it as source
+				$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app') . '-config';
+				// strtr fixes an issue with FSCache, FSCache does not allow path, so no / and \
+				$cache = new FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
+				$parsed = null;
 				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
 					$parsed = static::parse($path);
 					$cache->set($parsed);
@@ -301,13 +189,103 @@ abstract class Config {
 	}
 	
 	/**
+	 * Load new configuration from source
+	 *
+	 * @param string $source An identifier to get the source
+	 * @param boolean $cached True if this configuration should be cached
+	 * @return boolean True if this configuration was loaded successfully
+	 */
+	public function load(string $source, bool $cached = true): bool {
+		return $this->loadFrom(null, $source, $cached);
+	}
+	
+	/**
+	 * Get the file path
+	 * Get the configuration file path in CONFIG_FOLDER.
+	 *
+	 * @param string $source An identifier to get the source.
+	 * @param string|null $package The package to get file path (null to get app file path). Default is null
+	 * @return string The configuration file path, this file exists or an exception is thrown.
+	 * @throws Exception
+	 */
+	public static function getFilePath(string $source, ?string $package = null): ?string {
+		if( is_readable($source) ) {
+			return $source;
+		}
+		$configFile = '/' . $source . '.' . static::$extension;
+		if( $package ) {
+			$path = VENDOR_PATH . '/' . $package . CONFIG_FOLDER . '/' . $configFile;
+		} else {
+			$path = pathOf(CONFIG_FOLDER . '/' . $configFile, true);
+		}
+		if( !$path || !is_file($path) || !is_readable($path) ) {
+			throw new Exception('Unable to find config source "' . $source . '"');
+		}
+		
+		return $path;
+	}
+	
+	/**
+	 * Build a configuration from $source using load() method.
+	 * If it is not a minor configuration, that new configuration is added to the main configuration.
+	 *
+	 * @param string $source An identifier to build the source
+	 * @param boolean $minor True if this is a minor configuration
+	 * @param boolean $cached True if this configuration should be cached
+	 * @return Config|null
+	 */
+	public static function build(string $source, bool $minor = false, bool $cached = true): ?Config {
+		if( get_called_class() === get_class() ) {
+			throw new RuntimeException('Use a subclass of ' . get_class() . ' to build your configuration');
+		}
+		if( !$minor ) {
+			if( !isset(static::$main) ) {
+				static::$main = new static();
+				$GLOBALS['CONFIG'] = &static::$main;
+			}
+			static::$main->load($source, $cached);
+			
+			return static::$main;
+		}
+		$newConf = new static();
+		$newConf->load($source, $cached);
+		
+		return $newConf;
+	}
+	
+	/**
+	 * Build new configuration source from package
+	 *
+	 * Build a configuration from $source using load() method.
+	 * If it is not a minor configuration, that new configuration is added to the main configuration.
+	 *
+	 * @param string|null $package The package to include config (null to get app config)
+	 * @param string $source An identifier to build the source
+	 * @param boolean $cached True if this configuration should be cached
+	 * @param boolean $silent True if ignoring config loading issues
+	 * @return Config|null
+	 */
+	public static function buildFrom(?string $package, string $source, bool $cached = true, bool $silent = false): ?Config {
+		if( get_called_class() === get_class() ) {
+			throw new RuntimeException(sprintf("Use a subclass of %s to build your configuration", get_class()));
+		}
+		$newConf = new static();
+		if( $silent && !$newConf->hasSource($source, $package) ) {
+			return null;
+		}
+		$newConf->loadFrom($package, $source, $cached);
+		
+		return $newConf;
+	}
+	
+	/**
 	 * Get configuration from the main configuration object
 	 *
 	 * @param string $key The key to get the value
 	 * @param mixed $default The default value to use
 	 * @return mixed A config value
 	 */
-	public static function get($key, $default = null) {
+	public static function get($key, $default = null): mixed {
 		if( !isset(static::$main) ) {
 			return $default;
 		}
@@ -323,30 +301,11 @@ abstract class Config {
 	 * @param mixed $value The new config value
 	 * @throws Exception
 	 */
-	public static function set(string $key, $value) {
+	public static function set(string $key, $value): void {
 		if( !isset(static::$main) ) {
 			throw new Exception('No Main Config');
 		}
 		static::$main->$key = $value;
-	}
-	
-	/**
-	 * Add a repository library to load configs
-	 *
-	 * @param string $library The library folder
-	 * @throws Exception
-	 */
-	public static function addRepositoryLibrary($library) {
-		static::addRepository(pathOf(LIBRARY_FOLDER . '/' . $library) . CONFIG_FOLDER);
-	}
-	
-	/**
-	 * Add a repository to load configs
-	 *
-	 * @param mixed $repos The repository to add. Commonly a path to a directory.
-	 */
-	public static function addRepository($repos) {
-		static::$repositories[] = $repos;
 	}
 	
 	/**
@@ -363,8 +322,15 @@ abstract class Config {
 	 *
 	 * @param boolean $caching
 	 */
-	public static function setCaching(bool $caching) {
+	public static function setCaching(bool $caching): void {
 		self::$caching = $caching;
+	}
+	
+	/**
+	 * @return Config|null
+	 */
+	public static function getMain(): ?Config {
+		return self::$main;
 	}
 	
 }

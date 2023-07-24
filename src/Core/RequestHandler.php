@@ -11,7 +11,7 @@ use RuntimeException;
 /**
  * Official RequestHandler for Orpheus
  *
- * @author Florent HAZARD <florent@orpheus-framework.com>
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  *
  * We should also implement a service system to allow a class/object to provide
  * a feature that is required by other lib without they are knowning the lib implementing it
@@ -23,10 +23,8 @@ abstract class RequestHandler {
 	
 	/**
 	 * Handler classes by type
-	 *
-	 * @var string
 	 */
-	protected static $handlerClasses = [];
+	protected static array $handlerClasses = [];
 	
 	/**
 	 * Suggest handle $class for $type
@@ -37,7 +35,7 @@ abstract class RequestHandler {
 	 *
 	 * The difference with setHandler() is that only set if there is no current value
 	 */
-	public static function suggestHandler(string $type, string $class) {
+	public static function suggestHandler(string $type, string $class): void {
 		if( !isset(static::$handlerClasses[$type]) ) {
 			static::setHandler($type, $class);
 		}
@@ -49,7 +47,7 @@ abstract class RequestHandler {
 	 * @param string $type
 	 * @param string $class
 	 */
-	public static function setHandler($type, $class) {
+	public static function setHandler(string $type, string $class): void {
 		if( !method_exists($class, 'handleCurrentRequest') ) {
 			// Check getCurrentRoute
 			throw new RuntimeException(sprintf('The request handler class %s does not implement the handleCurrentRequest() method', $class));
@@ -61,9 +59,9 @@ abstract class RequestHandler {
 	 * Get the handler of $type
 	 *
 	 * @param string $type
-	 * @return string|InputRequest
+	 * @return string
 	 */
-	public static function getHandler($type): string {
+	public static function getHandler(string $type): string {
 		if( !isset(static::$handlerClasses[$type]) ) {
 			throw new RuntimeException(sprintf('We did not find any request handler for type %s', $type));
 		}
@@ -77,7 +75,8 @@ abstract class RequestHandler {
 	 * @param string $type
 	 * @return string
 	 */
-	public static function getRouteClass($type): string {
+	public static function getRouteClass(string $type): string {
+		/** @var InputRequest $class */
 		$class = static::getHandler($type);
 		
 		return $class::getRouteClass();
@@ -88,7 +87,8 @@ abstract class RequestHandler {
 	 *
 	 * @param string $type
 	 */
-	public static function handleCurrentRequest($type) {
+	public static function handleCurrentRequest(string $type) {
+		/** @var InputRequest $class */
 		$class = static::getHandler($type);
 		
 		$class::handleCurrentRequest();

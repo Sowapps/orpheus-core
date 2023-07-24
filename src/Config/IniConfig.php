@@ -1,7 +1,4 @@
 <?php
-/**
- * IniConfig
-*/
 
 namespace Orpheus\Config;
 
@@ -17,7 +14,7 @@ class IniConfig extends Config {
 	 *
 	 * @var string
 	 */
-	protected static $extension = 'ini';
+	protected static string $extension = 'ini';
 
 	/**
 	 * Parse configuration from given source.
@@ -28,7 +25,7 @@ class IniConfig extends Config {
 	 * If an identifier, loads a configuration from a .ini file in CONFIG_FOLDER.
 	 * Else $source is a full path to the ini configuration file.
 	 */
-	public static function parse($path) {
+	public static function parse($path): array {
 		return parse_ini_file($path, true);
 	}
 }

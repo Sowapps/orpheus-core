@@ -11,47 +11,17 @@
  * @param string $email The email address to check.
  * @return boolean True if $email si a valid email address.
  */
-function is_email($email) {
+function is_email(string $email): bool {
 	return filter_var($email, FILTER_VALIDATE_EMAIL);
-}
-
-/**
- * Check if the input is a name.
- *
- * @param string $name The name to check.
- * @param int $charnb_max The maximum length of the given name. Default value is 50.
- * @param int $charnb_min The minimum length of the given name. Default value is 3.
- * @return boolean True if $name si a name.
- * @sa is_personalname()
- *
- * The name is a slug with no special characters.
- */
-function is_name($name, $charnb_max = 50, $charnb_min = 3) {
-	return preg_match('#^[a-z0-9\-\_]{' . $charnb_min . ',' . $charnb_max . '}$#i', $name);
-}
-
-/**
- * Check if the input is a personal name.
- *
- * @param string $name The name to check.
- * @param int $charnb_max The maximum length of the given name. Default value is 50.
- * @param int $charnb_min The minimum length of the given name. Default value is 3.
- * @return boolean True if $name si a name.
- * @sa is_name()
- *
- * The name can not contain programming characters like control characters, '<', '>' or '='...
- */
-function is_personalname($name, $charnb_max = 50, $charnb_min = 3) {
-	return preg_match('#^[^\^\<\>\*\+\(\)\[\]\{\}\"\~\&\=\:\;\`\|\#\@\%\/\\\\[:cntrl:]]{' . $charnb_min . ',' . $charnb_max . '}$#i', $name);
 }
 
 /**
  * Check the $variable could be converted into a string
  *
- * @param $number
+ * @param mixed $variable
  * @return bool
  */
-function is_string_convertible($variable) {
+function is_string_convertible(mixed $variable): bool {
 	return !is_array($variable) && (
 			(!is_object($variable) && settype($variable, 'string') !== false) ||
 			(is_object($variable) && method_exists($variable, '__toString'))
@@ -61,17 +31,13 @@ function is_string_convertible($variable) {
 /**
  * Check if the input is an ID Number.
  *
- * @param mixed $number The number to check.
- * @return boolean True if $number si a valid integer.
+ * @param string $id The number to check
+ * @return boolean True if $number si a valid integer
  *
  * The ID number is an integer.
  */
-function is_ID($number) {
-	if( !is_string_convertible($number) ) {
-		return false;
-	}
-	$number = "$number";
-	return is_scalar($number) && ctype_digit($number) && $number > 0;
+function is_Id(string $id): bool {
+	return is_scalar($id) && ctype_digit($id) && intval($id) > 0;
 }
 
 define('DATE_FORMAT_LOCALE', 0);
@@ -91,28 +57,29 @@ define('DATE_FORMAT_GNU', 1);
  * Allow 01/01/1970, 01/01/1970 12:10:30, 01/01/1970 12:10
  * Fill missing information with 0.
  */
-function is_date($date, $withTime = false, &$dateTime = false, $format = null) {
+function is_date(string $date, bool $withTime = false, bool &$dateTime = false, int $format = null): bool {
 	// SQL USES GNU
 	if( $format === DATE_FORMAT_GNU ) {
 		$dateTime = DateTime::createFromFormat($withTime ? 'Y-m-d H:i:s' : 'Y-m-d|', $date);
 	} else {
 		$dateTime = DateTime::createFromFormat(t($withTime ? 'datetimeFromFormat' : 'dateFromFormat'), $date);
 	}
+	
 	return !!$dateTime;
 }
 
 /**
- * Check $time is a real time representation
+ * Check $time is a real time representation.
+ * Could use global translation "timeFormat" to check this is a time
+ * e.g. Basically validate 12:50
  *
  * @param string $time
  * @param array $matches
  * @return boolean
- *
- * Could use global translation "timeFormat" to check this is a time
- * e.g Basically validate 12:50
  */
-function is_time($time, &$matches = null) {
-	$format = hasTranslation('timeFormat') ? t('timeFormat') : '%H:%M';
+function is_time(string $time, ?array &$matches = null): bool {
+	$format = getTranslation('timeFormat') ?? '%H:%M';
+	
 	return preg_match(timeFormatToRegex($format), $time, $matches);
 }
 
@@ -123,7 +90,7 @@ function is_time($time, &$matches = null) {
  * @param string $protocol Not used yet. Default to SCHEME constant, not used.
  * @return boolean True if $url si a valid url.
  */
-function is_url($url, $protocol = null) {
+function is_url(string $url, string $protocol = null): bool {
 	return filter_var($url, FILTER_VALIDATE_URL);
 }
 
@@ -135,22 +102,24 @@ function is_url($url, $protocol = null) {
  * @return boolean True if $ip si a valid ip address.
  * @sa filter_var()
  */
-function is_ip($ip, $flags = null) {
+function is_ip(string $ip, int $flags = FILTER_DEFAULT): bool {
 	return filter_var($ip, FILTER_VALIDATE_IP, $flags);
 }
 
 /**
  * Check if the input is a phone number.
+ * It can only validate french phone number.
+ * The separator can be '.', ' ' or '-', it can be ommitted.
+ * e.g: +336.12.34.56.78, 01-12-34-56-78
  *
  * @param string $number The phone number to check.
  * @param string $country The country to use to validate the phone number, default is FR, this is the only possible value
  * @return boolean True if $number si a valid phone number.
- *
- * It can only validate french phone number.
- * The separator can be '.', ' ' or '-', it can be ommitted.
- * e.g: +336.12.34.56.78, 01-12-34-56-78
+ * @deprecated Use an external lib to do that
+ * @see standardizePhoneNumber_FR
  */
-function is_phone_number($number, $country = 'FR') {
+function is_phone_number($number, $country = 'FR'): bool {
 	$number = str_replace(['.', ' ', '-'], '', $number);
+	
 	return preg_match("#^(?:\+[0-9]{1,3}|0)[0-9]{9}$#", $number);
 }

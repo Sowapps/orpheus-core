@@ -1,6 +1,6 @@
 <?php
 /**
- * ClassLoader
+ * @author Florent HAZARD <f.hazard@sowapps.com>
  */
 
 namespace Orpheus\Core;
@@ -9,8 +9,6 @@ use Exception;
 
 /**
  * Official Orpheus class loader
- *
- * @author Florent HAZARD <florent@orpheus-framework.com>
  */
 class ClassLoader {
 	

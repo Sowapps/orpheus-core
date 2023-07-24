@@ -1,28 +1,37 @@
 {
-	"name" : "orpheus/orpheus-core",
-	"description" : "Orpheus Core",
-	"keywords" : [
+	"name": "orpheus/orpheus-core",
+	"description": "Orpheus Core",
+	"type": "orpheus-library",
+	"license": "MIT",
+	"keywords": [
 		"orpheus",
 		"core"
 	],
-	"autoload" : {
-		"psr-4" : {
-			"Orpheus\\" : "src"
+	"autoload": {
+		"psr-4": {
+			"Orpheus\\": "src/"
 		},
-		"files" : [
+		"files": [
 			"src/_loader.php"
 		]
 	},
-	"require" : {
-	  "orpheus/orpheus-hook": "1.*"
+	"require": {
+		"orpheus/orpheus-hook": "4.*"
 	},
-	"type" : "library",
-	"license" : "MIT",
-	"authors" : [{
-			"name" : "Florent HAZARD",
-			"email" : "contact@sowapps.com",
-			"homepage" : "http://sowapps.com",
-			"role" : "Developer"
+	"suggest": {
+		"ext-fileinfo": "File features may require FileInfo"
+	},
+	"extra": {
+		"orpheus-library": {
+			"class": "Orpheus\\Core\\OrpheusCoreLibrary"
+		}
+	},
+	"authors": [
+		{
+			"name": "Florent HAZARD",
+			"email": "contact@sowapps.com",
+			"homepage": "http://sowapps.com",
+			"role": "Developer"
 		}
 	]
 }

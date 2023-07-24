@@ -10,6 +10,7 @@ use Orpheus\Config\Config;
 use Orpheus\Core\ClassLoader;
 use Orpheus\Exception\UserException;
 use Orpheus\Hook\Hook;
+use Orpheus\Initernationalization\TranslationService;
 
 /**
  * Redirect the client to a destination by HTTP
@@ -106,10 +107,10 @@ function sendJSON($data) {
  * Scans a directory cleanly.
  *
  * @param string $dir The path to the directory to scan.
- * @param bool $sortingOrder True to reverse results order. Default value is False.
+ * @param bool $reverseOrder True to reverse results order. Default value is False.
  * @return string[] An array of the files in this directory.
  */
-function cleanscandir(string $dir, $sortingOrder = false) {
+function cleanscandir(string $dir, $reverseOrder = false) {
 	try {
 		$result = scandir($dir);
 	} catch( Exception $e ) {
@@ -117,7 +118,7 @@ function cleanscandir(string $dir, $sortingOrder = false) {
 	}
 	unset($result[0]);
 	unset($result[1]);
-	if( $sortingOrder ) {
+	if( $reverseOrder ) {
 		rsort($result);
 	}
 	
@@ -1108,16 +1109,20 @@ function htmlSelect(string $name, array $values, $data = null, $selected = null,
  * @param int|null $matches Define the associativity between array and option values. Default value is OPT_VALUE2LABEL (as null).
  * @param string $prefix The prefix to use for the text name of values. Default value is an empty string.
  * @param string $domain The domain to apply the Key. Default value is 'global'.
- * @return string A HTML source for the built SELECT tag.
+ * @return string An HTML source for the built SELECT tag.
  * @see htmlOption()
  */
-function htmlOptions(string $fieldPath, $values, $default = null, $matches = null, $prefix = '', $domain = 'global') {
+function htmlOptions(?string $fieldPath, $values, $default = null, $matches = null, $prefix = '', $domain = 'global') {
 	if( $matches === null ) {
 		$matches = OPT_VALUE2LABEL;
 	}
 	// Value of selected/default option
 	$selValue = null;
-	fillInputValue($selValue, $fieldPath, OPT_PERMANENTOBJECT && is_object($default) ? $default->id() : $default);
+	if( $fieldPath ) {
+		fillInputValue($selValue, $fieldPath, OPT_PERMANENTOBJECT && is_object($default) ? $default->id() : $default);
+	} else {
+		$selValue = $default;
+	}
 	$opts = '';
 	foreach( $values as $dataKey => $elValue ) {
 		if( $elValue === null ) {
@@ -1451,7 +1456,7 @@ function fillFormData(&$data) {
  *
  * Fill the given pointer value with input form data or uses default.
  */
-function fillInputValue(&$value, $fieldPath, $default = null, $pathRequired = false) {
+function fillInputValue(&$value, string $fieldPath, $default = null, bool $pathRequired = false) {
 	$value = apath_get(getFormData(), $fieldPath, $default, $pathRequired);
 	if( $value === null ) {
 		$value = $default;
@@ -1639,33 +1644,31 @@ function hashString($str) {
  *
  * Date format is storing a date, not a specific moment, we don't care about timezone
  */
-function sql2Time($datetime) {
+function sql2Time($datetime): string {
 	return strtotime($datetime . ' GMT');
 }
 
 /**
  * Format the date as string
+ * Date format is storing a date, not a specific moment, we don't care about timezone
  *
  * @param mixed $time The UNIX timestamp
  * @param bool $utc Is the time UTC
  * @return string The date using 'dateFormat' translation key
- *
- * Date format is storing a date, not a specific moment, we don't care about timezone
  */
-function d($time = TIME, $utc = false) {
+function d($time = TIME, $utc = false): string {
 	return df('dateFormat', $time, $utc ? false : null);
 }
 
 /**
  * Format the date time as string
+ * Datetime format is storing a specific moment, we care about timezone
  *
  * @param mixed $time The UNIX timestamp
  * @param bool $utc Is the time UTC
  * @return string The date using 'datetimeFormat' translation key
- *
- * Datetime format is storing a specific moment, we care about timezone
  */
-function dt($time = TIME, $utc = false) {
+function dt($time = TIME, $utc = false): string {
 	return df('datetimeFormat', $time, $utc ? false : null);
 }
 
@@ -1674,38 +1677,38 @@ function dt($time = TIME, $utc = false) {
  *
  * @param string $format The format to use
  * @param int|string $time The UNIX timestamp
- * @param string|bool|null $tz Timezone to use. False for UTC, Null for default or a string to specify the one to use
+ * @param string|false|null $timeZone Timezone to use. False for UTC, Null for default or a string to specify the one to use
  * @return string The date formatted using $format
  *
  * Datetime format is storing a specific moment, we care about timezone
  */
-function df($format, $time = TIME, $tz = null) {
+function df($format, $time = TIME, $timeZone = null) {
 	if( $time === null || $time === '' ) {
 		return '';
 	}
-	if( $tz === false ) {
-		$tz = 'UTC';
-	}
-	if( $tz ) {
-		$ctz = date_default_timezone_get();
-		date_default_timezone_set($tz);
+	if( $timeZone === false ) {
+		$timeZone = 'UTC';
 	}
 	// Calculating some delay, we want 00:00 and not null
-	$r = strftime(t($format), dateToTime($time));
-	if( isset($ctz) ) {
-		date_default_timezone_set($ctz);
+	$date = new DateTime('@' . $time, timezone($timeZone));
+	
+	return $date->format(t($format));
+}
+
+function timeZone(string|DateTimeZone|null $timeZone): ?DateTimeZone {
+	if( is_string($timeZone) ) {
+		return new DateTimeZone($timeZone);
 	}
 	
-	return $r;
+	return $timeZone;
 }
 
 /**
  * Convert date to time
+ * Allow any strtotime format to be converted to time, if time passed, it just returns it.
  *
  * @param int|string $date The date or UNIX timestamp
  * @return int The UNIX timestamp
- *
- * Allow any strtotime format to be converted to time, if time passed, it just returns it.
  */
 function dateToTime($date) {
 	if( is_numeric($date) ) {
@@ -1728,7 +1731,7 @@ function dateToTime($date) {
  * The system uses the constant SYSTEM_TIME_FORMAT to get the default format '%H:%M', you can define it by yourself.
  */
 function ft($time = null) {
-	$userFormat = translate('timeFormat', SYSTEM_TIME_FORMAT);
+	$userFormat = TranslationService::getDefault()->translate('timeFormat');
 	if( $userFormat === SYSTEM_TIME_FORMAT ) {
 		return $time;
 	}
@@ -1736,8 +1739,6 @@ function ft($time = null) {
 	
 	return strftime($userFormat, mktime($times[1], $times[2]));
 }
-
-defifn('SYSTEM_TIME_FORMAT', '%H:%M');
 
 /**
  * Create time format regex from strftime format
@@ -1785,21 +1786,28 @@ function sqlDate($time = TIME) {
 
 /**
  * Get the date time as string in SQL format
+ * Datetime format is storing a specific moment, we care about timezone
  *
  * @param int $time The UNIX timestamp.
  * @return string The date using sql format
- *
- * Datetime format is storing a specific moment, we care about timezone
  */
-function sqlDatetime($time = TIME) {
+function sqlDatetime($time = TIME): string {
 	if( $time === null ) {
 		$time = TIME;
 	}
 	if( $time instanceof DateTime ) {
 		return $time->format('Y-m-d H:i:s');
 	}
+	if( is_string($time) ) {
+		if( ctype_digit($time) ) {
+			$time = intval($time);
+		} else {
+			// Already a formatted string
+			return $time;
+		}
+	}
 	
-	return gmstrftime('%Y-%m-%d %H:%M:%S', $time);
+	return gmdate('Y-m-d H:i:s', $time);
 }
 
 /**
@@ -1807,7 +1815,7 @@ function sqlDatetime($time = TIME) {
  *
  * @return string The ip of the client
  */
-function clientIp() {
+function clientIp(): string {
 	if( isset($_SERVER['REMOTE_ADDR']) ) {
 		return $_SERVER['REMOTE_ADDR'];
 	}
@@ -1825,7 +1833,7 @@ function clientIp() {
  *
  * @return int|string The user's id
  */
-function userID() {
+function userId(): int|string {
 	global $USER;
 	
 	return !empty($USER) ? $USER->id() : 0;
@@ -1833,15 +1841,14 @@ function userID() {
 
 /**
  * Generate a new password
+ * Letters are randomly uppercased
  *
  * @param int $length The length of the generated password. Default value is 10.
  * @param string $chars The characters to use to generate password. Default value is 'abcdefghijklmnopqrstuvwxyz0123456789'
  * @return string The generated password.
  * @deprecated Use generateRandomString()
- *
- * Letters are randomly uppercased
  */
-function generatePassword($length = 10, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789') {
+function generatePassword($length = 10, $chars = 'abcdefghijklmnopqrstuvwxyz0123456789'): string {
 	$max = strlen($chars) - 1;
 	$r = '';
 	for( $i = 0; $i < $length; $i++ ) {
@@ -1859,7 +1866,7 @@ function generatePassword($length = 10, $chars = 'abcdefghijklmnopqrstuvwxyz0123
  * @param string $keyspace A string of all possible characters to select from
  * @return string
  */
-function generateRandomString($length = 64, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+function generateRandomString($length = 64, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'): string {
 	if( $length < 1 ) {
 		throw new RangeException('Length must be a positive integer');
 	}
@@ -1874,14 +1881,14 @@ function generateRandomString($length = 64, $keyspace = '0123456789abcdefghijklm
 
 /**
  * Calculate the day timestamp using the given integer
+ * Return the timestamp of the current day of $time according to the midnight hour.
  *
  * @param int $time The time to get the day time. Default value is current timestamp.
  * @param bool $gmt Is the time GMT
  * @return int
  *
- * Return the timestamp of the current day of $time according to the midnight hour.
  */
-function dayTime($time = null, $gmt = true) {
+function dayTime($time = null, $gmt = true): int {
 	if( $time === null ) {
 		$time = time();
 	}
@@ -1891,15 +1898,14 @@ function dayTime($time = null, $gmt = true) {
 
 /**
  * Return the timestamp of the $day of the month using the given integer
+ * Return the timestamp of the $day of current month of $time according to the midnight hour.
  *
  * @param $day The day of the month to get the timestamp. Default value is 1, the first day of the month.
  * @param $time The time to get the month timestamp. Default value is current timestamp.
  * @return int
  * @see dayTime()
- *
- * Return the timestamp of the $day of current month of $time according to the midnight hour.
  */
-function monthTime($day = 1, $time = null) {
+function monthTime($day = 1, $time = null): int {
 	if( $time === null ) {
 		$time = time();
 	}
@@ -1912,13 +1918,12 @@ function monthTime($day = 1, $time = null) {
  *
  * @param string $number The input phone number.
  * @param string $delimiter The delimiter for series of digits. Default value is current timestamp. Default value is '.'.
- * @param int $limit The number of digit in a serie separated by delimiter. Optional, the default value is 2.
+ * @param int $limit The number of digit in a sequence separated by delimiter. Optional, the default value is 2.
  * @return string
- *
- * Return a standard phone number for FR country format.
+ * @deprecated Use an external lib to do that
  */
-function standardizePhoneNumber_FR($number, $delimiter = '.', $limit = 2) {
-	// If there is not delimiter we try to put one
+function standardizePhoneNumber_FR($number, $delimiter = '.', $limit = 2): string {
+	// If there is no delimiter, we try to put one
 	$number = str_replace(['.', ' ', '-'], '', $number);
 	$length = strlen($number);
 	if( $length < 10 ) {
@@ -1939,7 +1944,7 @@ function standardizePhoneNumber_FR($number, $delimiter = '.', $limit = 2) {
  * @param int $length The length to add zero
  * @return string
  */
-function leadZero($number, $length = 2) {
+function leadZero($number, $length = 2): string {
 	return sprintf('%0' . $length . 'd', $number);
 }
 
@@ -1949,7 +1954,7 @@ function leadZero($number, $length = 2) {
  * @param int $duration Duration in seconds
  * @return string
  */
-function formatDuration_Shortest($duration) {
+function formatDuration_Shortest($duration): string {
 	$formats = ['days' => 86400, 'hours' => 3600, 'minutes' => 60];
 	foreach( $formats as $unit => $time ) {
 		$r = $duration / $time;
@@ -1968,7 +1973,7 @@ function formatDuration_Shortest($duration) {
  * @param array $array2
  * @return int
  */
-function count_intersect_keys($array1, $array2) {
+function count_intersect_keys($array1, $array2): int {
 	return count(array_intersect_key($array1, $array2));
 }
 
@@ -1978,7 +1983,7 @@ function count_intersect_keys($array1, $array2) {
  * @param string $filePath
  * @return string
  */
-function getMimeType($filePath) {
+function getMimeType($filePath): string {
 	if( function_exists('finfo_open') ) {
 		return finfo_file(finfo_open(FILEINFO_MIME_TYPE), $filePath);
 	}
@@ -1987,12 +1992,12 @@ function getMimeType($filePath) {
 }
 
 /**
- * Ensure path avaibility as folder
+ * Ensure path availability as folder
  *
  * @param string $filePath
  * @return boolean
  */
-function checkDir($filePath) {
+function checkDir($filePath): bool {
 	return is_dir($filePath) || mkdir($filePath, 0772, true);
 }
 
@@ -2004,7 +2009,7 @@ function checkDir($filePath) {
  * @param mixed $value
  * @set array_splice()
  */
-function array_insert(&$array, $position, $value) {
+function array_insert(&$array, $position, $value): void {
 	array_splice($array, $position, 0, $value);
 }
 
@@ -2014,7 +2019,7 @@ function array_insert(&$array, $position, $value) {
  * @param array $array
  * @param array $other
  */
-function array_add(&$array, $other) {
+function array_add(&$array, $other): void {
 	$array = array_merge($array, $other);
 }
 
@@ -2025,7 +2030,7 @@ function array_add(&$array, $other) {
  * @param array $keys
  * @return array
  */
-function array_filterbykeys($array, $keys) {
+function array_filterbykeys($array, $keys): array {
 	$r = [];
 	foreach( $keys as $key ) {
 		if( array_key_exists($key, $array) ) {
@@ -2037,13 +2042,13 @@ function array_filterbykeys($array, $keys) {
 }
 
 /**
- * Get the index in $array of $key
+ * Get the index of $key in $array
  *
  * @param array $array
  * @param string|int $key
  * @return int
  */
-function array_index($array, $key) {
+function array_index($array, $key): int {
 	return array_search($key, array_keys($array));
 }
 
@@ -2053,7 +2058,7 @@ function array_index($array, $key) {
  * @param array $array
  * @return mixed|false
  */
-function array_last($array) {
+function array_last($array): mixed {
 	// Copy of array, the pointer is not moved
 	return end($array);
 }
@@ -2066,10 +2071,10 @@ function array_last($array) {
  * @param bool $default
  * @return mixed
  */
-function array_get($array, $index, $default = false) {
+function array_get($array, $index, $default = false): mixed {
 	$array = array_values($array);
 	
-	return isset($array[$index]) ? $array[$index] : $default;
+	return $array[$index] ?? $default;
 }
 
 /**
@@ -2081,7 +2086,7 @@ function array_get($array, $index, $default = false) {
  * @param string $success TRUE on success or FALSE on failure.
  * @return array The resulting array
  */
-function array_apply($array, $callback, $userdata = null, &$success = null) {
+function array_apply($array, $callback, $userdata = null, &$success = null): array {
 	$success = array_walk($array, $callback, $userdata);
 	
 	return $array;
@@ -2094,7 +2099,7 @@ function array_apply($array, $callback, $userdata = null, &$success = null) {
  * @param string $peerGlue
  * @return array
  */
-function array_peer($array, $peerGlue = ': ') {
+function array_peer($array, $peerGlue = ': '): array {
 	return array_apply($array, function (&$v, $k) use ($peerGlue) {
 		$v = $k . $peerGlue . $v;
 	});
@@ -2106,7 +2111,7 @@ function array_peer($array, $peerGlue = ': ') {
  * @param string $str
  * @return string
  */
-function str_ucfirst($str) {
+function str_ucfirst($str): string {
 	return ucfirst(strtolower($str));
 }
 
@@ -2116,7 +2121,7 @@ function str_ucfirst($str) {
  * @param string $str
  * @return string
  */
-function str_ucwords($str) {
+function str_ucwords($str): string {
 	return ucwords(strtolower($str));
 }
 
@@ -2126,7 +2131,7 @@ function str_ucwords($str) {
  * @param string $str
  * @return string
  */
-function str_first($str) {
+function str_first($str): string {
 	return $str[0];
 }
 
@@ -2136,7 +2141,7 @@ function str_first($str) {
  * @param string $str
  * @return string
  */
-function str_last($str) {
+function str_last($str): string {
 	return substr($str, -1);
 }
 
@@ -2146,7 +2151,7 @@ function str_last($str) {
  * @param mixed $val1
  * @param mixed $val2
  */
-function reverse_values(&$val1, &$val2) {
+function reverse_values(&$val1, &$val2): void {
 	$tmp = $val1;
 	$val1 = $val2;
 	$val2 = $tmp;
@@ -2160,7 +2165,7 @@ function reverse_values(&$val1, &$val2) {
  * @param int $max
  * @return boolean
  */
-function between($value, $min, $max) {
+function between($value, $min, $max): bool {
 	return $min <= $value && $value <= $max;
 }
 
@@ -2170,7 +2175,7 @@ function between($value, $min, $max) {
  * @param string $name The name of the cookie to delete
  * @return bool True if cookie was deleted, false if not found
  */
-function deleteCookie($name) {
+function deleteCookie($name): bool {
 	if( !isset($_COOKIE[$name]) ) {
 		return false;
 	}
@@ -2181,14 +2186,11 @@ function deleteCookie($name) {
 }
 
 /**
- * Start a PHP Session
+ * Start a secured PHP Session and initialize Orpheus
  *
  * @param mixed $type The type flag of the session
- * @throws UserException
- *
- * Start a secured PHP Session and initialize Orpheus
  */
-function startSession($type = SESSION_WITH_COOKIE) {
+function startSession($type = SESSION_WITH_COOKIE): void {
 	/**
 	 * By default, browsers share cookies across subdomains
 	 * So, we change the session name (also the cookie name) according to host
@@ -2237,14 +2239,10 @@ function startSession($type = SESSION_WITH_COOKIE) {
 		// Hack Attemp' - Session stolen
 		// It will return hack attemp' even if user is using a VPN
 		// Allow 'reset', 'home', 'exception' / Default is 'reset'
-		$movedAction = Config::get('moved_session_action', 'home');
+		//		$movedAction = Config::get('moved_session_action', 'home');// No more supporting this feature, any hack should be rejected to error page
 		// reset in all cases
 		$initSession();
-		if( $movedAction === 'home' ) {
-			redirectTo(WEB_ROOT);
-		} elseif( $movedAction === 'exception' ) {
-			throw new UserException('movedSession');
-		}
+		throw new UserException('movedSession');
 	}
 	
 	Hook::trigger(HOOK_SESSIONSTARTED, $type);
@@ -2261,7 +2259,7 @@ define('SESSION_WITH_HTTPTOKEN', 1 << 1);
  * @param string $relativeTo
  * @return int
  */
-function calculateAge($birthday, $relativeTo = 'today') {
+function calculateAge($birthday, $relativeTo = 'today'): int {
 	return date_diff(date_create($birthday), date_create($relativeTo))->y;
 }
 
@@ -2271,7 +2269,7 @@ function calculateAge($birthday, $relativeTo = 'today') {
  * @param mixed $v
  * @return bool True if $v is a closure
  */
-function is_closure($v) {
+function is_closure($v): bool {
 	return is_object($v) && ($v instanceof \Closure);
 }
 
@@ -2281,16 +2279,14 @@ function is_closure($v) {
  * @param mixed $e
  * @return bool True if $v is an Exception
  */
-function is_exception($e) {
+function is_exception($e): bool {
 	return is_object($e) && ($e instanceof Exception);
 }
 
 /**
  * Get microsecond as UNIX format
- *
- * @return number|string
  */
-function ms($precision = null) {
+function ms(?int $precision = null): string {
 	return $precision !== null ? number_format(microtime(true), $precision, '.', '') : round(microtime(true) * 1000);
 }
 
@@ -2305,7 +2301,7 @@ function ms($precision = null) {
  * @param bool $forceBinaryStep For to use binary step even if using decimal unit
  * @return int The byte size
  */
-function parseHumanSize($size, $forceBinaryStep = false) {
+function parseHumanSize(string $size, bool $forceBinaryStep = false): int {
 	if( !preg_match('#^([0-9]+)\s*([a-z]*)$#', strtolower(trim($size)), $matches) ) {
 		throw new Exception(sprintf('Invalid size "%s"', $size));
 	}
@@ -2337,11 +2333,11 @@ function parseHumanSize($size, $forceBinaryStep = false) {
  * @param string $value The byte size to format
  * @param int $step The step between units
  * @param bool $useDecimalUnit The unit to use (decimal or binary)
- * @param int $allowMax Max value allow in one unit. e.g with 10.000, you keep an unit until 9.999
+ * @param int $allowMax Max value allow in one unit. e.g. with 10.000, you keep a unit until 9.999
  * @param string $format The format to use with sprintf(), first string is the value and the second one is the unit.
  * @return string The formatted size
  */
-function formatHumanSize($value, $step = 1000, $useDecimalUnit = true, $allowMax = 10000, $format = '%s%s') {
+function formatHumanSize(string $value, int $step = 1000, bool $useDecimalUnit = true, int $allowMax = 10000, string $format = '%s%s'): string {
 	$units = $useDecimalUnit ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
 	$valueUnit = null;
 	foreach( $units as $unit ) {
@@ -2352,5 +2348,5 @@ function formatHumanSize($value, $step = 1000, $useDecimalUnit = true, $allowMax
 		$valueUnit = $unit;
 	}
 	
-	return sprintf($format, (($value > 999 || !is_float($value)) ? formatInt($value) : formatDouble($value)), $valueUnit);
+	return sprintf($format, ($value <= 999 && is_float($value) ? formatNumber($value, 2) : formatNumber($value)), $valueUnit);
 }
