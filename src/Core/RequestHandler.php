@@ -29,8 +29,6 @@ abstract class RequestHandler {
 	/**
 	 * Suggest handle $class for $type
 	 *
-	 * @param string $type
-	 * @param string $class
 	 * @see setHandler()
 	 *
 	 * The difference with setHandler() is that only set if there is no current value
@@ -43,9 +41,6 @@ abstract class RequestHandler {
 	
 	/**
 	 * Set handle $class for $type
-	 *
-	 * @param string $type
-	 * @param string $class
 	 */
 	public static function setHandler(string $type, string $class): void {
 		if( !method_exists($class, 'handleCurrentRequest') ) {
@@ -57,9 +52,6 @@ abstract class RequestHandler {
 	
 	/**
 	 * Get the handler of $type
-	 *
-	 * @param string $type
-	 * @return string
 	 */
 	public static function getHandler(string $type): string {
 		if( !isset(static::$handlerClasses[$type]) ) {
@@ -71,9 +63,6 @@ abstract class RequestHandler {
 	
 	/**
 	 * Get the Route Class
-	 *
-	 * @param string $type
-	 * @return string
 	 */
 	public static function getRouteClass(string $type): string {
 		/** @var InputRequest $class */
@@ -84,10 +73,8 @@ abstract class RequestHandler {
 	
 	/**
 	 * Handle the current request
-	 *
-	 * @param string $type
 	 */
-	public static function handleCurrentRequest(string $type) {
+	public static function handleCurrentRequest(string $type): void {
 		/** @var InputRequest $class */
 		$class = static::getHandler($type);
 		

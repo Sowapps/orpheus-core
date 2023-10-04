@@ -6,7 +6,7 @@
 namespace Orpheus\Core;
 
 /**
- * Route for Orpheus
+ * Route for Orpheus.
  */
 abstract class Route {
 	

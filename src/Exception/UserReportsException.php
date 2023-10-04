@@ -30,9 +30,6 @@ class UserReportsException extends UserException {
 	
 	/**
 	 * Set the reports
-	 *
-	 * @param array $reports
-	 * @return self
 	 */
 	public function setReports(array $reports): self {
 		$this->reports = $reports;

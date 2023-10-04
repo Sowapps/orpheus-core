@@ -7,16 +7,18 @@ namespace Orpheus\Config;
 
 use Exception;
 use Orpheus\Cache\CacheException;
-use Orpheus\Cache\FSCache;
+use Orpheus\Cache\FileSystemCache;
+use Orpheus\Php\ArrayAggregate;
 use RuntimeException;
-use stdClass;
 
 /**
  * The config core class
  *
  * This class is the core for config classes inherited from custom configuration.
  */
-abstract class Config {
+abstract class Config extends ArrayAggregate {
+	
+	protected static string $extension;
 	
 	/**
 	 * Contains the main configuration, reachable from everywhere
@@ -45,15 +47,19 @@ abstract class Config {
 	 */
 	protected array $config = [];
 	
+	public function &getArray(): array {
+		return $this->config;
+	}
+	
 	/**
 	 * Return the configuration item with key $key.
 	 * Except for:
 	 * - 'all' : It returns an array containing all configuration items.
 	 *
 	 * @param string $key The key to get the value
-	 * @return string|stdClass A config value
+	 * @return array A config value
 	 */
-	public function __get($key) {
+	public function __get(string $key) {
 		if( $key === 'all' ) {
 			return $this->asArray();
 		}
@@ -67,9 +73,9 @@ abstract class Config {
 	 * - 'all' : It sets all the array containing all configuration items.
 	 *
 	 * @param string $key The key to set the value
-	 * @param string $value The new config value
+	 * @param mixed $value The new config value
 	 */
-	public function __set($key, $value) {
+	public function __set(string $key, mixed $value) {
 		if( $key === 'all' && is_array($value) ) {
 			$this->config = $value;
 			
@@ -85,14 +91,12 @@ abstract class Config {
 	 *
 	 * @param string $key Key of the config to check is set
 	 */
-	public function __isset($key) {
+	public function __isset(string $key) {
 		return isset($this->config[$key]);
 	}
 	
 	/**
 	 * Get this config as array
-	 *
-	 * @return array
 	 */
 	public function asArray(): array {
 		return $this->config;
@@ -100,13 +104,9 @@ abstract class Config {
 	
 	/**
 	 * Get one config value
-	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return mixed
 	 */
-	public function getOne(string $key, $default = null): mixed {
-		return apath_get($this->config, $key, $default);
+	public function getOne(string $key, mixed $default = null): mixed {
+		return array_path_get($this->config, $key, $default);
 	}
 	
 	/**
@@ -118,7 +118,7 @@ abstract class Config {
 	public function hasSource(string $source, ?string $package = null): bool {
 		try {
 			return !!static::getFilePath($source, $package);
-		} catch( Exception $e ) {
+		} catch( Exception ) {
 			return false;
 		}
 	}
@@ -128,10 +128,9 @@ abstract class Config {
 	 *
 	 * @param string $path The path to the config file
 	 * @return mixed The loaded configuration array
-	 * @throws Exception
 	 */
 	public static function parse(string $path): array {
-		throw new Exception('The class "' . get_called_class() . '" should override the `parse()` static method from "' . get_class() . '"');
+		throw new RuntimeException(sprintf('The class "%s" should override the `parse()` static method from "%s"', get_called_class(), get_class()));
 	}
 	
 	/**
@@ -160,11 +159,12 @@ abstract class Config {
 			if( !$path ) {
 				return false;
 			}
-			if( class_exists('\Orpheus\Cache\FSCache', true) ) {
+			if( class_exists(FileSystemCache::class) ) {
 				// Try to update cache even if we don't want to use it as source
-				$cacheClass = ($package ? strtr($package, '/\\', '--') : 'app') . '-config';
-				// strtr fixes an issue with FSCache, FSCache does not allow path, so no / and \
-				$cache = new FSCache($cacheClass, strtr($source, '/\\', '--'), filemtime($path));
+				$cacheClass = ($package ? $this->normalizeName($package) : 'app') . '-config';// app-config
+				// FileSystemCache does not allow path, so strtr() removes / and \
+				$cacheName = $this->normalizeName($source);
+				$cache = new FileSystemCache($cacheClass, $cacheName, filemtime($path));
 				$parsed = null;
 				if( !static::$caching || !$cached || !$cache->get($parsed) ) {
 					$parsed = static::parse($path);
@@ -178,14 +178,16 @@ abstract class Config {
 			return true;
 			
 		} catch( CacheException $e ) {
-			log_error($e, 'Caching parsed source ' . $source, false);
-			
-		} catch( Exception $e ) {
-			// If not found, we do nothing
-			log_error($e, 'Caching parsed source ' . $source, false);
+			log_error($e, 'Caching parsed source ' . $source);
 		}
 		
 		return false;
+	}
+	
+	protected function normalizeName(string $name): string {
+		$name = strtr($name, '/\\', '--');
+		
+		return preg_replace('#^\-+|\-+$#', '', $name);
 	}
 	
 	/**
@@ -205,24 +207,34 @@ abstract class Config {
 	 *
 	 * @param string $source An identifier to get the source.
 	 * @param string|null $package The package to get file path (null to get app file path). Default is null
-	 * @return string The configuration file path, this file exists or an exception is thrown.
-	 * @throws Exception
+	 * @return string|null The configuration file path, this file exists or an exception is thrown.
 	 */
 	public static function getFilePath(string $source, ?string $package = null): ?string {
 		if( is_readable($source) ) {
 			return $source;
 		}
-		$configFile = '/' . $source . '.' . static::$extension;
+		$configFile = static::getSourcePath($source);
 		if( $package ) {
-			$path = VENDOR_PATH . '/' . $package . CONFIG_FOLDER . '/' . $configFile;
+			$path = VENDOR_PATH . '/' . $package . CONFIG_FOLDER . $configFile;
 		} else {
-			$path = pathOf(CONFIG_FOLDER . '/' . $configFile, true);
+			$path = pathOf(CONFIG_FOLDER . $configFile, true);
 		}
 		if( !$path || !is_file($path) || !is_readable($path) ) {
-			throw new Exception('Unable to find config source "' . $source . '"');
+			throw new RuntimeException(sprintf('Unable to find config source "%s"%s', $source, $package ? sprintf(' in package "%s"', $package) : ''));
 		}
 		
 		return $path;
+	}
+	
+	protected static function getSourcePath(string $source): string {
+		if( !isset(static::$extension) ) {
+			throw new RuntimeException('To get file path, static string extension property must be declared');
+		}
+		if( $source[0] !== '/' ) {
+			// Normalize to start with slash
+			$source = '/' . $source;
+		}
+		return $source . '.' . static::$extension;
 	}
 	
 	/**
@@ -232,7 +244,6 @@ abstract class Config {
 	 * @param string $source An identifier to build the source
 	 * @param boolean $minor True if this is a minor configuration
 	 * @param boolean $cached True if this configuration should be cached
-	 * @return Config|null
 	 */
 	public static function build(string $source, bool $minor = false, bool $cached = true): ?Config {
 		if( get_called_class() === get_class() ) {
@@ -263,7 +274,6 @@ abstract class Config {
 	 * @param string $source An identifier to build the source
 	 * @param boolean $cached True if this configuration should be cached
 	 * @param boolean $silent True if ignoring config loading issues
-	 * @return Config|null
 	 */
 	public static function buildFrom(?string $package, string $source, bool $cached = true, bool $silent = false): ?Config {
 		if( get_called_class() === get_class() ) {
@@ -285,7 +295,7 @@ abstract class Config {
 	 * @param mixed $default The default value to use
 	 * @return mixed A config value
 	 */
-	public static function get($key, $default = null): mixed {
+	public static function get(string $key, mixed $default = null): mixed {
 		if( !isset(static::$main) ) {
 			return $default;
 		}
@@ -301,7 +311,7 @@ abstract class Config {
 	 * @param mixed $value The new config value
 	 * @throws Exception
 	 */
-	public static function set(string $key, $value): void {
+	public static function set(string $key, mixed $value): void {
 		if( !isset(static::$main) ) {
 			throw new Exception('No Main Config');
 		}
@@ -310,8 +320,6 @@ abstract class Config {
 	
 	/**
 	 * Test if config is caching
-	 *
-	 * @return boolean
 	 */
 	public static function isCaching(): bool {
 		return self::$caching;
@@ -319,16 +327,11 @@ abstract class Config {
 	
 	/**
 	 * Set if config is caching
-	 *
-	 * @param boolean $caching
 	 */
 	public static function setCaching(bool $caching): void {
 		self::$caching = $caching;
 	}
 	
-	/**
-	 * @return Config|null
-	 */
 	public static function getMain(): ?Config {
 		return self::$main;
 	}

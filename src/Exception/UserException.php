@@ -5,7 +5,6 @@
 
 namespace Orpheus\Exception;
 
-use Exception;
 use RuntimeException;
 use Throwable;
 use function t;
@@ -27,7 +26,7 @@ class UserException extends RuntimeException {
 	/**
 	 * The log channel
 	 *
-	 * @var string|null
+	 * @var string
 	 */
 	protected string $channel = LOGFILE_SYSTEM;
 	
@@ -36,22 +35,16 @@ class UserException extends RuntimeException {
 	 *
 	 * @param string|null $message The exception message
 	 * @param string|null $domain The domain for the message, optional, allow $code
-	 * @param int|null $code The code of the exception
+	 * @param int $code The code of the exception
 	 * @param Throwable|null $previous The previous exception
 	 */
 	public function __construct(?string $message = null, ?string $domain = null, int $code = 0, ?Throwable $previous = null) {
-		if( is_int($domain) ) {
-			$code = $domain;
-			$domain = null;
-		}
 		parent::__construct($message, $code, $previous);
 		$this->setDomain($domain);
 	}
 	
 	/**
 	 * Get the domain
-	 *
-	 * @return string
 	 */
 	public function getDomain(): ?string {
 		return $this->domain;
@@ -86,23 +79,11 @@ class UserException extends RuntimeException {
 	
 	/**
 	 * Get the string representation of this exception
-	 *
-	 * @return string
 	 */
-	public function __toString() {
-		try {
-			return $this->getText();
-		} catch( Exception $e ) {
-			if( ERROR_LEVEL == DEV_LEVEL ) {
-				die('A fatal error occurred in UserException::__toString() :<br />' . $e->getMessage());
-			}
-			die('A fatal error occurred, please report it to an admin.<br />Une erreur fatale est survenue, veuillez contacter un administrateur.<br />');
-		}
+	public function __toString(): string {
+		return $this->getText();
 	}
 	
-	/**
-	 * @return string
-	 */
 	public function getChannel(): string {
 		return $this->channel;
 	}

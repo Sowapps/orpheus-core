@@ -15,22 +15,20 @@
 			"src/_loader.php"
 		]
 	},
-	"require": {
-		"orpheus/orpheus-hook": "4.*"
-	},
 	"suggest": {
 		"ext-fileinfo": "File features may require FileInfo"
 	},
 	"extra": {
 		"orpheus-library": {
-			"class": "Orpheus\\Core\\OrpheusCoreLibrary"
+			"class": "Orpheus\\Core\\OrpheusCoreLibrary",
+			"priority" : 1000
 		}
 	},
 	"authors": [
 		{
 			"name": "Florent HAZARD",
 			"email": "contact@sowapps.com",
-			"homepage": "http://sowapps.com",
+			"homepage": "https://sowapps.com",
 			"role": "Developer"
 		}
 	]

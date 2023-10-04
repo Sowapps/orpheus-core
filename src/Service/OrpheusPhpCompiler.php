@@ -12,12 +12,10 @@ class OrpheusPhpCompiler {
 	
 	private static ?OrpheusPhpCompiler $instance = null;
 	
-	private ?string $compilerPath = null;
+	private string $compilerPath;
 	
 	/**
 	 * OrpheusPhpCompiler constructor
-	 *
-	 * @param string|null $compilerPath
 	 */
 	public function __construct(?string $compilerPath = null) {
 		$this->compilerPath = $compilerPath ?? STORE_PATH . '/compiler';
@@ -28,7 +26,6 @@ class OrpheusPhpCompiler {
 			mkdir($this->compilerPath, 0777, true);
 		}
 	}
-	
 	
 	public function compileArray(string $name, array $data, bool $pretty = false): void {
 		$this->checkFileSystem();
