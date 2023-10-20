@@ -1343,7 +1343,7 @@ function startSession(int $type = SESSION_WITH_COOKIE): void {
 	} elseif( !isset($_SESSION['ORPHEUS']['CLIENT_IP']) ) {
 		// Old session (Will be removed)
 		$_SESSION['ORPHEUS']['CLIENT_IP'] = clientIp();
-	} elseif( Config::get('session_moved_allow', false) && $_SESSION['ORPHEUS']['CLIENT_IP'] != clientIp() ) {
+	} else if( Config::get('session_moved_allow', false) && $_SESSION['ORPHEUS']['CLIENT_IP'] !== clientIp() ) {
 		// Hack Attempt - Session stolen
 		// It will return hack attempt even if user is using a VPN
 		// Allow 'reset', 'home', 'exception' / Default is 'reset'

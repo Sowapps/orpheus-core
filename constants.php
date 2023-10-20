@@ -12,6 +12,7 @@ const LOGFILE_SQL = 'sql.log';
 
 const DOMAIN_CACHE = 'cache';
 const DOMAIN_LOGS = 'logs';
+const DOMAIN_TEST = 'test';
 
 /**
  * @deprecated Use DEBUG_ENABLED and ApplicationKernel::isDebugEnabled()

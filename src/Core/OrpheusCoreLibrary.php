@@ -22,6 +22,7 @@ class OrpheusCoreLibrary extends AbstractOrpheusLibrary {
 		
 		defifn('DOMAIN_CACHE', 'cache');
 		defifn('DOMAIN_LOGS', 'logs');
+		defifn('DOMAIN_TEST', 'test');
 		
 		defifn('SESSION_SHARE_ACROSS_SUBDOMAIN', false);
 		define('SESSION_WITH_COOKIE', 1 << 0);

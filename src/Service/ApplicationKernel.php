@@ -5,8 +5,8 @@
 
 namespace Orpheus\Service;
 
+use Orpheus\Config\EnvConfig;
 use Orpheus\Core\AbstractOrpheusLibrary;
-use Orpheus\Core\Route;
 use Orpheus\InputController\ControllerRoute;
 use Orpheus\InputController\InputRequest;
 use RuntimeException;
@@ -27,6 +27,10 @@ class ApplicationKernel {
 	
 	public function isDebugEnabled(): bool {
 		return $this->environment !== self::ENVIRONMENT_PRODUCTION;
+	}
+	
+	public function isKernelCachingEnabled(): bool {
+		return EnvConfig::get('KERNEL_CACHING', !$this->isDebugEnabled());
 	}
 	
 	public function configure(): void {
