@@ -10,6 +10,7 @@
 use Orpheus\Config\Config;
 use Orpheus\Exception\UserException;
 use Orpheus\InputController\HttpController\HttpRequest;
+use Orpheus\Service\SecurityService;
 
 /**
  * Do a binary test to check $value is matching $reference
@@ -210,9 +211,9 @@ function log_debug(string $report, ?string $action = null): void {
  * @see log_report()
  */
 function log_hack(string $report, ?string $action = null): void {
-	global $USER;
+	$user = SecurityService::get()->getActiveUser();
 	log_report($report . '
-[ IP: ' . clientIp() . '; User: ' . (isset($USER) ? "$USER #" . $USER->id() : 'N/A') . '; agent: ' . ($_SERVER['HTTP_USER_AGENT'] ?? 'N/A') . '; referer: ' . ($_SERVER['HTTP_REFERER'] ?? 'N/A') . ' ]',
+[ IP: ' . clientIp() . '; User: ' . ($user ? "$user #" . $user->id() : 'N/A') . '; agent: ' . ($_SERVER['HTTP_USER_AGENT'] ?? 'N/A') . '; referer: ' . ($_SERVER['HTTP_REFERER'] ?? 'N/A') . ' ]',
 		LOGFILE_HACK, $action);
 }
 
@@ -1049,9 +1050,9 @@ function clientIp(): string {
  * @return int|string The user's id
  */
 function userId(): int|string {
-	global $USER;
+	$user = SecurityService::get()->getActiveUser();
 	
-	return !empty($USER) ? $USER->id() : 0;
+	return $user ? $user->id() : 0;
 }
 
 /**

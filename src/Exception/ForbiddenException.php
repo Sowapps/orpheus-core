@@ -21,7 +21,7 @@ class ForbiddenException extends UserException {
 	 * @param string|null $domain The domain for the message
 	 * @param Throwable|null $previous The previous exception
 	 */
-	public function __construct($message = null, $domain = null, $previous = null) {
+	public function __construct(?string $message = null, ?string $domain = null, ?Throwable $previous = null) {
 		parent::__construct($message ?? 'forbidden', $domain, defined('HTTP_FORBIDDEN') ? HTTP_FORBIDDEN : null, $previous);
 	}
 	
