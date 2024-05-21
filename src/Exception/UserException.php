@@ -43,6 +43,10 @@ class UserException extends RuntimeException {
 		$this->setDomain($domain);
 	}
 	
+	public function getExtraData(): array {
+		return [];
+	}
+	
 	/**
 	 * Get the domain
 	 */

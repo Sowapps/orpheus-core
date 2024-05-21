@@ -5,6 +5,8 @@
 
 namespace Orpheus\Exception;
 
+use Throwable;
+
 /**
  * The User Reports Exception class
  *
@@ -18,6 +20,11 @@ class UserReportsException extends UserException {
 	 * @var array
 	 */
 	protected array $reports;
+	
+	public function __construct(array $reports, string $message = null, ?string $domain = null) {
+		parent::__construct($message, $domain);
+		$this->setReports($reports);
+	}
 	
 	/**
 	 * Get all the reports
