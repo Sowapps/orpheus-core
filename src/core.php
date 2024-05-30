@@ -9,6 +9,7 @@
 
 use Orpheus\Config\Config;
 use Orpheus\Exception\UserException;
+use Orpheus\Exception\UserReportsException;
 use Orpheus\InputController\HttpController\HttpRequest;
 use Orpheus\Service\SecurityService;
 
@@ -226,7 +227,9 @@ function log_hack(string $report, ?string $action = null): void {
  * @see log_report()
  */
 function log_error(string|Throwable $report, ?string $action = null): void {
-	log_report($report, LOGFILE_SYSTEM, $action);
+	if( defined('LOGFILE_SYSTEM') ) {
+		log_report($report, LOGFILE_SYSTEM, $action);
+	}// Prevents error accumulation
 }
 
 /**
@@ -381,17 +384,21 @@ function transferReportStream(?string $from = null, string $to = 'global'): bool
  * @return bool False if rejected
  * @see reportSuccess(), reportError()
  */
-function addReport(string $report, string $type, ?string $domain = null, ?string $code = null, int $severity = 0): bool {
+function addReportWith(string $report, string $type, ?string $domain = null, ?string $code = null, int $severity = 0): bool {
+	$domain ??= 'global';
+	$code ??= $report;
+	$report = t($report, $domain);
+	return addReport(['code' => $code, 'report' => $report, 'domain' => $domain, 'severity' => $severity], $type);
+}
+
+function addReport(array $report, string $type): bool {
 	global $REPORTS, $REPORT_STREAM, $DISABLE_REPORT;
 	if( !empty($DISABLE_REPORT) ) {
 		return false;
 	}
-	$domain ??= 'global';
-	$code ??= $report;
 	$REPORTS[$REPORT_STREAM] ??= [];
 	$REPORTS[$REPORT_STREAM][$type] ??= [];
-	$report = t($report, $domain);
-	$REPORTS[$REPORT_STREAM][$type][] = ['code' => $code, 'report' => $report, 'domain' => $domain, 'severity' => $severity];
+	$REPORTS[$REPORT_STREAM][$type][] = $report;
 	
 	return true;
 }
@@ -404,10 +411,10 @@ function addReport(string $report, string $type, ?string $domain = null, ?string
  * @param mixed $report The message to report.
  * @param string|null $domain The domain fo the message. Not used for translation. Default value is global.
  * @return bool False if rejected
- * @see addReport()
+ * @see addReportWith()
  */
 function reportSuccess(mixed $report, ?string $domain = null): bool {
-	return addReport($report, 'success', $domain);
+	return addReportWith($report, 'success', $domain);
 }
 
 /**
@@ -418,10 +425,10 @@ function reportSuccess(mixed $report, ?string $domain = null): bool {
  * @param mixed $report The message to report.
  * @param string|null $domain The domain fo the message. Not used for translation. Default value is global.
  * @return bool False if rejected
- * @see addReport()
+ * @see addReportWith()
  */
 function reportInfo(mixed $report, ?string $domain = null): bool {
-	return addReport($report, 'info', $domain);
+	return addReportWith($report, 'info', $domain);
 }
 
 /**
@@ -433,7 +440,7 @@ function reportInfo(mixed $report, ?string $domain = null): bool {
  * @param mixed $report The message to report.
  * @param string|null $domain The domain fo the message. Not used for translation. Default value is the domain of Exception in case of UserException else 'global'.
  * @return bool False if rejected
- * @see addReport()
+ * @see addReportWith()
  */
 function reportWarning(mixed $report, ?string $domain = null): bool {
 	return reportError($report, $domain, 0);
@@ -446,17 +453,22 @@ function reportWarning(mixed $report, ?string $domain = null): bool {
  * @param string|null $domain The domain fo the message. Default value is the domain of Exception in case of UserException else 'global'.
  * @param int $severity The severity of the error, commonly 1 for standard user error and 0 for warning. Default value is 1.
  * @return bool False if rejected
- * @see addReport()
+ * @see addReportWith()
  * Adds the report $message to the list of reports for this type 'error'.
  */
 function reportError(mixed $report, ?string $domain = null, int $severity = 1): bool {
 	$code = null;
+	if( $report instanceof UserReportsException ) {
+		foreach( $report->getReports() as $childReport ) {
+			addReport($childReport, 'error');
+		}
+	}
 	if( $report instanceof UserException ) {
 		$code = $report->getMessage();
 		$domain ??= $report->getDomain();
 	}
 	
-	return addReport($report, 'error', $domain, $code, $severity);
+	return addReportWith($report, 'error', $domain, $code, $severity);
 }
 
 /**
